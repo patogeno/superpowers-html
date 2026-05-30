@@ -23,3 +23,39 @@ export function findExternalRefs(html) {
   }
   return refs;
 }
+
+const MARKER = '/* INLINE_STYLESHEET */';
+
+export function inlineStylesheet(templateHtml, css) {
+  return templateHtml.split(MARKER).join(css);
+}
+
+export function findUnreplacedMarkers(html) {
+  return html.includes(MARKER) ? [MARKER] : [];
+}
+
+export function extractMarkdownCheckboxes(md) {
+  const re = /^[ \t]*-[ \t]*\[([ xX])\][ \t]*(.*\S)[ \t]*$/gm;
+  const out = [];
+  let m;
+  while ((m = re.exec(md)) !== null) {
+    out.push({ checked: m[1].toLowerCase() === 'x', text: m[2] });
+  }
+  return out;
+}
+
+export function extractHtmlTaskState(html) {
+  const m = html.match(
+    /<script[^>]*id\s*=\s*["']sp-task-state["'][^>]*>([\s\S]*?)<\/script>/i
+  );
+  if (!m) return null;
+  return JSON.parse(m[1]).checkboxes;
+}
+
+export function taskStateMatches(md, html) {
+  const a = extractMarkdownCheckboxes(md);
+  const b = extractHtmlTaskState(html);
+  if (b === null || a.length !== b.length) return false;
+  return a.every((x, i) =>
+    x.checked === b[i].checked && x.text.trim() === b[i].text.trim());
+}
