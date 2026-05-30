@@ -1,11 +1,13 @@
 ---
 name: html-artifacts
-description: Use when producing a human-facing HTML artifact in the brainstorming or planning workflow — a design spec, an implementation plan view, a session roadmap, or a learnings log. Provides the canonical stylesheet, templates, and self-contained authoring rules.
+description: Use when producing a human-facing HTML artifact in the brainstorming or planning workflow — a design spec, an implementation plan view, a session roadmap, or a learnings log.
 ---
 
 # Authoring HTML Artifacts
 
-Produce **self-contained, zero-dependency HTML** that a human enjoys reading and navigating. Use this whenever a skill emits a spec, plan view, roadmap, or learnings log.
+Produce **self-contained, zero-dependency HTML** that a human enjoys reading and navigating. Each artifact must be a single, sendable HTML file — no build step, no network dependencies.
+
+**When NOT to use:** plain conversational replies or short Markdown snippets don't need a template — only formal spec/plan/roadmap/learnings artifacts do.
 
 ## Rules
 
