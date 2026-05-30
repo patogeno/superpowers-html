@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { findExternalRefs } from './validate.js';
 import {
+  findExternalRefs,
   inlineStylesheet, findUnreplacedMarkers,
   extractMarkdownCheckboxes, extractHtmlTaskState, taskStateMatches,
 } from './validate.js';
@@ -56,6 +56,10 @@ test('taskStateMatches true when HTML JSON mirror equals Markdown checkboxes', (
     {"checkboxes":[{"checked":true,"text":"**Step 1: a**"},{"checked":false,"text":"**Step 2: b**"}]}
     </script>`;
   assert.equal(taskStateMatches(md, html), true);
+});
+
+test('extractHtmlTaskState returns null when no task-state block present', () => {
+  assert.equal(extractHtmlTaskState('<html><body>no block</body></html>'), null);
 });
 
 test('taskStateMatches false when checked state diverges', () => {

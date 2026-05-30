@@ -49,7 +49,11 @@ export function extractHtmlTaskState(html) {
     /<script[^>]*id\s*=\s*["']sp-task-state["'][^>]*>([\s\S]*?)<\/script>/i
   );
   if (!m) return null;
-  return JSON.parse(m[1]).checkboxes;
+  try {
+    return JSON.parse(m[1]).checkboxes ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export function taskStateMatches(md, html) {
