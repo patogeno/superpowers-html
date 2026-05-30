@@ -15,5 +15,14 @@ test('findExternalRefs: flags external script, stylesheet link, image, and css u
     <img src="//cdn.test/a.png">
     <style>@import url(https://cdn.test/f.css); body{background:url('http://cdn.test/b.png')}</style>`;
   const refs = findExternalRefs(html);
+  assert.ok(refs.some(r => r.includes('https://cdn.test/x.css')));
+  assert.ok(refs.some(r => r.includes('https://cdn.test/x.js')));
+  assert.ok(refs.some(r => r.includes('//cdn.test/a.png')));
+  assert.ok(refs.some(r => r.includes('https://cdn.test/f.css')));
+  assert.ok(refs.some(r => r.includes('http://cdn.test/b.png')));
   assert.equal(refs.length, 5);
+});
+
+test('findExternalRefs: flags bare-string @import', () => {
+  assert.equal(findExternalRefs(`<style>@import "https://cdn.test/x.css";</style>`).length, 1);
 });

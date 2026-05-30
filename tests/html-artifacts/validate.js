@@ -5,9 +5,12 @@
 // URIs are allowed — they do not break self-containment.
 const EXTERNAL = [
   /\bsrc\s*=\s*["'](?:https?:\/\/|\/\/)[^"']*/gi,         // script/img/iframe/source
-  /\bsrcset\s*=\s*["'][^"']*(?:https?:\/\/|\/\/)[^"']*/gi,
+  /\bsrcset\s*=\s*["'][^"']*?(?:https?:\/\/|\/\/)[^"']*/gi,
   /<link\b[^>]*\bhref\s*=\s*["'](?:https?:\/\/|\/\/)[^"']*/gi,
   /@import\s+(?:url\()?["']?(?:https?:\/\/|\/\/)[^"')]*/gi,
+  // The (?<!@import\s) lookbehind assumes a single space between @import and
+  // url( (the normal/formatted case), so the prior @import rule already counted
+  // it — this avoids double-counting that same ref here.
   /(?<!@import\s)url\(\s*["']?(?:https?:\/\/|\/\/)[^"')]*/gi,
 ];
 
