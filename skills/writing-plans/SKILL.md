@@ -15,12 +15,26 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Context:** If working in an isolated worktree, it should have been created via the `superpowers:using-git-worktrees` skill at execution time.
 
-**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
+**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md` — this Markdown plan is **canonical**.
 - (User preferences for plan location override this default)
+- **Also emit a human-facing HTML view** alongside it — see "HTML Plan View" below.
 
 ## Scope Check
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
+
+## HTML Plan View
+
+**REQUIRED SUB-SKILL:** Use superpowers:html-artifacts to render a human-facing HTML view of the plan.
+
+The Markdown plan is **canonical** — it holds the authoritative checkbox task-state that execution skills read and tick. In addition, author a self-contained HTML **view** of the same plan so the human can read and navigate it comfortably:
+
+- Build it from `templates/plan.html` with the canonical stylesheet inlined (no external resources).
+- Save it next to the Markdown plan with the same basename and a `.html` extension: `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.html`.
+- Embed the canonical checkbox state in the `<script type="application/json" id="sp-task-state">` block. `checkboxes` is the ordered list of every `- [ ]`/`- [x]` step, each with its `checked` boolean and raw step `text`.
+- The view **mirrors** the Markdown; it is never the authority. Whenever you (re)write the Markdown plan, regenerate the HTML view in the same turn so they stay in sync.
+
+The sync contract is verifiable: `taskStateMatches(markdown, html)` in `tests/html-artifacts/validate.js` returns true only when the view's `sp-task-state` block exactly matches the Markdown checkboxes.
 
 ## File Structure
 
