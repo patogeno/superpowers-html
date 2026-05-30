@@ -2,6 +2,8 @@
 
 Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
 
+> **This is `superpowers-html`** — a fork of [obra/superpowers](https://github.com/obra/superpowers) that makes the human-facing design **spec** and implementation **plan** render as rich, self-contained **HTML** (diagrams, tables, navigable task lists) instead of plain Markdown, and adds a multi-session workflow with a cross-session learnings log. The agent-only execution layer is unchanged. See [What this fork changes](#what-this-fork-changes-superpowers-html) and [how to install it](#this-fork-superpowers-html).
+
 ## Quickstart
 
 Give your agent Superpowers: [Claude Code](#claude-code), [Codex CLI](#codex-cli), [Codex App](#codex-app), [Factory Droid](#factory-droid), [Gemini CLI](#gemini-cli), [OpenCode](#opencode), [Cursor](#cursor), [GitHub Copilot CLI](#github-copilot-cli).
@@ -19,6 +21,28 @@ Next up, once you say "go", it launches a *subagent-driven-development* process,
 There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
 
 
+## What this fork changes (superpowers-html)
+
+Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **only what a human reads and reviews** — the design spec and the implementation plan — so they render as polished, self-contained HTML that's easier to navigate and react to. Nothing the *agent* executes changes, which keeps the fork easy to merge with upstream.
+
+**What's added:**
+
+- **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus HTML templates (spec, plan, roadmap, learnings) and authoring rules, with a small Node test suite that enforces self-containment. It's the shared design system every artifact inlines.
+- **`brainstorming` emits an HTML design spec.** The spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline **SVG** diagram and at least one semantic **table**, instead of `…-design.md`.
+- **`writing-plans` emits an HTML plan _view_.** The Markdown plan stays **canonical** (execution skills read and tick it, unchanged); alongside it the skill renders a navigable HTML view from `templates/plan.html` carrying a machine-checkable `sp-task-state` mirror of the Markdown checkboxes.
+- **A multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder with a **roadmap**, self-contained **session plans** (canonical Markdown + an HTML view each), and a cross-session **learnings log** (What happened · Deviations · Surprises · Follow-ups).
+
+**Principles:** every artifact is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; and the Markdown plan remains the source of truth wherever a machine reads it.
+
+| Artifact | Upstream | This fork |
+|---|---|---|
+| Design spec | Markdown | **HTML** (inline SVG + tables) |
+| Implementation plan | Markdown | Markdown (canonical) **+ HTML view** |
+| Multi-session roadmap / learnings log | — | **HTML** |
+| Agent-only / execution skills | Markdown | unchanged |
+
+> Why HTML? For human–AI collaborative *outputs* like specs and plans, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.
+
 ## Sponsorship
 
 If Superpowers has helped you do stuff that makes money and you are so inclined, I'd greatly appreciate it if you'd consider [sponsoring my opensource work](https://github.com/sponsors/obra).
@@ -35,6 +59,26 @@ Installation differs by harness. If you use more than one, install Superpowers s
 ### Claude Code
 
 Superpowers is available via the [official Claude plugin marketplace](https://claude.com/plugins/superpowers)
+
+#### This fork (superpowers-html)
+
+This fork ships as its own Claude Code plugin marketplace, so you can install it straight from GitHub:
+
+- Register the fork's marketplace:
+
+  ```bash
+  /plugin marketplace add patogeno/superpowers-html
+  ```
+
+- Install the plugin (the fork's marketplace is named `superpowers-dev`):
+
+  ```bash
+  /plugin install superpowers@superpowers-dev
+  ```
+
+The plugin name is still `superpowers`, so install this **instead of** the upstream Superpowers plugin — having both enabled at once will conflict. Disable or uninstall any existing `superpowers` plugin first.
+
+The sections below describe installing the **upstream** Superpowers from `obra/*`; use them only if you want the original Markdown-based version rather than this fork.
 
 #### Official Marketplace
 
@@ -150,6 +194,17 @@ already use it in another harness.
   ```bash
   copilot plugin install superpowers@superpowers-marketplace
   ```
+
+### Installing this fork on other harnesses
+
+The fork's changes live in the shared skill files, which every harness loads. For harnesses that can install from an arbitrary Git repository, point the installer at `patogeno/superpowers-html` (or `https://github.com/patogeno/superpowers-html`) in place of `obra/superpowers`:
+
+- **Gemini CLI:** `gemini extensions install https://github.com/patogeno/superpowers-html`
+- **Factory Droid:** `droid plugin marketplace add https://github.com/patogeno/superpowers-html` then `droid plugin install superpowers@superpowers-dev`
+- **GitHub Copilot CLI:** `copilot plugin marketplace add patogeno/superpowers-html` then `copilot plugin install superpowers@superpowers-dev`
+- **OpenCode:** tell OpenCode to `Fetch and follow instructions from https://raw.githubusercontent.com/patogeno/superpowers-html/refs/heads/main/.opencode/INSTALL.md`
+
+**Codex CLI/App and Cursor** install from their own curated marketplaces (`openai/plugins`, the Cursor marketplace), which carry only upstream Superpowers. To use this fork there, clone the repo and install it locally per that harness's local-plugin instructions.
 
 ## The Basic Workflow
 
