@@ -4,6 +4,7 @@ import {
   findExternalRefs,
   inlineStylesheet, findUnreplacedMarkers,
   extractMarkdownCheckboxes, extractHtmlTaskState, taskStateMatches,
+  findSpecDeficiencies,
 } from './validate.js';
 
 test('findExternalRefs: clean self-contained HTML has none', () => {
@@ -71,4 +72,20 @@ test('taskStateMatches false when checked state diverges', () => {
   const html = `<script type="application/json" id="sp-task-state">
     {"checkboxes":[{"checked":true,"text":"**Step 1: a**"}]}</script>`;
   assert.equal(taskStateMatches(md, html), false);
+});
+
+test('findSpecDeficiencies: a spec with an inline svg and a table has none', () => {
+  const html = `<svg viewBox="0 0 10 10"><rect width="10" height="10"/></svg>
+    <table><thead><tr><th>a</th></tr></thead><tbody><tr><td>b</td></tr></tbody></table>`;
+  assert.deepEqual(findSpecDeficiencies(html), []);
+});
+
+test('findSpecDeficiencies: flags a missing diagram and a missing table', () => {
+  assert.deepEqual(findSpecDeficiencies('<p>prose only, no visuals</p>'),
+    ['no inline <svg> diagram', 'no <table>']);
+});
+
+test('findSpecDeficiencies: flags only the missing one', () => {
+  assert.deepEqual(findSpecDeficiencies('<svg><rect/></svg><p>no table</p>'),
+    ['no <table>']);
 });
