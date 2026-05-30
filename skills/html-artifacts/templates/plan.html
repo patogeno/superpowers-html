@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><!-- TITLE: Implementation Plan — Feature --></title>
+<style>/* INLINE_STYLESHEET */</style>
+</head>
+<body class="layout">
+<nav class="sidebar">
+  <div class="doc-label">Implementation Plan</div>
+  <h1><!-- FEATURE NAME --></h1>
+  <div class="progress">
+    <div class="bar"><div class="fill" style="width:0%"></div></div>
+    <div class="pct"><!-- N of M tasks complete --></div>
+  </div>
+  <div class="toc"><!-- TOC: one <a> per task, with <span class="dot"> status --></div>
+</nav>
+<main class="main">
+  <header class="meta-head">
+    <h2><!-- Feature — Implementation Plan --></h2>
+    <div class="meta-row"><span class="k">Goal</span><span><!-- goal --></span></div>
+    <div class="meta-row"><span class="k">Architecture</span><span><!-- approach --></span></div>
+    <div class="meta-row"><span class="k">Tech Stack</span><span><!-- stack --></span></div>
+    <div class="callout"><span class="h">For agentic workers</span>Canonical task state lives in the Markdown plan; this page is its readable view.</div>
+  </header>
+  <!-- TASKS: one <details class="task"> per task. summary = tnum + h3 + badge.
+       task-body = files, then <div class="step [checked]"> per step. -->
+
+  <!-- Machine-readable mirror of the canonical Markdown checkbox state.
+       Keep in sync with the .md plan on every regeneration. -->
+  <script type="application/json" id="sp-task-state">
+  {"checkboxes":[]}
+  </script>
+</main>
+</body>
+</html>
