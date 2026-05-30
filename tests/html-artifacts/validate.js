@@ -63,3 +63,13 @@ export function taskStateMatches(md, html) {
   return a.every((x, i) =>
     x.checked === b[i].checked && x.text.trim() === b[i].text.trim());
 }
+
+// Spec-quality check: a human-facing design spec (§7 of the design) should be
+// visual — at least one hand-authored inline <svg> diagram and one semantic
+// <table>. Returns a list of human-readable deficiencies; empty means it qualifies.
+export function findSpecDeficiencies(html) {
+  const out = [];
+  if (!/<svg[\s>]/i.test(html)) out.push('no inline <svg> diagram');
+  if (!/<table[\s>]/i.test(html)) out.push('no <table>');
+  return out;
+}
