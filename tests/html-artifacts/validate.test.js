@@ -31,6 +31,10 @@ test('findExternalRefs: flags bare-string @import', () => {
   assert.equal(findExternalRefs(`<style>@import "https://cdn.test/x.css";</style>`).length, 1);
 });
 
+test('findExternalRefs: @import with multiple spaces before url() is counted once', () => {
+  assert.equal(findExternalRefs(`<style>@import   url(https://cdn.test/x.css);</style>`).length, 1);
+});
+
 test('inlineStylesheet replaces the marker and removes it', () => {
   const tpl = `<style>/* INLINE_STYLESHEET */</style>`;
   const out = inlineStylesheet(tpl, 'body{color:#000}');

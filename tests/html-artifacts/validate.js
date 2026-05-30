@@ -8,10 +8,10 @@ const EXTERNAL = [
   /\bsrcset\s*=\s*["'][^"']*?(?:https?:\/\/|\/\/)[^"']*/gi,
   /<link\b[^>]*\bhref\s*=\s*["'](?:https?:\/\/|\/\/)[^"']*/gi,
   /@import\s+(?:url\()?["']?(?:https?:\/\/|\/\/)[^"')]*/gi,
-  // The (?<!@import\s) lookbehind assumes a single space between @import and
-  // url( (the normal/formatted case), so the prior @import rule already counted
-  // it — this avoids double-counting that same ref here.
-  /(?<!@import\s)url\(\s*["']?(?:https?:\/\/|\/\/)[^"')]*/gi,
+  // The (?<!@import\s+) lookbehind assumes one or more spaces between @import
+  // and url( (the normal/formatted case), so the prior @import rule already
+  // counted it — this avoids double-counting that same ref here.
+  /(?<!@import\s+)url\(\s*["']?(?:https?:\/\/|\/\/)[^"')]*/gi,
 ];
 
 export function findExternalRefs(html) {
