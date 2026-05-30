@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Spec — HTML Output for Superpowers</title>
+<style>
+  /* ============================================================
+     superpowers-html · canonical artifact stylesheet (inlined)
+     Light/dark aware · zero dependencies · self-contained
+     ============================================================ */
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg-primary:#f5f5f7;--bg-secondary:#fff;--bg-tertiary:#e9e9ec;--border:#d1d1d6;
+    --text-primary:#1d1d1f;--text-secondary:#6e6e73;--text-tertiary:#aeaeb2;
+    --accent:#0071e3;--success:#34c759;--warning:#ff9f0a;--error:#ff3b30;--purple:#bf5af2;--code-bg:#f6f8fa;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg-primary:#1d1d1f;--bg-secondary:#2d2d2f;--bg-tertiary:#3a3a3c;--border:#424245;
+    --text-primary:#f5f5f7;--text-secondary:#a1a1a6;--text-tertiary:#636366;--accent:#0a84ff;--code-bg:#161618;}}
+  body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);
+    color:var(--text-primary);line-height:1.6;display:grid;grid-template-columns:270px 1fr;min-height:100vh;}
+
+  /* sidebar TOC */
+  .sidebar{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--bg-secondary);
+    border-right:1px solid var(--border);padding:1.5rem 1rem;}
+  .sidebar .doc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;}
+  .sidebar h1{font-size:1rem;font-weight:650;margin:.3rem 0 .4rem;line-height:1.3;}
+  .sidebar .meta{font-size:.74rem;color:var(--text-secondary);margin-bottom:1.1rem;}
+  .toc a{display:block;text-decoration:none;color:var(--text-secondary);font-size:.84rem;padding:.34rem .5rem;
+    border-radius:6px;border-left:2px solid transparent;}
+  .toc a:hover{background:var(--bg-tertiary);color:var(--text-primary);}
+  .toc .num{color:var(--text-tertiary);font-variant-numeric:tabular-nums;margin-right:.4rem;}
+
+  /* main */
+  .main{padding:2.5rem 3rem;max-width:880px;}
+  h2{font-size:1.35rem;font-weight:660;margin:2.6rem 0 .9rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);scroll-margin-top:1rem;}
+  h2:first-of-type{margin-top:0;}
+  h3{font-size:1.02rem;font-weight:620;margin:1.4rem 0 .5rem;}
+  p{margin-bottom:.9rem;} ul,ol{margin:.3rem 0 1rem 1.4rem;} li{margin-bottom:.35rem;}
+  .lede{font-size:1.05rem;color:var(--text-secondary);margin-bottom:1.5rem;}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code-bg);
+    padding:.1rem .35rem;border-radius:5px;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;
+    font-family:ui-monospace,Menlo,monospace;font-size:.8rem;line-height:1.55;margin:.6rem 0 1.1rem;}
+  pre code{background:none;padding:0;}
+  .callout{border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);
+    border-radius:0 8px 8px 0;padding:.8rem 1.1rem;margin:1.1rem 0;font-size:.92rem;}
+  .callout.warn{border-color:var(--warning);background:color-mix(in srgb,var(--warning) 11%,transparent);}
+  .callout .h{font-weight:650;display:block;margin-bottom:.2rem;}
+
+  table{width:100%;border-collapse:collapse;margin:1rem 0 1.3rem;font-size:.9rem;}
+  th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);}
+  tbody tr:hover{background:var(--bg-secondary);}
+  td code{color:var(--accent);}
+  .pill{font-size:.68rem;font-weight:650;padding:.14rem .5rem;border-radius:99px;white-space:nowrap;}
+  .pill.html{color:var(--warning);background:color-mix(in srgb,var(--warning) 16%,transparent);}
+  .pill.md{color:var(--success);background:color-mix(in srgb,var(--success) 16%,transparent);}
+  .pill.keep{color:var(--text-secondary);background:var(--bg-tertiary);}
+
+  .fig{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin:1.2rem 0;}
+  .fig-cap{font-size:.74rem;color:var(--text-secondary);text-align:center;margin-top:.7rem;}
+  .nlabel{fill:var(--text-primary);font:600 12.5px system-ui;text-anchor:middle;}
+  .nsub{fill:var(--text-secondary);font:10px system-ui;text-anchor:middle;}
+  .col-title{fill:var(--text-secondary);font:700 11px system-ui;text-anchor:middle;letter-spacing:.5px;}
+  rect{stroke-width:1.5;} polygon{stroke-width:1.5;}
+  .n-edit{fill:color-mix(in srgb,var(--accent) 13%,var(--bg-secondary));stroke:var(--accent);}
+  .n-keep{fill:var(--bg-secondary);stroke:var(--border);stroke-dasharray:4 3;}
+  .n-art{fill:color-mix(in srgb,var(--warning) 14%,var(--bg-secondary));stroke:var(--warning);}
+  .n-md{fill:var(--bg-secondary);stroke:var(--success);}
+  .n-cons{fill:color-mix(in srgb,var(--success) 12%,var(--bg-secondary));stroke:var(--success);}
+  .n-learn{fill:color-mix(in srgb,var(--purple) 14%,var(--bg-secondary));stroke:var(--purple);}
+  .n-dec{fill:var(--bg-tertiary);stroke:var(--text-tertiary);}
+  .edge{stroke:var(--text-tertiary);stroke-width:1.4;fill:none;marker-end:url(#arr);}
+  .edge.fb{stroke:var(--purple);stroke-dasharray:5 4;marker-end:url(#arrp);}
+  .elabel{fill:var(--text-secondary);font:10px system-ui;text-anchor:middle;}
+  .elabel.fb{fill:var(--purple);}
+  .legend{display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.76rem;color:var(--text-secondary);}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem;}
+  .sw{width:12px;height:12px;border-radius:3px;border:1.5px solid;}
+  @media (max-width:780px){body{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}.main{padding:1.5rem;}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="doc-label">Design Spec</div>
+  <h1>HTML Output for Superpowers</h1>
+  <div class="meta">2026-05-30 · superpowers-html fork</div>
+  <div class="toc">
+    <a href="#summary"><span class="num">1</span>Summary &amp; rationale</a>
+    <a href="#scope"><span class="num">2</span>Scope &amp; principles</a>
+    <a href="#architecture"><span class="num">3</span>Architecture &amp; data flow</a>
+    <a href="#artifacts"><span class="num">4</span>Artifacts &amp; file layout</a>
+    <a href="#sessions"><span class="num">5</span>Multi-session workflow</a>
+    <a href="#styling"><span class="num">6</span>Styling &amp; shared skill</a>
+    <a href="#diagrams"><span class="num">7</span>Diagrams &amp; tables</a>
+    <a href="#testing"><span class="num">8</span>Testing &amp; verification</a>
+    <a href="#nongoals"><span class="num">9</span>Non-goals (YAGNI)</a>
+    <a href="#future"><span class="num">10</span>Future work</a>
+  </div>
+</nav>
+
+<main class="main">
+  <p class="lede">Make the <strong>human-facing collaborative artifacts</strong> of Superpowers — the design spec and the implementation plan — render as rich, navigable, self-contained HTML, while leaving the agent-only instruction and execution layer as lean Markdown. Add a multi-session execution model with a cross-session learning loop for large-scope work.</p>
+
+  <h2 id="summary">1 · Summary &amp; rationale</h2>
+  <p>Superpowers is a coding-agent methodology built from composable skills. Most skill files are instructions consumed by the <em>model</em> and are best kept in token-cheap Markdown. But a subset of artifacts are produced <em>for a human to read and react to</em> — and there the format matters.</p>
+  <p>Two articles by Thariq Shihipar (Claude Code team) — "The unreasonable effectiveness of HTML" and "HTML is the new Markdown" — argue that for human-AI collaborative <em>outputs</em> (plans, specs, design explorations), HTML beats Markdown: better information density, navigability, diagrams/tables, and shareability, making the work "legible enough that you actually want to read it." Roughly ~1% of these tokens reach production; the rest exist to make the <em>process</em> legible. This directly matches the project owner's experience: Markdown plans are hard to navigate and dull to engage with, which degrades the quality of feedback during design.</p>
+  <div class="callout"><span class="h">Core insight</span>The win is at the <strong>human review</strong> layer, not the agent-instruction layer. We convert what the human reads; we do not bloat what the model executes.</div>
+
+  <h2 id="scope">2 · Scope &amp; principles</h2>
+  <h3>In scope</h3>
+  <ul>
+    <li>The <strong>design spec</strong> produced by <code>brainstorming</code> → self-contained HTML with diagrams and tables.</li>
+    <li>The <strong>implementation plan</strong> produced by <code>writing-plans</code> → Markdown stays canonical; an HTML <em>view</em> is generated for the human.</li>
+    <li>A <strong>multi-session</strong> model for large scope: a session roadmap, self-contained session plans, and a running learnings log.</li>
+    <li>A new shared <code>html-artifacts</code> skill holding the canonical stylesheet and HTML authoring conventions.</li>
+  </ul>
+  <h3>Principles</h3>
+  <ul>
+    <li><strong>Additive &amp; mergeable.</strong> Make surgical edits to two skills, add new files, and touch nothing agent-only — so upstream improvements from <code>obra/superpowers</code> remain easy to pull.</li>
+    <li><strong>Zero dependencies.</strong> A hard project rule. No external libraries, CDNs, or build step. Diagrams are hand-authored inline SVG; CSS is inlined.</li>
+    <li><strong>Self-contained artifacts.</strong> Each HTML file stands alone (no external resource references), so it is portable and shareable.</li>
+    <li><strong>Markdown stays authoritative where machines read it.</strong> The plan's checkbox task-state must remain machine-parseable and untouched.</li>
+  </ul>
+
+  <h2 id="architecture">3 · Architecture &amp; data flow</h2>
+  <p>Two skills gain HTML output; one new skill supplies shared styling; all agent-only skills are untouched and keep reading the Markdown plan exactly as today.</p>
+  <div class="fig">
+    <svg viewBox="0 0 920 290" width="100%" role="img" aria-label="Solution overview">
+      <defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/></marker></defs>
+      <text class="col-title" x="150" y="18">SKILLS (additive edits)</text>
+      <text class="col-title" x="460" y="18">ARTIFACTS PRODUCED</text>
+      <text class="col-title" x="800" y="18">CONSUMERS</text>
+      <rect class="n-edit" x="40" y="34" width="220" height="42" rx="9"/><text class="nlabel" x="150" y="52">brainstorming</text><text class="nsub" x="150" y="67">+ HTML spec w/ diagrams</text>
+      <rect class="n-edit" x="40" y="86" width="220" height="42" rx="9"/><text class="nlabel" x="150" y="104">writing-plans</text><text class="nsub" x="150" y="119">+ roadmap · session plans · HTML view</text>
+      <rect class="n-edit" x="40" y="138" width="220" height="38" rx="9"/><text class="nlabel" x="150" y="155">NEW html-artifacts skill</text><text class="nsub" x="150" y="169">canonical CSS, inlined</text>
+      <rect class="n-keep" x="40" y="186" width="220" height="38" rx="9"/><text class="nlabel" x="150" y="203">executing · subagent · TDD …</text><text class="nsub" x="150" y="217">UNCHANGED (agent-only)</text>
+      <rect class="n-art" x="350" y="34" width="220" height="36" rx="9"/><text class="nlabel" x="460" y="56">Design spec · HTML</text>
+      <rect class="n-art" x="350" y="80" width="220" height="36" rx="9"/><text class="nlabel" x="460" y="102">Session roadmap · HTML</text>
+      <rect class="n-md" x="350" y="126" width="220" height="42" rx="9"/><text class="nlabel" x="460" y="144">Session plan · MD (canonical)</text><text class="nsub" x="460" y="159">checkbox task-state</text>
+      <rect class="n-art" x="350" y="178" width="220" height="34" rx="9"/><text class="nlabel" x="460" y="199">↳ plan · HTML view</text>
+      <rect class="n-art" x="350" y="222" width="220" height="34" rx="9"/><text class="nlabel" x="460" y="243">Learnings log · HTML</text>
+      <rect class="n-cons" x="690" y="56" width="190" height="46" rx="9"/><text class="nlabel" x="785" y="76">You (human)</text><text class="nsub" x="785" y="91">read &amp; review in HTML</text>
+      <rect class="n-cons" x="690" y="150" width="190" height="46" rx="9"/><text class="nlabel" x="785" y="170">Execution agents</text><text class="nsub" x="785" y="185">read/tick MD checkboxes</text>
+      <path class="edge" d="M260,52 L346,52"/><path class="edge" d="M260,104 L346,98"/>
+      <path class="edge" d="M260,110 C300,135 310,146 346,147"/><path class="edge" d="M260,116 C300,200 310,232 346,239"/>
+      <path class="edge" d="M460,168 L460,176"/>
+      <path class="edge" d="M570,52 C640,58 640,72 686,76"/><path class="edge" d="M570,98 C640,92 645,82 686,82"/>
+      <path class="edge" d="M570,195 C640,150 645,172 686,173"/><path class="edge" d="M570,239 C645,210 650,100 686,96"/>
+      <path class="edge" d="M570,147 C645,147 645,168 686,170"/>
+    </svg>
+    <div class="fig-cap">Fig 1 · Edited skills produce HTML artifacts (human) and a canonical Markdown plan (agents).</div>
+  </div>
+  <div class="legend">
+    <span><span class="sw" style="border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,var(--bg-secondary))"></span>Edited skill</span>
+    <span><span class="sw" style="border-color:var(--border);border-style:dashed"></span>Untouched</span>
+    <span><span class="sw" style="border-color:var(--warning);background:color-mix(in srgb,var(--warning) 14%,var(--bg-secondary))"></span>HTML (you read)</span>
+    <span><span class="sw" style="border-color:var(--success);background:var(--bg-secondary)"></span>Markdown (agents read)</span>
+  </div>
+
+  <h2 id="artifacts">4 · Artifacts &amp; file layout</h2>
+  <table>
+    <thead><tr><th>Artifact</th><th>Format</th><th>Read by</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td>Design spec</td><td><span class="pill html">HTML primary</span></td><td>Human (review), planning agent</td><td>Diagrams/tables are the point; nothing machine-parses it</td></tr>
+      <tr><td>Session roadmap</td><td><span class="pill html">HTML</span></td><td>Human</td><td>Orders session plans, shows dependencies + status, links each</td></tr>
+      <tr><td>Session plan</td><td><span class="pill md">MD canonical</span></td><td>Execution agents</td><td>Checkbox task-state must stay machine-readable &amp; untouched</td></tr>
+      <tr><td>↳ plan HTML view</td><td><span class="pill html">HTML</span></td><td>Human</td><td>Navigable, collapsible view rendered from the canonical MD</td></tr>
+      <tr><td>Learnings log</td><td><span class="pill html">HTML</span></td><td>Human + next lead</td><td>Cross-session memory; basis for inserting fix/intermediate sessions</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><span class="h">Principled asymmetry</span>The spec is HTML-primary; the plan is MD-canonical with an HTML view. Only the plan carries machine state, so only the plan needs Markdown to remain authoritative.</div>
+  <h3>File layout</h3>
+  <p>Multi-session work groups its files in a per-feature folder; single-session work stays flat.</p>
+  <pre><code>docs/superpowers/specs/2026-05-30-&lt;topic&gt;-design.html
+
+# Large scope (multi-session):
+docs/superpowers/plans/&lt;feature&gt;/
+    roadmap.html
+    session-01-&lt;name&gt;.md      &larr; canonical (agents)
+    session-01-&lt;name&gt;.html     &larr; view (human)
+    session-02-&lt;name&gt;.md / .html
+    learnings.html
+
+# Small/medium scope (single session):
+docs/superpowers/plans/2026-05-30-&lt;feature&gt;.md     &larr; canonical
+docs/superpowers/plans/2026-05-30-&lt;feature&gt;.html   &larr; view</code></pre>
+  <h3>Plan view ↔ canonical sync</h3>
+  <p>The agent authors the Markdown plan as the source of truth, then authors/regenerates the HTML view from it in the same turn. Whenever the Markdown changes (including agents ticking checkboxes during execution), the HTML view is regenerated to match. The HTML view mirrors task/step completion state but is never the authority.</p>
+
+  <h2 id="sessions">5 · Multi-session workflow &amp; learning loop</h2>
+  <p><strong>Trigger:</strong> after the spec is approved, <code>writing-plans</code> judges scope. If the work spans multiple subsystems or more tasks than one session can carry while the <em>lead's</em> context stays healthy, it produces the multi-session structure. Otherwise it produces a single plan (rendered as HTML). The trigger is the agent's judgment — no manual knob.</p>
+  <div class="fig">
+    <svg viewBox="0 0 940 320" width="100%" role="img" aria-label="Multi-session workflow">
+      <defs>
+        <marker id="arr2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/></marker>
+        <marker id="arrp" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--purple)"/></marker>
+      </defs>
+      <rect class="n-edit" x="30" y="30" width="160" height="46" rx="10"/><text class="nlabel" x="110" y="50">Design spec (HTML)</text><text class="nsub" x="110" y="65">brainstorming</text>
+      <polygon class="n-dec" points="280,53 336,25 392,53 336,81"/><text class="nsub" x="336" y="50">scope</text><text class="nsub" x="336" y="63">big?</text>
+      <rect class="n-art" x="470" y="26" width="180" height="50" rx="10"/><text class="nlabel" x="560" y="46">Roadmap (HTML)</text><text class="nsub" x="560" y="62">+ N session plans + learnings log</text>
+      <rect class="n-keep" x="470" y="98" width="180" height="36" rx="10"/><text class="nlabel" x="560" y="120">Single plan (as before)</text>
+      <rect class="n-keep" x="110" y="160" width="190" height="56" rx="10" style="stroke-dasharray:none"/><text class="nlabel" x="205" y="182">Session N</text><text class="nsub" x="205" y="198">lead + agents execute</text><text class="nsub" x="205" y="210">one session plan (MD)</text>
+      <rect class="n-learn" x="380" y="160" width="190" height="56" rx="10"/><text class="nlabel" x="475" y="182">Write learnings</text><text class="nsub" x="475" y="198">happened · deviations ·</text><text class="nsub" x="475" y="210">surprises · follow-ups</text>
+      <rect class="n-learn" x="650" y="160" width="220" height="56" rx="10"/><text class="nlabel" x="760" y="180">Before session N+1</text><text class="nsub" x="760" y="196">read learnings + roadmap;</text><text class="nsub" x="760" y="208">revise plans / insert fix session</text>
+      <rect class="n-edit" x="380" y="270" width="190" height="40" rx="10"/><text class="nlabel" x="475" y="290">Roadmap complete</text><text class="nsub" x="475" y="304">optional final consolidation</text>
+      <path class="edge" d="M190,53 L276,53"/><path class="edge" d="M392,53 L466,53"/><text class="elabel" x="430" y="44">yes</text>
+      <path class="edge" d="M336,81 C336,116 420,112 466,116"/><text class="elabel" x="404" y="103">no</text>
+      <path class="edge" d="M560,76 C560,120 380,128 300,165"/>
+      <path class="edge" d="M300,188 L376,188"/><path class="edge" d="M570,188 L646,188"/>
+      <path class="edge fb" d="M760,216 C760,258 350,258 295,216"/><text class="elabel fb" x="520" y="251">next session — context reset, learnings carried forward</text>
+      <path class="edge" d="M475,216 L475,266"/>
+    </svg>
+    <div class="fig-cap">Fig 2 · The learnings log (purple) is the cross-session memory that lets the lead's context reset safely and lets earlier sessions reshape later ones.</div>
+  </div>
+  <h3>Session plan = self-contained</h3>
+  <p>A fresh lead must be able to execute a session by reading only <em>that</em> session plan plus the learnings log — no need to re-read the whole spec or sibling plans. Each session plan therefore restates the minimal context it needs.</p>
+  <h3>Learnings log entry (per session)</h3>
+  <ul>
+    <li><strong>What happened</strong> — what was actually built/changed.</li>
+    <li><strong>Deviations</strong> — where execution differed from the plan, and why.</li>
+    <li><strong>Surprises</strong> — discoveries, gotchas, constraints found.</li>
+    <li><strong>Follow-ups</strong> — new tasks/risks for future sessions (may trigger roadmap edits or a new session).</li>
+  </ul>
+
+  <h2 id="styling">6 · Styling &amp; the shared <code>html-artifacts</code> skill</h2>
+  <p>To keep every artifact self-contained <em>and</em> avoid CSS drift across skills, a new skill <code>html-artifacts</code> owns the single source of truth:</p>
+  <ul>
+    <li>the <strong>canonical stylesheet</strong> — light/dark variables, typography, the sidebar-TOC plan/spec layout, diagram and table styles (the design system used by this very document);</li>
+    <li>the <strong>authoring conventions</strong> — write self-contained HTML, inline the CSS, draw diagrams as inline SVG, use semantic tables, never reference external resources.</li>
+  </ul>
+  <p><code>brainstorming</code> and <code>writing-plans</code> reference it with a <code>**REQUIRED SUB-SKILL**</code> marker (Superpowers' own composition pattern). The agent reads it and inlines the style when producing an artifact. This is purely additive (a new folder), and future-proofs HTML-ifying other human-facing skills later.</p>
+
+  <h2 id="diagrams">7 · Diagrams &amp; tables</h2>
+  <p>Diagrams are <strong>hand-authored inline SVG</strong> (with CSS box/flow layouts for simpler cases) — chosen over Mermaid-via-CDN and bundled-Mermaid to honor the zero-dependency rule and keep artifacts self-contained and offline-forever. Tables are plain semantic HTML. Both are emphasized in the design/spec phase so architecture and processes are visually graspable. Diagrams use the shared node/edge classes so they theme automatically (every figure in this spec is an example).</p>
+
+  <h2 id="testing">8 · Testing &amp; verification</h2>
+  <p>This repo's rule is "no skill change without a failing test first." We follow it to keep the fork honest and mergeable. Each change is driven by a subagent-scenario eval plus lightweight automatable invariants.</p>
+  <table>
+    <thead><tr><th>Check</th><th>Type</th><th>Passes when</th></tr></thead>
+    <tbody>
+      <tr><td>Brainstorming triggers &amp; emits HTML spec</td><td>Subagent scenario</td><td>"Let's build a todo app" → spec is HTML with ≥1 diagram + ≥1 table</td></tr>
+      <tr><td>Large scope → multi-session</td><td>Subagent scenario</td><td>Big prompt → roadmap + multiple session plans + learnings log produced</td></tr>
+      <tr><td>Self-contained / zero-dep</td><td>Invariant</td><td>Produced HTML has no external resource references (no http(s)/CDN/&lt;link&gt; src)</td></tr>
+      <tr><td>Canonical checkboxes intact</td><td>Invariant</td><td>MD plan still contains parseable <code>- [ ]</code> items</td></tr>
+      <tr><td>View matches canonical</td><td>Invariant</td><td>HTML plan view's task list matches the MD plan's</td></tr>
+      <tr><td>Execution loop regression</td><td>Subagent scenario</td><td>An untouched skill (subagent-driven-development) reads/ticks the MD plan correctly</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="nongoals">9 · Non-goals (YAGNI)</h2>
+  <ul>
+    <li><strong>No rewrite of agent-only skills.</strong> Behavioral/execution skills stay Markdown; HTML there would only add token noise.</li>
+    <li><strong>No external diagram libraries</strong> (Mermaid CDN or bundled) — rejected for zero-dep/self-contained reasons.</li>
+    <li><strong>No build step or converter tooling.</strong> The agent authors HTML directly; nothing to compile or maintain.</li>
+    <li><strong>No changes to multi-platform packaging</strong> (Codex/Cursor/OpenCode/Gemini) beyond what the additive skills naturally carry.</li>
+    <li><strong>Code-review and finishing-branch menus are not converted in this iteration</strong> (see Future work).</li>
+  </ul>
+
+  <h2 id="future">10 · Future work</h2>
+  <ul>
+    <li>HTML treatment for <code>finishing-a-development-branch</code> decision menus and the <code>requesting-code-review</code> report (both identified as human-facing; deferred to keep this iteration focused).</li>
+    <li>Optional: a tiny zero-dep validator script for the self-contained/checkbox invariants, runnable in tests.</li>
+    <li>Optional: contribute the <code>html-artifacts</code> skill upstream as an opt-in feature if it proves out.</li>
+  </ul>
+</main>
+</body>
+</html>
