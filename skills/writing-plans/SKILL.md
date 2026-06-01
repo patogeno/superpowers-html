@@ -151,6 +151,8 @@ git commit -m "feat: add specific feature"
 ```
 ````
 
+**For team plans only:** add a `**Specialist:** <role>` line immediately after the `**Files:**` block of each task (see "Team Plan Structure"). Sequential plans omit it.
+
 ## No Placeholders
 
 Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
