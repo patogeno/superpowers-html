@@ -34,39 +34,9 @@ export function findUnreplacedMarkers(html) {
   return html.includes(MARKER) ? [MARKER] : [];
 }
 
-export function extractMarkdownCheckboxes(md) {
-  const re = /^[ \t]*-[ \t]*\[([ xX])\][ \t]*(.*\S)[ \t]*$/gm;
-  const out = [];
-  let m;
-  while ((m = re.exec(md)) !== null) {
-    out.push({ checked: m[1].toLowerCase() === 'x', text: m[2] });
-  }
-  return out;
-}
-
-export function extractHtmlTaskState(html) {
-  const m = html.match(
-    /<script[^>]*id\s*=\s*["']sp-task-state["'][^>]*>([\s\S]*?)<\/script>/i
-  );
-  if (!m) return null;
-  try {
-    return JSON.parse(m[1]).checkboxes ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export function taskStateMatches(md, html) {
-  const a = extractMarkdownCheckboxes(md);
-  const b = extractHtmlTaskState(html);
-  if (b === null || a.length !== b.length) return false;
-  return a.every((x, i) =>
-    x.checked === b[i].checked && x.text.trim() === b[i].text.trim());
-}
-
-// Spec-quality check: a human-facing design spec (§7 of the design) should be
-// visual — at least one hand-authored inline <svg> diagram and one semantic
-// <table>. Returns a list of human-readable deficiencies; empty means it qualifies.
+// Spec-quality check: a human-facing design spec should be visual — at least
+// one hand-authored inline <svg> diagram and one semantic <table>. Returns a
+// list of human-readable deficiencies; empty means it qualifies.
 export function findSpecDeficiencies(html) {
   const out = [];
   if (!/<svg[\s>]/i.test(html)) out.push('no inline <svg> diagram');
