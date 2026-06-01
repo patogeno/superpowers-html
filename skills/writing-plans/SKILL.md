@@ -15,45 +15,40 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Context:** If working in an isolated worktree, it should have been created via the `superpowers:using-git-worktrees` skill at execution time.
 
-**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md` — this Markdown plan is **canonical**.
+**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md` — this Markdown plan is **canonical** and is the single source of truth. Execution skills read and tick its checkboxes directly.
 - (User preferences for plan location override this default)
-- **Also emit a human-facing HTML view** alongside it — see "HTML Plan View" below.
 
 ## Scope Check
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
-## HTML Plan View
+## Execution Model
 
-**REQUIRED SUB-SKILL:** Use superpowers:html-artifacts to render a human-facing HTML view of the plan.
+**Choose the execution model up front, before writing tasks** — ask your human partner which fits the work, because it changes the shape of the plan:
 
-The Markdown plan is **canonical** — it holds the authoritative checkbox task-state that execution skills read and tick. In addition, author a self-contained HTML **view** of the same plan so the human can read and navigate it comfortably:
+**1. Sequential subagents (default)** — a fresh subagent implements one task at a time, with review between tasks. Produces a plain ordered plan (the task structure below). Best when tasks are coupled or must run in a fixed order.
 
-- Build it from `templates/plan.html` with the canonical stylesheet inlined (no external resources).
-- Save it next to the Markdown plan with the same basename and a `.html` extension: `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.html`.
-- Embed the canonical checkbox state in the `<script type="application/json" id="sp-task-state">` block. `checkboxes` is the ordered list of every `- [ ]`/`- [x]` step, each with its `checked` boolean and raw step `text`.
-- The view **mirrors** the Markdown; it is never the authority. Whenever you (re)write the Markdown plan, regenerate the HTML view in the same turn so they stay in sync.
+**2. Team of specialists** — multiple specialized agents work concurrently on independent tasks. Produces a plan organized into parallel work-streams with an explicit dependency graph and a specialist tag per task (see "Team Plan Structure"). Best when the work splits into independent domains that benefit from concurrency.
 
-The sync contract is verifiable: `taskStateMatches(markdown, html)` in `tests/html-artifacts/validate.js` returns true only when the view's `sp-task-state` block exactly matches the Markdown checkboxes.
+Record the chosen model in the plan header (`**Execution:**` line). This choice is **orthogonal** to the multi-session judgment below: a multi-session feature can have each session plan written in either shape.
 
 ## Multi-Session Plans
 
-**Judge the scope first.** After the spec is approved, decide whether the work fits one session. If it spans multiple subsystems, or has more tasks than a single lead can carry while keeping its context healthy, produce a **multi-session structure**. Otherwise produce a single plan (with its HTML view, as above). This is your judgment — there is no manual knob.
+**Judge the scope first.** After the spec is approved, decide whether the work fits one session. If it spans multiple subsystems, or has more tasks than a single lead can carry while keeping its context healthy, produce a **multi-session structure**. Otherwise produce a single plan. This is your judgment — there is no manual knob.
 
-When the work is multi-session, group everything in a per-feature folder and use superpowers:html-artifacts for each human-facing artifact:
+When the work is multi-session, group everything in a per-feature folder of Markdown files:
 
 ```
 docs/superpowers/plans/<feature>/
-    roadmap.html                  ← from templates/roadmap.html
-    session-01-<name>.md          ← canonical (execution agents read this)
-    session-01-<name>.html        ← view (from templates/plan.html)
-    session-02-<name>.md / .html
-    learnings.html                ← from templates/learnings.html
+    roadmap.md            orders the sessions, their dependencies, status, and links
+    session-01-<name>.md  canonical session plan (execution agents read this)
+    session-02-<name>.md
+    learnings.md          cross-session memory
 ```
 
-- **Roadmap** (`roadmap.html`): orders the sessions, shows their dependencies and status, and links each session's plan. Insert intermediate or fix sessions here as they arise.
-- **Session plans are self-contained.** A fresh lead must be able to execute a session by reading only *that* session's plan plus the learnings log — restate the minimal context each session needs. Each session plan is a normal canonical Markdown plan with its synced HTML view.
-- **Learnings log** (`learnings.html`): cross-session memory. After each session, append an entry with four parts — **What happened**, **Deviations** (and why), **Surprises** (discoveries, gotchas, constraints found), and **Follow-ups** (new tasks/risks, which may trigger roadmap edits or a new session). The next lead reads this before starting.
+- **Roadmap** (`roadmap.md`): orders the sessions, shows their dependencies and status, and links each session's plan. Insert intermediate or fix sessions here as they arise.
+- **Session plans are self-contained.** A fresh lead must be able to execute a session by reading only *that* session's plan plus the learnings log — restate the minimal context each session needs. Each session plan is a normal canonical Markdown plan written in the chosen execution-model shape.
+- **Learnings log** (`learnings.md`): cross-session memory. After each session, append an entry with four parts — **What happened**, **Deviations** (and why), **Surprises** (discoveries, gotchas, constraints found), and **Follow-ups** (new tasks/risks, which may trigger roadmap edits or a new session). The next lead reads this before starting.
 
 ## File Structure
 
@@ -82,7 +77,7 @@ This structure informs the task decomposition. Each task should produce self-con
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: implement this plan task-by-task with the sub-skill named under "Execution Handoff" — superpowers:subagent-driven-development (recommended) or superpowers:executing-plans for a sequential plan, superpowers:dispatching-parallel-agents for a team plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -90,7 +85,27 @@ This structure informs the task decomposition. Each task should produce self-con
 
 **Tech Stack:** [Key technologies/libraries]
 
+**Execution:** [Sequential subagents | Team of specialists]
+
 ---
+```
+
+## Team Plan Structure
+
+When the chosen model is **team of specialists**, structure the plan so a dispatcher can run specialists concurrently:
+
+- **Work-streams section (up front).** Before the tasks, list each work-stream: a short name, the specialist role it needs, the tasks it owns, and the work-streams it depends on. This is the dependency graph — a dispatcher runs all dependency-free streams in the first wave, then the next wave as dependencies clear.
+- **Specialists are inferred per plan.** There is no fixed taxonomy. Derive the roles the work actually needs from the task content (for example: a DB-migration specialist, an API specialist, a React specialist) and tag each task with a `**Specialist:** <role>` line under its `**Files:**` block.
+- **Tasks stay bite-sized and independently testable** (same structure as below). Tasks within one stream are ordered; tasks across independent streams are not.
+
+Example work-streams section:
+
+```markdown
+## Work-streams
+
+- **Stream A — Schema** (Specialist: DB-migration) — Tasks 1–2. Depends on: none.
+- **Stream B — API** (Specialist: backend) — Tasks 3–4. Depends on: Stream A.
+- **Stream C — UI** (Specialist: React) — Tasks 5–6. Depends on: none.
 ```
 
 ## Task Structure
@@ -166,20 +181,22 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, hand off according to the execution model chosen up front.
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
+**If Sequential subagents:**
 
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
+> **"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
+>
+> **1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per task, review between tasks, fast iteration
+>
+> **2. Inline Execution** — Execute tasks in this session using executing-plans, batch execution with checkpoints
+>
+> **Which approach?"**
 
-**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
+- If Subagent-Driven chosen: **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development — fresh subagent per task + two-stage review.
+- If Inline Execution chosen: **REQUIRED SUB-SKILL:** Use superpowers:executing-plans — batch execution with checkpoints for review.
 
-**Which approach?"**
+**If Team of specialists:**
 
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Fresh subagent per task + two-stage review
-
-**If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
-- Batch execution with checkpoints for review
+- **REQUIRED SUB-SKILL:** Use superpowers:dispatching-parallel-agents.
+- Dispatch one specialist agent per dependency-free work-stream as a wave; give each agent only its stream's tasks plus the minimal context it needs. Review each stream's work as it returns, then launch the next wave as its dependencies clear.
