@@ -2,7 +2,7 @@
 
 Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
 
-> **This is `superpowers-html`** — a fork of [obra/superpowers](https://github.com/obra/superpowers) that makes the human-facing design **spec** and implementation **plan** render as rich, self-contained **HTML** (diagrams, tables, navigable task lists) instead of plain Markdown, and adds a multi-session workflow with a cross-session learnings log. The agent-only execution layer is unchanged. See [What this fork changes](#what-this-fork-changes-superpowers-html) and [how to install it](#this-fork-superpowers-html).
+> **This is `superpowers-html`** — a fork of [obra/superpowers](https://github.com/obra/superpowers) that makes the human-facing design **spec** render as a rich, self-contained **HTML** document (diagrams, tables) instead of plain Markdown, adds a Markdown multi-session workflow with a cross-session learnings log, and lets you choose at planning time between sequential subagents and a team of specialized agents. The agent-only execution layer is unchanged. See [What this fork changes](#what-this-fork-changes-superpowers-html) and [how to install it](#this-fork-superpowers-html).
 
 ## Quickstart
 
@@ -27,18 +27,19 @@ Upstream Superpowers produces its human-facing artifacts as Markdown. This fork 
 
 **What's added:**
 
-- **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus HTML templates (spec, plan, roadmap, learnings) and authoring rules, with a small Node test suite that enforces self-containment. It's the shared design system every artifact inlines.
+- **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus the spec HTML template and authoring rules, with a small Node test suite that enforces self-containment. It's the shared design system the design spec inlines.
 - **`brainstorming` emits an HTML design spec.** The spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline **SVG** diagram and at least one semantic **table**, instead of `…-design.md`.
-- **`writing-plans` emits an HTML plan _view_.** The Markdown plan stays **canonical** (execution skills read and tick it, unchanged); alongside it the skill renders a navigable HTML view from `templates/plan.html` carrying a machine-checkable `sp-task-state` mirror of the Markdown checkboxes.
-- **A multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder with a **roadmap**, self-contained **session plans** (canonical Markdown + an HTML view each), and a cross-session **learnings log** (What happened · Deviations · Surprises · Follow-ups).
+- **`writing-plans` lets you choose an execution model.** Up front you pick **sequential subagents** (a fresh subagent per task, reviewed between tasks) or a **team of specialists** (independent work-streams with a dependency graph and a per-plan-inferred specialist per task, dispatched concurrently). The plan itself stays canonical **Markdown**.
+- **A Markdown multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder of Markdown files: a **roadmap** (`roadmap.md`), self-contained **session plans** (`session-NN-<name>.md`), and a cross-session **learnings log** (`learnings.md` — What happened · Deviations · Surprises · Follow-ups).
 
-**Principles:** every artifact is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; and the Markdown plan remains the source of truth wherever a machine reads it.
+**Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
 
 | Artifact | Upstream | This fork |
 |---|---|---|
 | Design spec | Markdown | **HTML** (inline SVG + tables) |
-| Implementation plan | Markdown | Markdown (canonical) **+ HTML view** |
-| Multi-session roadmap / learnings log | — | **HTML** |
+| Implementation plan | Markdown | Markdown (canonical) |
+| Multi-session roadmap / learnings log | — | **Markdown** |
+| Execution model choice (sequential subagents / team of specialists) | — | **chosen at planning time** |
 | Agent-only / execution skills | Markdown | unchanged |
 
 > Why HTML? For human–AI collaborative *outputs* like specs and plans, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.
