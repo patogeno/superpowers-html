@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Spec — Markdown plans + subagents-vs-team execution model</title>
+<style>/* superpowers-html · canonical artifact stylesheet
+   Light/dark aware · zero dependencies · inline into each artifact's <style>. */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-primary:#f5f5f7;--bg-secondary:#fff;--bg-tertiary:#e9e9ec;--border:#d1d1d6;
+  --text-primary:#1d1d1f;--text-secondary:#6e6e73;--text-tertiary:#aeaeb2;
+  --accent:#0071e3;--success:#34c759;--warning:#ff9f0a;--error:#ff3b30;--purple:#bf5af2;--code-bg:#f6f8fa;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg-primary:#1d1d1f;--bg-secondary:#2d2d2f;--bg-tertiary:#3a3a3c;--border:#424245;
+  --text-primary:#f5f5f7;--text-secondary:#a1a1a6;--text-tertiary:#636366;--accent:#0a84ff;--code-bg:#161618;}}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);
+  color:var(--text-primary);line-height:1.6;}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh;}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--bg-secondary);
+  border-right:1px solid var(--border);padding:1.5rem 1rem;}
+.sidebar .doc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;}
+.sidebar h1{font-size:1.05rem;font-weight:650;margin:.3rem 0 .8rem;line-height:1.3;}
+.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text-secondary);
+  font-size:.84rem;padding:.36rem .5rem;border-radius:6px;}
+.toc a:hover,.toc a.active{background:var(--bg-tertiary);color:var(--text-primary);}
+.toc .num{color:var(--text-tertiary);font-variant-numeric:tabular-nums;margin-right:.4rem;}
+.progress{background:var(--bg-tertiary);border-radius:8px;padding:.75rem;margin-bottom:1.1rem;}
+.progress .bar{height:6px;background:var(--bg-primary);border-radius:99px;overflow:hidden;margin-bottom:.5rem;}
+.progress .fill{height:100%;background:var(--success);}
+.progress .pct{font-size:.78rem;color:var(--text-secondary);}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;border:2px solid var(--text-tertiary);}
+.dot.done{background:var(--success);border-color:var(--success);}
+.dot.active{background:var(--accent);border-color:var(--accent);}
+.main{padding:2.5rem 3rem;max-width:880px;}
+.lede{font-size:1.05rem;color:var(--text-secondary);margin-bottom:1.5rem;}
+h2{font-size:1.35rem;font-weight:660;margin:2.4rem 0 .9rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);scroll-margin-top:1rem;}
+h2:first-of-type{margin-top:0;}
+h3{font-size:1.02rem;font-weight:620;margin:1.3rem 0 .5rem;}
+p{margin-bottom:.9rem;}ul,ol{margin:.3rem 0 1rem 1.4rem;}li{margin-bottom:.35rem;}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code-bg);padding:.1rem .35rem;border-radius:5px;}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;
+  font-family:ui-monospace,Menlo,monospace;font-size:.8rem;line-height:1.55;margin:.6rem 0 1.1rem;}
+pre code{background:none;padding:0;}
+.callout{border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);
+  border-radius:0 8px 8px 0;padding:.8rem 1.1rem;margin:1.1rem 0;font-size:.92rem;}
+.callout.warn{border-color:var(--warning);background:color-mix(in srgb,var(--warning) 11%,transparent);}
+.callout .h{font-weight:650;display:block;margin-bottom:.2rem;}
+table{width:100%;border-collapse:collapse;margin:1rem 0 1.3rem;font-size:.9rem;}
+th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--border);vertical-align:top;}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);}
+tbody tr:hover{background:var(--bg-secondary);}
+td code{color:var(--accent);}
+.pill{font-size:.68rem;font-weight:650;padding:.14rem .5rem;border-radius:99px;white-space:nowrap;}
+.pill.ok{color:var(--success);background:color-mix(in srgb,var(--success) 16%,transparent);}
+.pill.warn{color:var(--warning);background:color-mix(in srgb,var(--warning) 16%,transparent);}
+.pill.muted{color:var(--text-secondary);background:var(--bg-tertiary);}
+.fig{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin:1.2rem 0;}
+.fig-cap{font-size:.74rem;color:var(--text-secondary);text-align:center;margin-top:.7rem;}
+.nlabel{fill:var(--text-primary);font:600 12.5px system-ui;text-anchor:middle;}
+.nsub{fill:var(--text-secondary);font:10px system-ui;text-anchor:middle;}
+.edge{stroke:var(--text-tertiary);stroke-width:1.4;fill:none;}
+.meta-head{border-bottom:1px solid var(--border);padding-bottom:1.5rem;margin-bottom:2rem;}
+.meta-row{display:grid;grid-template-columns:120px 1fr;gap:1rem;font-size:.92rem;margin-bottom:.5rem;}
+.meta-row .k{color:var(--text-secondary);font-weight:600;}
+details.task{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;margin-bottom:1rem;overflow:hidden;}
+details.task[open]{box-shadow:0 2px 10px rgba(0,0,0,.05);}
+summary{list-style:none;cursor:pointer;padding:1rem 1.25rem;display:flex;align-items:center;gap:.85rem;}
+summary::-webkit-details-marker{display:none;}
+summary .tnum{font-size:.72rem;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:.15rem .5rem;border-radius:99px;}
+summary h3{font-size:1.05rem;font-weight:620;flex:1;margin:0;}
+.badge{font-size:.68rem;font-weight:600;padding:.18rem .55rem;border-radius:99px;text-transform:uppercase;letter-spacing:.03em;}
+.badge.done{color:var(--success);background:color-mix(in srgb,var(--success) 15%,transparent);}
+.badge.todo{color:var(--text-secondary);background:var(--bg-tertiary);}
+.task-body{padding:0 1.25rem 1.25rem;border-top:1px solid var(--border);}
+.step{display:flex;gap:.7rem;padding:.55rem 0;align-items:flex-start;font-size:.9rem;}
+.step .cb{width:16px;height:16px;border:2px solid var(--text-tertiary);border-radius:4px;flex-shrink:0;margin-top:.18rem;}
+.step.checked .cb{background:var(--success);border-color:var(--success);}
+.step.checked .txt{color:var(--text-secondary);text-decoration:line-through;}
+@media (max-width:780px){.layout{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}.main{padding:1.5rem;}}</style>
+</head>
+<body class="layout">
+<nav class="sidebar">
+  <div class="doc-label">Design Spec</div>
+  <h1>Markdown plans + subagents-vs-team execution model</h1>
+  <div class="toc">
+    <a href="#goal"><span class="num">1</span>Goal &amp; context</a>
+    <a href="#flow"><span class="num">2</span>Decision flow</a>
+    <a href="#shapes"><span class="num">3</span>The two plan shapes</a>
+    <a href="#multisession"><span class="num">4</span>Multi-session in Markdown</a>
+    <a href="#handoff"><span class="num">5</span>Execution handoff</a>
+    <a href="#revert"><span class="num">6</span>Revert &amp; cleanup scope</a>
+    <a href="#nongoals"><span class="num">7</span>Non-goals</a>
+    <a href="#testing"><span class="num">8</span>Testing</a>
+  </div>
+</nav>
+<main class="main">
+  <p class="lede">Revert the <code>writing-plans</code> skill to Markdown-only plans, keep the multi-session triage (now expressed in Markdown), and add an up-front choice between two execution models — sequential subagents or a team of per-plan-inferred specialists — each producing a differently-shaped plan.</p>
+
+  <div class="meta-head">
+    <div class="meta-row"><span class="k">Date</span><span>2026-06-01</span></div>
+    <div class="meta-row"><span class="k">Scope</span><span>Fork-local change to <code>superpowers-html</code>. Edits <code>skills/writing-plans</code>, trims <code>skills/html-artifacts</code>, removes orphaned templates/tests.</span></div>
+    <div class="meta-row"><span class="k">Approach</span><span>A — one skill, branch by mode (chosen over a separate team-plan skill).</span></div>
+  </div>
+
+  <h2 id="goal">1. Goal &amp; context</h2>
+  <p>This fork added two HTML-emitting behaviours on top of upstream Superpowers: brainstorming emits an HTML design spec, and <code>writing-plans</code> emits a synced HTML plan view plus an HTML multi-session structure. In practice the HTML <em>plan</em> view added little value over the canonical Markdown — it introduced a sync contract (the <code>sp-task-state</code> mirror) that must be regenerated on every checkbox tick, for a document that is already pleasant to read in Markdown.</p>
+  <p>Two things should change together:</p>
+  <ul>
+    <li><strong>Revert the plan HTML.</strong> Plans return to canonical Markdown only. The multi-session triage — a valued fork addition — stays, but expressed as Markdown files instead of HTML artifacts.</li>
+    <li><strong>Add an execution-model choice.</strong> Before writing tasks, <code>writing-plans</code> asks whether the work will be executed by <em>sequential subagents</em> (today's flow) or a <em>team of specialists</em> working concurrently. The answer changes the shape of the plan document.</li>
+  </ul>
+  <p>The brainstorming HTML design spec (this very document) and the <code>html-artifacts</code> skill are <strong>kept</strong> — only the plan/roadmap/learnings HTML outputs are reverted.</p>
+
+  <h2 id="flow">2. Decision flow</h2>
+  <p>Plan authoring gains one new decision point. Three judgments run in order, and the last two are orthogonal: multi-session decides <em>how many</em> plan documents; the execution model decides <em>the shape of each</em> document.</p>
+
+  <div class="fig">
+    <svg viewBox="0 0 760 300" role="img" aria-label="Plan authoring decision flow">
+      <defs>
+        <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/>
+        </marker>
+      </defs>
+
+      <!-- Scope check -->
+      <rect x="20" y="120" width="130" height="56" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="85" y="143">Scope check</text>
+      <text class="nsub" x="85" y="160">split subsystems</text>
+
+      <!-- Multi-session judgment -->
+      <rect x="200" y="120" width="150" height="56" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="275" y="143">Multi-session?</text>
+      <text class="nsub" x="275" y="160">one vs many sessions</text>
+
+      <!-- Execution-model choice -->
+      <rect x="400" y="120" width="160" height="56" rx="10" fill="color-mix(in srgb,var(--accent) 14%,transparent)" stroke="var(--accent)"/>
+      <text class="nlabel" x="480" y="143">Execution model?</text>
+      <text class="nsub" x="480" y="160">NEW · ask the human</text>
+
+      <!-- Sequential shape -->
+      <rect x="610" y="60" width="130" height="56" rx="10" fill="color-mix(in srgb,var(--success) 15%,transparent)" stroke="var(--success)"/>
+      <text class="nlabel" x="675" y="83">Sequential</text>
+      <text class="nsub" x="675" y="100">ordered plan</text>
+
+      <!-- Team shape -->
+      <rect x="610" y="180" width="130" height="56" rx="10" fill="color-mix(in srgb,var(--purple) 18%,transparent)" stroke="var(--purple)"/>
+      <text class="nlabel" x="675" y="203">Team</text>
+      <text class="nsub" x="675" y="220">work-streams + deps</text>
+
+      <!-- edges -->
+      <path class="edge" d="M150,148 L200,148" marker-end="url(#arrow)"/>
+      <path class="edge" d="M350,148 L400,148" marker-end="url(#arrow)"/>
+      <path class="edge" d="M560,140 C585,120 585,100 610,90" marker-end="url(#arrow)"/>
+      <path class="edge" d="M560,156 C585,176 585,196 610,206" marker-end="url(#arrow)"/>
+    </svg>
+    <div class="fig-cap">Scope check → multi-session judgment → execution-model choice. The model choice selects which plan shape each plan document takes.</div>
+  </div>
+
+  <p>Composition rule: a multi-session feature produces one <code>roadmap.md</code> and several session plans; each session plan is written in whichever shape the execution-model choice selected. A single-session feature produces one plan document in that shape.</p>
+
+  <h2 id="shapes">3. The two plan shapes</h2>
+  <p>Both shapes keep the existing quality bar — bite-sized 2–5 minute TDD steps, exact file paths, complete code per step, no placeholders. They differ only in structure and the handoff they point to.</p>
+
+  <table>
+    <thead><tr><th>Aspect</th><th>Sequential</th><th>Team</th></tr></thead>
+    <tbody>
+      <tr><td>Task ordering</td><td>Linear <code>### Task N</code></td><td>Tasks grouped into parallel-safe work-streams</td></tr>
+      <tr><td>Specialist tag</td><td><span class="pill muted">none</span></td><td><code>**Specialist:** &lt;role&gt;</code> per task, inferred from the work</td></tr>
+      <tr><td>Dependency info</td><td>Implicit (top-to-bottom)</td><td>Explicit "Work-streams" section: which streams run concurrently, which cross-stream deps gate later streams</td></tr>
+      <tr><td>Header points at</td><td><code>subagent-driven-development</code> / <code>executing-plans</code></td><td><code>dispatching-parallel-agents</code></td></tr>
+      <tr><td>Best when</td><td>Tasks are coupled or strictly ordered</td><td>Tasks split into independent domains that benefit from concurrency</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Specialists are inferred per plan</h3>
+  <p>There is no fixed role taxonomy. When writing a team plan, derive the roles the work actually needs from the task content — for example a DB-migration specialist, an API specialist, a React specialist — and tag each task with one. The role is a label that scopes the dispatched agent's instructions; it is not tied to a registered harness agent type.</p>
+
+  <div class="callout">
+    <span class="h">Team plan header &amp; work-streams</span>
+    A team plan opens with a <strong>Work-streams</strong> section listing each stream, its specialist, the tasks it owns, and its dependencies on other streams (e.g. "Stream C: API — depends on Stream A: DB schema"). This is the dependency graph a dispatcher reads to decide which streams launch in the same wave.
+  </div>
+
+  <h2 id="multisession">4. Multi-session in Markdown</h2>
+  <p>The multi-session triage logic is unchanged ("judge the scope first; if it spans subsystems or overflows one lead's context, produce a multi-session structure"). Only its output format changes from HTML artifacts to Markdown files:</p>
+  <pre><code>docs/superpowers/plans/&lt;feature&gt;/
+    roadmap.md            session order, dependencies, status, links to sessions
+    session-01-&lt;name&gt;.md  self-contained canonical plan (sequential- or team-shaped)
+    session-02-&lt;name&gt;.md
+    learnings.md          cross-session memory</code></pre>
+  <ul>
+    <li><strong><code>roadmap.md</code></strong> — orders sessions, shows dependencies and status, links each session plan. Fix/intermediate sessions are inserted here as they arise.</li>
+    <li><strong>Session plans are self-contained</strong> — a fresh lead executes a session by reading only that session's plan plus <code>learnings.md</code>. Each is a normal canonical Markdown plan in the chosen shape.</li>
+    <li><strong><code>learnings.md</code></strong> — after each session, append an entry with four parts: <em>What happened</em>, <em>Deviations</em> (and why), <em>Surprises</em>, <em>Follow-ups</em> (which may trigger roadmap edits or a new session).</li>
+  </ul>
+  <p>No HTML, no <code>sp-task-state</code> mirror. The Markdown checkboxes are canonical and execution skills read and tick them directly.</p>
+
+  <h2 id="handoff">5. Execution handoff</h2>
+  <p>The end-of-skill handoff branches on the model chosen up front:</p>
+  <table>
+    <thead><tr><th>Chosen model</th><th>Handoff offers</th><th>Sub-skill</th></tr></thead>
+    <tbody>
+      <tr><td>Sequential</td><td>Subagent-driven (recommended) or inline batch execution</td><td><code>subagent-driven-development</code> / <code>executing-plans</code></td></tr>
+      <tr><td>Team</td><td>Dispatch one specialist per independent work-stream in a wave; review; launch the next wave as dependencies clear</td><td><code>dispatching-parallel-agents</code></td></tr>
+    </tbody>
+  </table>
+  <p>Because the model is chosen up front and recorded in the plan header, the handoff is deterministic — it does not re-ask.</p>
+
+  <h2 id="revert">6. Revert &amp; cleanup scope</h2>
+  <p>Concrete edits to undo the plan HTML while keeping the spec HTML path intact:</p>
+  <table>
+    <thead><tr><th>File</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><code>skills/writing-plans/SKILL.md</code></td><td>Remove "HTML Plan View" section and HTML view line; restore Markdown-only "Save plans to"; rewrite "Multi-Session Plans" to <code>.md</code> files; add "Execution Model" choice + "Team Plan Structure" section; branch the "Execution Handoff".</td></tr>
+      <tr><td><code>skills/html-artifacts/SKILL.md</code></td><td>Trim description and rules to the design spec only (drop plan/roadmap/learnings template references).</td></tr>
+      <tr><td><code>templates/plan.html</code>, <code>roadmap.html</code>, <code>learnings.html</code></td><td>Remove — orphaned once plans/multi-session are Markdown.</td></tr>
+      <tr><td><code>references/authoring.md</code></td><td>Remove the "Task-state mirror" section and the plan/roadmap/learnings template bullets.</td></tr>
+      <tr><td><code>tests/.../plan-view.test.js</code>, <code>writing-plans.test.js</code></td><td>Remove — they assert the plan-view sync contract.</td></tr>
+      <tr><td><code>tests/.../templates.test.js</code>, <code>skill.test.js</code>, <code>validate.test.js</code></td><td>Drop plan/roadmap/learnings assertions; keep spec assertions.</td></tr>
+      <tr><td><code>tests/.../validate.js</code></td><td>Remove <code>extractMarkdownCheckboxes</code>, <code>extractHtmlTaskState</code>, <code>taskStateMatches</code> (plan-view-only helpers).</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="nongoals">7. Non-goals</h2>
+  <ul>
+    <li><strong>No change to brainstorming.</strong> It still emits an HTML design spec via <code>html-artifacts</code>.</li>
+    <li><strong>No new fixed role taxonomy.</strong> Specialists are inferred per plan.</li>
+    <li><strong>No rewrite of <code>dispatching-parallel-agents</code></strong> beyond what's needed for the team handoff to point at it cleanly.</li>
+    <li><strong>No upstream PR.</strong> This is a deliberate fork-local customization.</li>
+  </ul>
+
+  <h2 id="testing">8. Testing</h2>
+  <p>After the edits, <code>npm run test:html</code> must pass: the remaining validators (<code>findExternalRefs</code>, <code>findUnreplacedMarkers</code>, <code>findSpecDeficiencies</code>) still cover the spec path, and no test references a removed template or helper. The <code>writing-plans</code> change is behavior-shaping skill content, verified by reading the rendered skill rather than by unit tests.</p>
+</main>
+</body>
+</html>
