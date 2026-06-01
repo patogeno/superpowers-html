@@ -4,31 +4,40 @@ import { readFileSync } from 'node:fs';
 
 const skill = readFileSync('skills/writing-plans/SKILL.md', 'utf8');
 
-test('writing-plans references html-artifacts as a REQUIRED SUB-SKILL', () => {
-  assert.match(skill, /## HTML Plan View/);
-  assert.match(skill, /REQUIRED SUB-SKILL/);
-  assert.match(skill, /superpowers:html-artifacts/);
-});
-
-test('writing-plans keeps Markdown canonical and emits an HTML view', () => {
+test('writing-plans keeps the Markdown plan canonical and Markdown-only', () => {
   assert.match(skill, /canonical/i);
-  assert.match(skill, /templates\/plan\.html/);
-  assert.match(skill, /plans\/YYYY-MM-DD-<feature-name>\.html/);
+  assert.match(skill, /plans\/YYYY-MM-DD-<feature-name>\.md/);
+  assert.ok(!/## HTML Plan View/.test(skill), 'HTML Plan View section should be removed');
+  assert.ok(!/sp-task-state/.test(skill), 'sp-task-state mirror should be removed');
+  assert.ok(!/templates\/plan\.html/.test(skill), 'plan.html reference should be removed');
 });
 
-test('writing-plans documents the sp-task-state sync contract', () => {
-  assert.match(skill, /sp-task-state/);
-  assert.match(skill, /taskStateMatches/);
+test('writing-plans offers an up-front execution-model choice', () => {
+  assert.match(skill, /## Execution Model/);
+  assert.match(skill, /sequential/i);
+  assert.match(skill, /team/i);
 });
 
-test('writing-plans describes the agent-judged multi-session trigger', () => {
+test('writing-plans documents the team plan structure with specialists and dependencies', () => {
+  assert.match(skill, /## Team Plan Structure/);
+  assert.match(skill, /Work-streams/);
+  assert.match(skill, /Specialist/);
+  assert.match(skill, /depend/i);
+});
+
+test('writing-plans branches the execution handoff to the right sub-skills', () => {
+  assert.match(skill, /subagent-driven-development/);
+  assert.match(skill, /executing-plans/);
+  assert.match(skill, /dispatching-parallel-agents/);
+});
+
+test('writing-plans keeps the multi-session structure in Markdown', () => {
   assert.match(skill, /multi-session/i);
   assert.match(skill, /docs\/superpowers\/plans\/<feature>\//);
-});
-
-test('writing-plans references the roadmap and learnings templates', () => {
-  assert.match(skill, /templates\/roadmap\.html/);
-  assert.match(skill, /templates\/learnings\.html/);
+  assert.match(skill, /roadmap\.md/);
+  assert.match(skill, /learnings\.md/);
+  assert.ok(!/roadmap\.html/.test(skill), 'roadmap.html reference should be removed');
+  assert.ok(!/learnings\.html/.test(skill), 'learnings.html reference should be removed');
 });
 
 test('writing-plans documents the four-part learnings log entry', () => {

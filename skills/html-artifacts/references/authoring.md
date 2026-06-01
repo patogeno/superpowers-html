@@ -15,15 +15,3 @@ Draw architecture/flow diagrams as inline `<svg>` inside a `<div class="fig">` w
 `<div class="fig-cap">` caption. Use `viewBox` for responsiveness. Theme nodes/edges
 with the `.nlabel`, `.nsub`, and `.edge` classes plus CSS variables (`var(--accent)`,
 `var(--success)`) so they adapt to light/dark. Define an arrowhead `<marker>` once per svg.
-
-## Task-state mirror (plan views only)
-The plan HTML view embeds the canonical Markdown checkbox state as JSON:
-
-    <script type="application/json" id="sp-task-state">
-    {"checkboxes":[{"checked":false,"text":"**Step 1: ...**"}, ...]}
-    </script>
-
-`checkboxes` is the ordered list of every `- [ ]`/`- [x]` step in the Markdown plan,
-with `checked` and the raw step `text`. `taskStateMatches(md, html)` in the validator
-verifies the view is in sync. Regenerate the HTML view (and this block) whenever the
-Markdown plan changes — including when execution skills tick a checkbox.

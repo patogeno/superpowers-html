@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {
   findExternalRefs,
   inlineStylesheet, findUnreplacedMarkers,
-  extractMarkdownCheckboxes, extractHtmlTaskState, taskStateMatches,
   findSpecDeficiencies,
 } from './validate.js';
 
@@ -45,33 +44,6 @@ test('inlineStylesheet replaces the marker and removes it', () => {
 
 test('findUnreplacedMarkers flags a leftover marker', () => {
   assert.equal(findUnreplacedMarkers('<style>/* INLINE_STYLESHEET */</style>').length, 1);
-});
-
-test('extractMarkdownCheckboxes reads checked state and text', () => {
-  const md = `- [ ] **Step 1: a**\nsome prose\n- [x] **Step 2: b**`;
-  assert.deepEqual(extractMarkdownCheckboxes(md), [
-    { checked: false, text: '**Step 1: a**' },
-    { checked: true, text: '**Step 2: b**' },
-  ]);
-});
-
-test('taskStateMatches true when HTML JSON mirror equals Markdown checkboxes', () => {
-  const md = `- [x] **Step 1: a**\n- [ ] **Step 2: b**`;
-  const html = `<script type="application/json" id="sp-task-state">
-    {"checkboxes":[{"checked":true,"text":"**Step 1: a**"},{"checked":false,"text":"**Step 2: b**"}]}
-    </script>`;
-  assert.equal(taskStateMatches(md, html), true);
-});
-
-test('extractHtmlTaskState returns null when no task-state block present', () => {
-  assert.equal(extractHtmlTaskState('<html><body>no block</body></html>'), null);
-});
-
-test('taskStateMatches false when checked state diverges', () => {
-  const md = `- [ ] **Step 1: a**`;
-  const html = `<script type="application/json" id="sp-task-state">
-    {"checkboxes":[{"checked":true,"text":"**Step 1: a**"}]}</script>`;
-  assert.equal(taskStateMatches(md, html), false);
 });
 
 test('findSpecDeficiencies: a spec with an inline svg and a table has none', () => {
