@@ -23,7 +23,7 @@ There's a bunch more to it, but that's the core of the system. And because the s
 
 ## What this fork changes (superpowers-html)
 
-Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **only what a human reads and reviews** — the design spec and the implementation plan — so they render as polished, self-contained HTML that's easier to navigate and react to. Nothing the *agent* executes changes, which keeps the fork easy to merge with upstream.
+Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **only what a human reads and reviews** — the design **spec** renders as a polished, self-contained HTML document that's easier to navigate and react to, while implementation plans stay canonical Markdown and gain an up-front choice of execution model. Nothing the *agent* executes changes, which keeps the fork easy to merge with upstream.
 
 **What's added:**
 
@@ -42,7 +42,7 @@ Upstream Superpowers produces its human-facing artifacts as Markdown. This fork 
 | Execution model choice (sequential subagents / team of specialists) | — | **chosen at planning time** |
 | Agent-only / execution skills | Markdown | unchanged |
 
-> Why HTML? For human–AI collaborative *outputs* like specs and plans, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.
+> Why HTML? For a human–AI collaborative *output* like the design spec, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.
 
 ## Sponsorship
 
