@@ -27,6 +27,13 @@ test('findExternalRefs: flags external script, stylesheet link, image, and css u
   assert.equal(refs.length, 5);
 });
 
+test('findExternalRefs: ignores refs inside HTML comments', () => {
+  const html = `<!-- <script src="https://cdn.test/x.js"></script> -->
+    <!-- <link rel="stylesheet" href="https://cdn.test/x.css"> -->
+    <style>body{color:#000}</style>`;
+  assert.deepEqual(findExternalRefs(html), []);
+});
+
 test('findExternalRefs: flags bare-string @import', () => {
   assert.equal(findExternalRefs(`<style>@import "https://cdn.test/x.css";</style>`).length, 1);
 });

@@ -1,5 +1,37 @@
 # Superpowers Release Notes
 
+---
+
+# superpowers-html — fork changes
+
+This section records what the [`superpowers-html`](https://github.com/patogeno/superpowers-html) fork changed relative to upstream [obra/superpowers](https://github.com/obra/superpowers). Everything below the divider is upstream release history. Fork versions track the upstream `version` string, so changes are dated rather than version-pinned.
+
+The fork's design principle is to change **only what a human reads and reviews**, leaving everything the *agent* executes byte-for-byte identical to upstream so the fork stays easy to merge. See the README's [What this fork changes](README.md#what-this-fork-changes-superpowers-html) section.
+
+### Markdown plans + subagents-vs-team execution model (2026-06-01)
+
+Reverted the experimental HTML plan view back to canonical Markdown, and added an up-front execution-model choice to `writing-plans`. Design spec: [`docs/superpowers/specs/2026-06-01-md-plans-subagents-vs-team-design.html`](docs/superpowers/specs/2026-06-01-md-plans-subagents-vs-team-design.html).
+
+- **Implementation plans are canonical Markdown again.** The earlier HTML plan view and HTML multi-session workflow (below) were reverted — execution skills read and tick the Markdown plan's checkboxes directly, with no separate human/agent representation to keep in sync. This also deleted the most fragile validator pieces (the `sp-task-state` mirror and multi-line checkbox handling).
+- **`writing-plans` now picks an execution model up front** — **sequential subagents** (default; a fresh subagent per task, reviewed between tasks; ordered plan) or a **team of specialists** (independent work-streams with a dependency graph, each task tagged with a specialist role inferred from the work, dispatched concurrently via `dispatching-parallel-agents`). The choice is recorded in the plan header's `**Execution:**` line and is orthogonal to the multi-session judgment. This is a *planning-time* choice and is separate from any harness multi-agent feature — a team plan runs as ordinary parallel subagents on any harness, with no special config.
+- **The team handoff prefers a first-class agent team when the harness provides one** — e.g. Claude Code's experimental agent teams (enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json) or Codex's multi-agent mode — and falls back to parallel subagents otherwise. The README documents activation across the supported harnesses.
+- **Markdown multi-session workflow** — for work too large for one session, `writing-plans` produces a per-feature folder: a `roadmap.md`, self-contained `session-NN-<name>.md` plans, and a cross-session `learnings.md` (What happened · Deviations · Surprises · Follow-ups).
+
+### HTML design spec + html-artifacts skill (kept)
+
+- **New `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus the spec HTML template and authoring rules, with a Node test suite (`tests/html-artifacts/`) that enforces self-containment (no CDNs, no build step, no external resources).
+- **`brainstorming` emits an HTML design spec** — the human-facing design spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline SVG diagram and at least one semantic table, instead of `…-design.md`.
+
+### Earlier experiment (superseded by the 2026-06-01 revert)
+
+- **HTML plan view + HTML multi-session** were added so plans rendered as navigable HTML, then reverted to Markdown when the cost of keeping a human HTML view in sync with the agent-executed plan outweighed the benefit. The lesson — keep the win at the review layer (the spec), not the agent-instruction layer (the plan) — is now the fork's stated principle.
+
+### Validator
+
+- **`findExternalRefs` ignores HTML comments** — a commented-out `<script>`/`<link>` no longer counts as an external-resource violation against self-containment.
+
+---
+
 ## v5.1.0 (2026-04-30)
 
 ### Removals

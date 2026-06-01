@@ -34,8 +34,19 @@ if %ERRORLEVEL% equ 0 (
     exit /b %ERRORLEVEL%
 )
 
-REM No bash found - exit silently rather than error
-REM (plugin still works, just without SessionStart context injection)
+REM Try bash bundled with Git, even in a non-standard install dir (e.g. D:\Tools\Git).
+REM where git -> ...\Git\cmd\git.exe; bash sits beside it at ...\Git\bin\bash.exe.
+for /f "delims=" %%G in ('where git 2^>nul') do (
+    if exist "%%~dpG..\bin\bash.exe" (
+        "%%~dpG..\bin\bash.exe" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
+        exit /b
+    )
+)
+
+REM No bash found. Warn on stderr instead of failing silently: a silent skip
+REM means the superpowers bootstrap never loads and skills don't auto-trigger,
+REM which is very hard to diagnose. The session still starts.
+echo superpowers: bash not found; SessionStart hook skipped, so skills will not auto-trigger. Install Git for Windows, or add bash to PATH. See README "Windows: skills not auto-triggering".>&2
 exit /b 0
 CMDBLOCK
 

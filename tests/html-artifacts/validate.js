@@ -15,6 +15,9 @@ const EXTERNAL = [
 ];
 
 export function findExternalRefs(html) {
+  // Strip HTML comments first — a ref inside <!-- ... --> is never loaded by
+  // the browser, so counting it would be a false positive against self-containment.
+  html = html.replace(/<!--[\s\S]*?-->/g, '');
   const refs = [];
   for (const re of EXTERNAL) {
     re.lastIndex = 0;

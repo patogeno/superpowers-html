@@ -201,4 +201,5 @@ After saving the plan, hand off according to the execution model chosen up front
 **If Team of specialists:**
 
 - **REQUIRED SUB-SKILL:** Use superpowers:dispatching-parallel-agents.
+- **Prefer a first-class agent team when the harness provides one.** If your harness exposes agent-team tools — Claude Code's *agent teams* (the user enables them with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, after which team-creation/teammate tools are available), Codex's multi-agent mode, or similar — create a team and run one teammate per dependency-free work-stream, coordinating through the shared task list and direct messages. Otherwise (or if the feature isn't enabled), dispatch ordinary parallel subagents as below.
 - Dispatch one specialist agent per dependency-free work-stream as a wave; give each agent only its stream's tasks plus the minimal context it needs. Review each stream's work as it returns, then launch the next wave as its dependencies clear.
