@@ -113,6 +113,11 @@ summary h3{font-size:1.05rem;font-weight:620;flex:1;margin:0;}
   </ul>
   <p>The brainstorming HTML design spec (this very document) and the <code>html-artifacts</code> skill are <strong>kept</strong> — only the plan/roadmap/learnings HTML outputs are reverted.</p>
 
+  <div class="callout warn">
+    <span class="h">Why the plan HTML is worth removing, not just unloved</span>
+    A plugin review confirmed the plan view's sync contract is <strong>structurally unenforceable</strong>. <code>authoring.md</code> promises the <code>sp-task-state</code> mirror stays in sync "including when execution skills tick a checkbox," yet neither <code>subagent-driven-development</code> nor <code>executing-plans</code> mentions HTML or regeneration at all. The moment execution ticks a box, the canonical Markdown and the HTML view diverge and <code>taskStateMatches()</code> would fail on the real artifact. Reverting deletes this entire failure class rather than papering over it.
+  </div>
+
   <h2 id="flow">2. Decision flow</h2>
   <p>Plan authoring gains one new decision point. Three judgments run in order, and the last two are orthogonal: multi-session decides <em>how many</em> plan documents; the execution model decides <em>the shape of each</em> document.</p>
 
@@ -208,19 +213,22 @@ summary h3{font-size:1.05rem;font-weight:620;flex:1;margin:0;}
   <p>Because the model is chosen up front and recorded in the plan header, the handoff is deterministic — it does not re-ask.</p>
 
   <h2 id="revert">6. Revert &amp; cleanup scope</h2>
-  <p>Concrete edits to undo the plan HTML while keeping the spec HTML path intact:</p>
+  <p>Concrete edits to undo the plan HTML while keeping the spec HTML path intact. This folds in everything the revert <em>forces</em> — including documentation and a test <strong>rewrite</strong> (not just deletion), since several tests and README claims hard-code the plan-view behavior and would otherwise go red or stale.</p>
   <table>
-    <thead><tr><th>File</th><th>Action</th></tr></thead>
+    <thead><tr><th>File</th><th>Action</th><th>Kind</th></tr></thead>
     <tbody>
-      <tr><td><code>skills/writing-plans/SKILL.md</code></td><td>Remove "HTML Plan View" section and HTML view line; restore Markdown-only "Save plans to"; rewrite "Multi-Session Plans" to <code>.md</code> files; add "Execution Model" choice + "Team Plan Structure" section; branch the "Execution Handoff".</td></tr>
-      <tr><td><code>skills/html-artifacts/SKILL.md</code></td><td>Trim description and rules to the design spec only (drop plan/roadmap/learnings template references).</td></tr>
-      <tr><td><code>templates/plan.html</code>, <code>roadmap.html</code>, <code>learnings.html</code></td><td>Remove — orphaned once plans/multi-session are Markdown.</td></tr>
-      <tr><td><code>references/authoring.md</code></td><td>Remove the "Task-state mirror" section and the plan/roadmap/learnings template bullets.</td></tr>
-      <tr><td><code>tests/.../plan-view.test.js</code>, <code>writing-plans.test.js</code></td><td>Remove — they assert the plan-view sync contract.</td></tr>
-      <tr><td><code>tests/.../templates.test.js</code>, <code>skill.test.js</code>, <code>validate.test.js</code></td><td>Drop plan/roadmap/learnings assertions; keep spec assertions.</td></tr>
-      <tr><td><code>tests/.../validate.js</code></td><td>Remove <code>extractMarkdownCheckboxes</code>, <code>extractHtmlTaskState</code>, <code>taskStateMatches</code> (plan-view-only helpers).</td></tr>
+      <tr><td><code>skills/writing-plans/SKILL.md</code></td><td>Remove "HTML Plan View" section and HTML view line; restore Markdown-only "Save plans to"; rewrite "Multi-Session Plans" to <code>.md</code> files; add "Execution Model" choice + "Team Plan Structure" section; branch the "Execution Handoff".</td><td><span class="pill warn">behavior</span></td></tr>
+      <tr><td><code>skills/html-artifacts/SKILL.md</code></td><td>Trim description and rules to the design spec only (drop plan/roadmap/learnings template references and the task-state-mirror rule).</td><td><span class="pill warn">behavior</span></td></tr>
+      <tr><td><code>skills/html-artifacts/templates/plan.html</code>, <code>roadmap.html</code>, <code>learnings.html</code></td><td>Remove — orphaned once plans/multi-session are Markdown.</td><td><span class="pill muted">delete</span></td></tr>
+      <tr><td><code>skills/html-artifacts/references/authoring.md</code></td><td>Remove the "Task-state mirror" section and the plan/roadmap/learnings template bullets; keep the spec/diagram/self-containment guidance.</td><td><span class="pill muted">docs</span></td></tr>
+      <tr><td><code>README.md</code></td><td>Correct the fork description (lines ~5, ~32–33) and the comparison table (line ~41): the implementation plan is <strong>Markdown only</strong> again (no "+ HTML view"); multi-session artifacts are <code>.md</code>. Keep the design-spec-as-HTML row. Add a line on the new subagents-vs-team execution-model choice.</td><td><span class="pill muted">docs</span></td></tr>
+      <tr><td><code>tests/html-artifacts/plan-view.test.js</code></td><td>Remove — it exists only to exercise the plan-view sync contract.</td><td><span class="pill muted">delete</span></td></tr>
+      <tr><td><code>tests/html-artifacts/writing-plans.test.js</code></td><td><strong>Rewrite</strong> (build-breaker if left): drop the HTML-view assertions (<code>## HTML Plan View</code>, <code>templates/plan.html</code>, <code>&lt;feature-name&gt;.html</code>, <code>sp-task-state</code>, <code>taskStateMatches</code>, <code>templates/{roadmap,learnings}.html</code>) and instead assert the reverted behavior: Markdown-only canonical plan, the <code>.md</code> multi-session structure, the four-part learnings entry, and the new execution-model choice (sequential vs team).</td><td><span class="pill warn">rewrite</span></td></tr>
+      <tr><td><code>tests/html-artifacts/templates.test.js</code>, <code>skill.test.js</code>, <code>validate.test.js</code></td><td>Drop plan/roadmap/learnings assertions; keep spec assertions.</td><td><span class="pill warn">rewrite</span></td></tr>
+      <tr><td><code>tests/html-artifacts/validate.js</code></td><td>Remove <code>extractMarkdownCheckboxes</code>, <code>extractHtmlTaskState</code>, <code>taskStateMatches</code> (plan-view-only helpers); keep <code>findExternalRefs</code>, <code>findUnreplacedMarkers</code>, <code>inlineStylesheet</code>, <code>findSpecDeficiencies</code>.</td><td><span class="pill warn">rewrite</span></td></tr>
     </tbody>
   </table>
+  <p>Deferred to a separate session (recorded in the git-ignored <code>triage/deferred-followups.md</code>, not part of this work): the Windows session-start hook silent-fail in <code>hooks/run-hook.cmd</code>, and adding a fork-specific section to <code>RELEASE-NOTES.md</code>.</p>
 
   <h2 id="nongoals">7. Non-goals</h2>
   <ul>
@@ -231,7 +239,13 @@ summary h3{font-size:1.05rem;font-weight:620;flex:1;margin:0;}
   </ul>
 
   <h2 id="testing">8. Testing</h2>
-  <p>After the edits, <code>npm run test:html</code> must pass: the remaining validators (<code>findExternalRefs</code>, <code>findUnreplacedMarkers</code>, <code>findSpecDeficiencies</code>) still cover the spec path, and no test references a removed template or helper. The <code>writing-plans</code> change is behavior-shaping skill content, verified by reading the rendered skill rather than by unit tests.</p>
+  <p>After the edits, <code>npm run test:html</code> must pass with no reference to a removed template or helper. Concretely:</p>
+  <ul>
+    <li>The remaining validators (<code>findExternalRefs</code>, <code>findUnreplacedMarkers</code>, <code>findSpecDeficiencies</code>) still cover the spec path.</li>
+    <li>The rewritten <code>writing-plans.test.js</code> now asserts the <em>reverted</em> behavior — Markdown-only canonical plan, the <code>.md</code> multi-session structure, the four-part learnings entry, and the presence of both execution-model branches (sequential and team) — so the skill's new contract is regression-guarded rather than its old one.</li>
+    <li>README accuracy is verified by reading it against the reverted skills (no automated test); the comparison table must show the plan as Markdown-only.</li>
+  </ul>
+  <p>The <code>writing-plans</code> SKILL.md change itself is behavior-shaping content, verified by reading the rendered skill rather than by unit tests.</p>
 </main>
 </body>
 </html>
