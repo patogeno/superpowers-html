@@ -6,7 +6,16 @@
 
 This section records what the [`superpowers-html`](https://github.com/patogeno/superpowers-html) fork changed relative to upstream [obra/superpowers](https://github.com/obra/superpowers). Everything below the divider is upstream release history. Fork versions track the upstream `version` string, so changes are dated rather than version-pinned.
 
-The fork's design principle is to change **only what a human reads and reviews**, leaving everything the *agent* executes byte-for-byte identical to upstream so the fork stays easy to merge. See the README's [What this fork changes](README.md#what-this-fork-changes-superpowers-html) section.
+The fork's design principle is to change **what a human reads and reviews**, leaving the agent-executed *code* (servers, scripts) identical to upstream so the fork stays easy to merge. See the README's [What this fork changes](README.md#what-this-fork-changes-superpowers-html) section.
+
+### Mockups replace the visual companion (2026-06-17)
+
+Retired upstream's browser-based visual companion in favour of static, self-contained HTML mockups. Design spec: [`docs/superpowers/specs/2026-06-17-mockups-replace-visual-companion-design.html`](docs/superpowers/specs/2026-06-17-mockups-replace-visual-companion-design.html).
+
+- **The visual companion is no longer offered.** `brainstorming` drops the just-in-time companion offer and the *Visual Companion* section; `visual-companion.md` becomes a tombstone pointing to the new flow. The companion's server (`scripts/server.cjs`), shell scripts, and `tests/brainstorm-server/` are **left on disk identical to upstream** — unwired, not deleted — so future upstream merges don't re-fight it.
+- **Visual design is conveyed as HTML mockups.** When a question is clearer shown than told, the agent authors a self-contained mockup. A schematic wireframe goes **inline in the design spec** (canonical `html-artifacts` theme); a higher-fidelity mockup **styled like the product being designed** (its own inline CSS, not the plugin stylesheet) is spun out to its own file. There is no server and no interactive selection — the user opens the file and chooses in the terminal.
+- **Output layout.** A lone spec stays a single `…-design.html`. Once a topic has a spec plus one or more mockups, everything moves into a per-topic folder: `docs/superpowers/specs/YYYY-MM-DD-<topic>/` with `design.html` and `mockup-<name>.html`.
+- **`html-artifacts` reused for discipline, not theme.** A new *Mockups* section in `references/authoring.md` (plus a self-contained `mockup-example.html`) documents that mockups obey self-containment (`findExternalRefs` empty) but carry the product's own look and are exempt from the spec-quality gate. `writing-plans` links mockups from the relevant UI tasks.
 
 ### Markdown plans + subagents-vs-team execution model (2026-06-01)
 

@@ -22,7 +22,7 @@ Every project goes through this process. A todo list, a single-function utility,
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
+2. **Show, don't just tell, with mockups** — when a question or design point is genuinely clearer shown than described, author a self-contained HTML mockup (inline in the spec, or its own file when detailed). See the Mockups section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
@@ -142,21 +142,20 @@ Wait for the user's response. If they request changes, make them and re-run the 
 - **Incremental validation** - Present design, get approval before moving on
 - **Be flexible** - Go back and clarify when something doesn't make sense
 
-## Visual Companion
+## Mockups
 
-A browser-based companion for showing mockups, diagrams, and visual options during brainstorming. Available as a tool — not a mode. Accepting the companion means it's available for questions that benefit from visual treatment; it does NOT mean every question goes through the browser.
+When a question or design point is genuinely clearer **shown** than told — a layout, a screen, a navigation structure — author a **mockup**: a static, self-contained HTML artifact the user opens and looks at. There is no server and no interactive browser tool; the user views the file, and any choice between options is taken in the terminal like every other brainstorming decision.
 
-**Offering the companion (just-in-time):** Do NOT offer it upfront. Wait until a question would genuinely be clearer shown than told — a real mockup / layout / diagram question, not merely a UI *topic*. The first time that happens, offer it then, as its own message:
-> "This next part might be easier if I show you — I can put together mockups, diagrams, and comparisons in a browser tab as we go. It's still new and can be token-intensive. Want me to? I'll open it for you."
+**Per-question test:** would the user understand this better by *seeing* it than reading it? A question *about* a UI topic is not automatically visual — "what does personality mean here?" is conceptual (terminal); "which of these two layouts works better?" is visual (mockup). Don't reach for a mockup when words, a list, or a table answer the question.
 
-**This offer MUST be its own message.** Only the offer — no clarifying question, summary, or other content. Wait for the user's response. If they accept, start the server with `--open` so their browser opens to the first screen automatically. If they decline, continue text-only and don't offer again unless they raise it.
+**Two fidelities — let the narrow spec decide:**
 
-**Per-question decision:** Even after the user accepts, decide FOR EACH QUESTION whether to use the browser or the terminal. The test: **would the user understand this better by seeing it than reading it?**
+- **Inline schematic (default).** A structural wireframe — boxes, flow, layout skeleton — authored *inside the design spec* using the `html-artifacts` conventions (inline `<svg>` or CSS boxes, the canonical stylesheet). Use this when the spec can hold it without turning into a UI file.
+- **Spun-out mockup.** When a mockup needs more fidelity than the narrow spec holds well, author it as its **own** self-contained HTML file that **looks like the product being designed** — its own inline CSS, colors, and type, *not* the plugin's spec stylesheet. Link it from the spec with a plain relative `<a href>`. `html-artifacts` is reused here only for its self-containment discipline (one file, zero-dependency, no CDNs), not its theme.
 
-- **Use the browser** for content that IS visual — mockups, wireframes, layout comparisons, architecture diagrams, side-by-side visual designs
-- **Use the terminal** for content that is text — requirements questions, conceptual choices, tradeoff lists, A/B/C/D text options, scope decisions
+**Output layout:**
 
-A question about a UI topic is not automatically a visual question. "What does personality mean in this context?" is a conceptual question — use the terminal. "Which wizard layout works better?" is a visual question — use the browser.
+- Spec only → a single file: `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.html`
+- Spec **+ mockups** → a per-topic folder: `docs/superpowers/specs/YYYY-MM-DD-<topic>/` holding `design.html` plus `mockup-<name>.html` files.
 
-If they agree to the companion, read the detailed guide before proceeding:
-`skills/brainstorming/visual-companion.md`
+When the work proceeds to a plan, `writing-plans` references the same mockup files from the relevant tasks so the implementer opens them.

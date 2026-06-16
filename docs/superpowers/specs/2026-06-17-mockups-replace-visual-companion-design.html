@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Spec — Mockups-in-spec replace the visual companion</title>
+<style>/* superpowers-html · canonical artifact stylesheet
+   Light/dark aware · zero dependencies · inline into each artifact's <style>. */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-primary:#f5f5f7;--bg-secondary:#fff;--bg-tertiary:#e9e9ec;--border:#d1d1d6;
+  --text-primary:#1d1d1f;--text-secondary:#6e6e73;--text-tertiary:#aeaeb2;
+  --accent:#0071e3;--success:#34c759;--warning:#ff9f0a;--error:#ff3b30;--purple:#bf5af2;--code-bg:#f6f8fa;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg-primary:#1d1d1f;--bg-secondary:#2d2d2f;--bg-tertiary:#3a3a3c;--border:#424245;
+  --text-primary:#f5f5f7;--text-secondary:#a1a1a6;--text-tertiary:#636366;--accent:#0a84ff;--code-bg:#161618;}}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);
+  color:var(--text-primary);line-height:1.6;}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh;}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--bg-secondary);
+  border-right:1px solid var(--border);padding:1.5rem 1rem;}
+.sidebar .doc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;}
+.sidebar h1{font-size:1.05rem;font-weight:650;margin:.3rem 0 .8rem;line-height:1.3;}
+.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text-secondary);
+  font-size:.84rem;padding:.36rem .5rem;border-radius:6px;}
+.toc a:hover,.toc a.active{background:var(--bg-tertiary);color:var(--text-primary);}
+.toc .num{color:var(--text-tertiary);font-variant-numeric:tabular-nums;margin-right:.4rem;}
+.progress{background:var(--bg-tertiary);border-radius:8px;padding:.75rem;margin-bottom:1.1rem;}
+.progress .bar{height:6px;background:var(--bg-primary);border-radius:99px;overflow:hidden;margin-bottom:.5rem;}
+.progress .fill{height:100%;background:var(--success);}
+.progress .pct{font-size:.78rem;color:var(--text-secondary);}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;border:2px solid var(--text-tertiary);}
+.dot.done{background:var(--success);border-color:var(--success);}
+.dot.active{background:var(--accent);border-color:var(--accent);}
+.main{padding:2.5rem 3rem;max-width:880px;}
+.lede{font-size:1.05rem;color:var(--text-secondary);margin-bottom:1.5rem;}
+h2{font-size:1.35rem;font-weight:660;margin:2.4rem 0 .9rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);scroll-margin-top:1rem;}
+h2:first-of-type{margin-top:0;}
+h3{font-size:1.02rem;font-weight:620;margin:1.3rem 0 .5rem;}
+p{margin-bottom:.9rem;}ul,ol{margin:.3rem 0 1rem 1.4rem;}li{margin-bottom:.35rem;}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code-bg);padding:.1rem .35rem;border-radius:5px;}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;overflow-x:auto;
+  font-family:ui-monospace,Menlo,monospace;font-size:.8rem;line-height:1.55;margin:.6rem 0 1.1rem;}
+pre code{background:none;padding:0;}
+.callout{border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);
+  border-radius:0 8px 8px 0;padding:.8rem 1.1rem;margin:1.1rem 0;font-size:.92rem;}
+.callout.warn{border-color:var(--warning);background:color-mix(in srgb,var(--warning) 11%,transparent);}
+.callout .h{font-weight:650;display:block;margin-bottom:.2rem;}
+table{width:100%;border-collapse:collapse;margin:1rem 0 1.3rem;font-size:.9rem;}
+th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--border);vertical-align:top;}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);}
+tbody tr:hover{background:var(--bg-secondary);}
+td code{color:var(--accent);}
+.pill{font-size:.68rem;font-weight:650;padding:.14rem .5rem;border-radius:99px;white-space:nowrap;}
+.pill.ok{color:var(--success);background:color-mix(in srgb,var(--success) 16%,transparent);}
+.pill.warn{color:var(--warning);background:color-mix(in srgb,var(--warning) 16%,transparent);}
+.pill.muted{color:var(--text-secondary);background:var(--bg-tertiary);}
+.fig{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin:1.2rem 0;}
+.fig-cap{font-size:.74rem;color:var(--text-secondary);text-align:center;margin-top:.7rem;}
+.nlabel{fill:var(--text-primary);font:600 12.5px system-ui;text-anchor:middle;}
+.nsub{fill:var(--text-secondary);font:10px system-ui;text-anchor:middle;}
+.edge{stroke:var(--text-tertiary);stroke-width:1.4;fill:none;}
+.meta-head{border-bottom:1px solid var(--border);padding-bottom:1.5rem;margin-bottom:2rem;}
+.meta-row{display:grid;grid-template-columns:120px 1fr;gap:1rem;font-size:.92rem;margin-bottom:.5rem;}
+.meta-row .k{color:var(--text-secondary);font-weight:600;}
+details.task{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;margin-bottom:1rem;overflow:hidden;}
+details.task[open]{box-shadow:0 2px 10px rgba(0,0,0,.05);}
+summary{list-style:none;cursor:pointer;padding:1rem 1.25rem;display:flex;align-items:center;gap:.85rem;}
+summary::-webkit-details-marker{display:none;}
+summary .tnum{font-size:.72rem;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:.15rem .5rem;border-radius:99px;}
+summary h3{font-size:1.05rem;font-weight:620;flex:1;margin:0;}
+.badge{font-size:.68rem;font-weight:600;padding:.18rem .55rem;border-radius:99px;text-transform:uppercase;letter-spacing:.03em;}
+.badge.done{color:var(--success);background:color-mix(in srgb,var(--success) 15%,transparent);}
+.badge.todo{color:var(--text-secondary);background:var(--bg-tertiary);}
+.task-body{padding:0 1.25rem 1.25rem;border-top:1px solid var(--border);}
+.step{display:flex;gap:.7rem;padding:.55rem 0;align-items:flex-start;font-size:.9rem;}
+.step .cb{width:16px;height:16px;border:2px solid var(--text-tertiary);border-radius:4px;flex-shrink:0;margin-top:.18rem;}
+.step.checked .cb{background:var(--success);border-color:var(--success);}
+.step.checked .txt{color:var(--text-secondary);text-decoration:line-through;}
+@media (max-width:780px){.layout{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}.main{padding:1.5rem;}}</style>
+</head>
+<body class="layout">
+<nav class="sidebar">
+  <div class="doc-label">Design Spec</div>
+  <h1>Mockups-in-spec replace the visual companion</h1>
+  <div class="toc">
+    <a href="#problem"><span class="num">1</span>Problem</a>
+    <a href="#goals"><span class="num">2</span>Goals &amp; non-goals</a>
+    <a href="#flow"><span class="num">3</span>Authoring flow</a>
+    <a href="#fidelity"><span class="num">4</span>Fidelity split</a>
+    <a href="#layout"><span class="num">5</span>Output layout</a>
+    <a href="#brainstorming"><span class="num">6</span>brainstorming changes</a>
+    <a href="#html-artifacts"><span class="num">7</span>html-artifacts changes</a>
+    <a href="#writing-plans"><span class="num">8</span>writing-plans changes</a>
+    <a href="#tests"><span class="num">9</span>Tests &amp; validators</a>
+    <a href="#docs"><span class="num">10</span>Docs</a>
+    <a href="#blast"><span class="num">11</span>Affected files</a>
+  </div>
+</nav>
+<main class="main">
+  <div class="meta-head">
+    <div class="meta-row"><span class="k">Status</span><span>Approved — ready for plan</span></div>
+    <div class="meta-row"><span class="k">Date</span><span>2026-06-17</span></div>
+    <div class="meta-row"><span class="k">Fork</span><span>superpowers-html (on top of upstream v6.0.0)</span></div>
+    <div class="meta-row"><span class="k">Skills touched</span><span><code>brainstorming</code>, <code>html-artifacts</code>, <code>writing-plans</code></span></div>
+  </div>
+
+  <p class="lede">Retire the browser-based visual companion as an offered tool and convey visual design through static, self-contained HTML mockups — schematic ones inline in the spec, higher-fidelity product-styled ones spun out to their own files in a per-topic folder.</p>
+
+  <h2 id="problem">1. Problem</h2>
+  <p>The <code>brainstorming</code> skill offers a <strong>visual companion</strong>: a local web server (<code>skills/brainstorming/scripts/server.cjs</code>) that streams mockups to a browser tab and reads back the user's click selections. Upstream v6 invested heavily in it — a per-session key, a sandboxed file server, restart survival — which is real surface area to run, secure, and keep working across platforms.</p>
+  <p>This fork already makes the human-facing <strong>spec</strong> a self-contained HTML artifact. Mockups are the same kind of artifact: a human looks at them, nothing machine-parses them. So the companion's live server and interactive-selection machinery is more apparatus than the job needs. We want the <em>visual</em> value — seeing layouts and screens during design — without running a server, and without diverging so hard from upstream that future merges become painful.</p>
+
+  <h2 id="goals">2. Goals &amp; non-goals</h2>
+  <table>
+    <thead><tr><th>Goals</th><th>Non-goals</th></tr></thead>
+    <tbody>
+      <tr><td>Stop offering the visual companion in <code>brainstorming</code>.</td><td>Deleting <code>server.cjs</code>, the shell scripts, or <code>tests/brainstorm-server/</code>.</td></tr>
+      <tr><td>Convey visual design as static, self-contained HTML mockups.</td><td>Any interactive / click-to-select browser viewer.</td></tr>
+      <tr><td>Inline schematic mockups in the spec; spin out detailed ones to their own files.</td><td>Changing the canonical <code>stylesheet.css</code> or adding a mockup template.</td></tr>
+      <tr><td>Let Markdown plans reference the spun-out mockups.</td><td>Making plans anything other than canonical Markdown.</td></tr>
+      <tr><td>Keep agent-executed code byte-for-byte with upstream where possible (easy merges).</td><td>Re-styling mockups to the plugin's spec theme.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><span class="h">Fork principle preserved</span>We <strong>unwire</strong> the companion rather than delete it. The server, scripts, and their tests stay on disk identical to upstream, so future <code>git merge</code>s from upstream don't re-fight the companion. Only the human-read <code>brainstorming</code> guidance changes.</div>
+
+  <h2 id="flow">3. Authoring flow</h2>
+  <p>During brainstorming, when a question would be clearer shown than told, the agent authors a mockup instead of opening a server. Whether it lands inline or as its own file depends on whether the narrow spec can hold the detail well.</p>
+  <div class="fig">
+    <svg viewBox="0 0 760 280" width="100%" role="img" aria-label="Mockup authoring decision flow">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/>
+        </marker>
+      </defs>
+      <!-- node: visual question -->
+      <rect x="20" y="110" width="150" height="58" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="95" y="134">Visual question</text>
+      <text class="nsub" x="95" y="152">clearer shown than told?</text>
+      <!-- node: author mockup -->
+      <rect x="230" y="110" width="150" height="58" rx="10" fill="color-mix(in srgb,var(--accent) 14%,transparent)" stroke="var(--accent)"/>
+      <text class="nlabel" x="305" y="134">Author mockup</text>
+      <text class="nsub" x="305" y="152">self-contained HTML</text>
+      <!-- decision: fits narrow spec? -->
+      <path d="M515,139 L575,105 L635,139 L575,173 Z" fill="var(--bg-secondary)" stroke="var(--text-tertiary)"/>
+      <text class="nsub" x="575" y="135">fits the</text>
+      <text class="nsub" x="575" y="148">narrow spec?</text>
+      <!-- node: inline -->
+      <rect x="600" y="14" width="150" height="54" rx="10" fill="color-mix(in srgb,var(--success) 15%,transparent)" stroke="var(--success)"/>
+      <text class="nlabel" x="675" y="36">Inline schematic</text>
+      <text class="nsub" x="675" y="54">in design.html</text>
+      <!-- node: spun out -->
+      <rect x="600" y="212" width="150" height="58" rx="10" fill="color-mix(in srgb,var(--purple) 16%,transparent)" stroke="var(--purple)"/>
+      <text class="nlabel" x="675" y="234">Spin-out file</text>
+      <text class="nsub" x="675" y="252">product-styled, linked</text>
+      <!-- edges -->
+      <path class="edge" d="M170,139 H224" marker-end="url(#ah)"/>
+      <path class="edge" d="M380,139 H509" marker-end="url(#ah)"/>
+      <path class="edge" d="M600,123 C570,90 620,55 668,68" marker-end="url(#ah)"/>
+      <text class="nsub" x="612" y="92">yes</text>
+      <path class="edge" d="M600,155 C570,190 620,210 668,216" marker-end="url(#ah)"/>
+      <text class="nsub" x="606" y="196">no</text>
+    </svg>
+    <div class="fig-cap">A visual question yields a mockup; fidelity decides whether it lives inline in the spec or as its own linked file.</div>
+  </div>
+  <p>Because there is no interactive browser, the user views the mockup by opening the HTML file, and any choice between options is taken in the terminal (normal Q&amp;A) — the same way every other brainstorming decision is made.</p>
+
+  <h2 id="fidelity">4. Fidelity split</h2>
+  <p>The deciding question is not "is this visual?" but "can the spec hold this without becoming a UI file?" Schematic structure belongs inline; pixel-level product fidelity belongs in its own file.</p>
+  <table>
+    <thead><tr><th>Aspect</th><th>Inline schematic</th><th>Spun-out mockup</th></tr></thead>
+    <tbody>
+      <tr><td>Lives in</td><td><code>design.html</code> (the spec)</td><td>Own file in the topic folder</td></tr>
+      <tr><td>Fidelity</td><td>Structural — boxes, flow, layout skeleton</td><td>High — represents the real screen</td></tr>
+      <tr><td>Styling</td><td>Canonical spec stylesheet (<code>.fig</code>, SVG)</td><td><strong>The product's own</strong> inline CSS</td></tr>
+      <tr><td>Self-contained</td><td><span class="pill ok">required</span></td><td><span class="pill ok">required</span></td></tr>
+      <tr><td>Spec-deficiency validator</td><td>Applies (it is the spec)</td><td><span class="pill muted">exempt</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><span class="h">Why mockups carry their own style</span>A spun-out mockup represents the <em>product being designed</em>, so it should look like that product — its own colors, type, and layout, inline. It deliberately does <strong>not</strong> inline the plugin's spec stylesheet. html-artifacts is reused for its self-containment discipline (one file, zero-dep, no CDNs), not its theme.</div>
+
+  <h2 id="layout">5. Output layout</h2>
+  <p>A lone spec stays a single file, exactly as today. The moment a topic produces more than one artifact (a spec plus one or more mockups), everything moves into a dated per-topic folder so the set stays together and is easy to reference.</p>
+  <table>
+    <thead><tr><th>Case</th><th>Path</th></tr></thead>
+    <tbody>
+      <tr><td>Spec only</td><td><code>docs/superpowers/specs/YYYY-MM-DD-&lt;topic&gt;-design.html</code></td></tr>
+      <tr><td>Spec + mockups</td><td><code>docs/superpowers/specs/YYYY-MM-DD-&lt;topic&gt;/</code> containing <code>design.html</code> + <code>mockup-&lt;name&gt;.html</code></td></tr>
+    </tbody>
+  </table>
+  <p>The spec links each spun-out mockup with a plain relative <code>&lt;a href&gt;</code>. When the work proceeds to a plan, the plan links the same files (see §8).</p>
+
+  <h2 id="brainstorming">6. brainstorming changes</h2>
+  <ul>
+    <li><strong>Remove the offer.</strong> Delete the <em>Visual Companion</em> section, checklist item 2 (the just-in-time offer), and the offer language from <code>skills/brainstorming/SKILL.md</code>. The process-flow already has no companion node post-merge.</li>
+    <li><strong>Add a Mockups section</strong> describing the authoring flow (§3), the fidelity split (§4), and the output layout (§5), and stating that selection happens in the terminal.</li>
+    <li><strong>Retire the guide.</strong> Replace <code>skills/brainstorming/visual-companion.md</code> with a short tombstone that points to the Mockups section and notes the server still exists on disk but is no longer offered.</li>
+    <li><strong>Leave untouched:</strong> <code>scripts/server.cjs</code>, <code>scripts/*.sh</code>, <code>frame-template.html</code>, <code>helper.js</code>, and <code>tests/brainstorm-server/</code>.</li>
+  </ul>
+
+  <h2 id="html-artifacts">7. html-artifacts changes</h2>
+  <p>Guidance only — no new template, no stylesheet edits.</p>
+  <ul>
+    <li>Add a <strong>Mockups</strong> subsection to <code>references/authoring.md</code>: mockups obey the same self-containment rules (<code>findExternalRefs</code> empty, opens from <code>file://</code>) but are styled to resemble the target product with their own inline CSS, and do not inline the canonical stylesheet.</li>
+    <li>Add one line to <code>SKILL.md</code> widening the skill's stated scope from "only the formal design spec" to "the design spec (canonical theme) and product-styled mockups (self-contained, own theme)."</li>
+  </ul>
+
+  <h2 id="writing-plans">8. writing-plans changes</h2>
+  <ul>
+    <li>When a spec ships mockups, the implementation plan references them: UI tasks list the relevant <code>mockup-&lt;name&gt;.html</code> in their <code>**Files:**</code> block, and the plan header carries a brief <strong>Mockups</strong> reference line linking the topic folder.</li>
+    <li>Plans remain canonical Markdown; this is a documentation convention added to <code>skills/writing-plans/SKILL.md</code>, not a format change.</li>
+  </ul>
+
+  <h2 id="tests">9. Tests &amp; validators</h2>
+  <ul>
+    <li>Add a test to <code>tests/html-artifacts/</code> asserting a representative spun-out mockup is self-contained (reuse <code>findExternalRefs</code>) and is <em>not</em> subjected to <code>findSpecDeficiencies</code> (mockups need no inline SVG or table).</li>
+    <li>Existing suites stay green: the spec validators are unchanged, and because the companion is only unwired, <code>tests/brainstorm-server/</code> still passes as-is.</li>
+  </ul>
+
+  <h2 id="docs">10. Docs</h2>
+  <ul>
+    <li><code>README.md</code> — update "What this fork changes" and the comparison table: the visual companion is no longer offered; mockups are authored as self-contained HTML.</li>
+    <li><code>RELEASE-NOTES.md</code> — add a fork-section entry dated 2026-06-17 describing the change.</li>
+  </ul>
+
+  <h2 id="blast">11. Affected files</h2>
+  <table>
+    <thead><tr><th>File</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td><code>skills/brainstorming/SKILL.md</code></td><td>Remove companion offer/section; add Mockups section</td></tr>
+      <tr><td><code>skills/brainstorming/visual-companion.md</code></td><td>Replace with tombstone</td></tr>
+      <tr><td><code>skills/html-artifacts/references/authoring.md</code></td><td>Add Mockups subsection</td></tr>
+      <tr><td><code>skills/html-artifacts/SKILL.md</code></td><td>Widen scope line</td></tr>
+      <tr><td><code>skills/writing-plans/SKILL.md</code></td><td>Mockup reference convention</td></tr>
+      <tr><td><code>tests/html-artifacts/*</code></td><td>Add mockup self-containment test</td></tr>
+      <tr><td><code>README.md</code>, <code>RELEASE-NOTES.md</code></td><td>Document the change</td></tr>
+      <tr><td><code>skills/brainstorming/scripts/**</code>, <code>tests/brainstorm-server/**</code></td><td><span class="pill muted">untouched</span> (kept identical to upstream)</td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

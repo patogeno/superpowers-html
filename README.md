@@ -32,24 +32,26 @@ If you're using Superpowers in enterprise and could benefit from commercial supp
 
 ## What this fork changes (superpowers-html)
 
-Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **only what a human reads and reviews** — the design **spec** renders as a polished, self-contained HTML document that's easier to navigate and react to, while implementation plans stay canonical Markdown and gain an up-front choice of execution model. Nothing the *agent* executes changes, which keeps the fork easy to merge with upstream.
+Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **what a human reads and reviews** — the design **spec** renders as a polished, self-contained HTML document that's easier to navigate and react to, while implementation plans stay canonical Markdown and gain an up-front choice of execution model. The agent-executed *code* (the brainstorm server, scripts) is left identical to upstream, which keeps the fork easy to merge.
 
 **What's added:**
 
 - **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus the spec HTML template and authoring rules, with a small Node test suite that enforces self-containment. It's the shared design system the design spec inlines.
 - **`brainstorming` emits an HTML design spec.** The spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline **SVG** diagram and at least one semantic **table**, instead of `…-design.md`.
+- **Mockups instead of a visual companion.** The fork retires upstream's browser-based visual companion (no server, no offer) and conveys visual design as static, self-contained **HTML mockups** — schematic wireframes inline in the spec, and higher-fidelity mockups *styled like the product being designed* spun out to their own files in the topic folder, linked from the spec and the plan. The companion's server and tests stay on disk, untouched, so upstream syncs stay clean.
 - **`writing-plans` lets you choose an execution model.** Up front you pick **sequential subagents** (a fresh subagent per task, reviewed between tasks) or a **team of specialists** (independent work-streams with a dependency graph, each task tagged with a specialist role inferred from the work itself, dispatched concurrently). The plan itself stays canonical **Markdown**.
 - **A Markdown multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder of Markdown files: a **roadmap** (`roadmap.md`), self-contained **session plans** (`session-NN-<name>.md`), and a cross-session **learnings log** (`learnings.md` — What happened · Deviations · Surprises · Follow-ups).
 
-**Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
+**Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; mockups reuse that self-containment discipline but carry the product's own look; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
 
 | Artifact | Upstream | This fork |
 |---|---|---|
 | Design spec | Markdown | **HTML** (inline SVG + tables) |
+| Visual mockups | Browser visual companion (live server) | **Static self-contained HTML** (inline schematic, or product-styled spin-out) |
 | Implementation plan | Markdown | Markdown (canonical) |
 | Multi-session roadmap / learnings log | — | **Markdown** |
 | Execution model choice (sequential subagents / team of specialists) | — | **chosen at planning time** |
-| Agent-only / execution skills | Markdown | unchanged |
+| Agent-executed server/scripts | shipped | unchanged (kept, not offered) |
 
 > Why HTML? For a human–AI collaborative *output* like the design spec, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.
 

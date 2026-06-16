@@ -96,6 +96,8 @@ independently testable deliverable.
 
 **Execution:** [Sequential subagents | Team of specialists]
 
+**Mockups:** [If the spec shipped mockups, link the topic folder — e.g. `docs/superpowers/specs/2026-06-17-checkout/`. Omit this line if there are none.]
+
 ## Global Constraints
 
 [The spec's project-wide requirements — version floors, dependency limits,
@@ -105,6 +107,15 @@ include this section.]
 
 ---
 ```
+
+## Mockups
+
+If the design spec shipped HTML mockups (see `brainstorming`'s Mockups section), the plan ties them to the work so an implementer building a screen opens the right reference:
+
+- Link the topic folder once in the header's `**Mockups:**` line.
+- In each UI-building task, list the specific `mockup-<name>.html` it implements under that task's `**Files:**` block (as a `Mockup:` entry). The implementer reads the mockup, not just the prose.
+
+Plans stay canonical Markdown; mockups are linked, never embedded.
 
 ## Team Plan Structure
 
@@ -133,6 +144,7 @@ Example work-streams section:
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
+- Mockup: `docs/superpowers/specs/<topic>/mockup-<name>.html` (UI tasks only, if the spec shipped one)
 
 **Interfaces:**
 - Consumes: [what this task uses from earlier tasks — exact signatures]
