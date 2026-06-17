@@ -22,7 +22,7 @@ Every project goes through this process. A todo list, a single-function utility,
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Show, don't just tell, with mockups** — when a question or design point is genuinely clearer shown than described, author a self-contained HTML mockup (inline in the spec, or its own file when detailed). See the Mockups section below.
+2. **Show, don't just tell, with mockups** — when a question or design point is genuinely clearer shown than described, author a self-contained **HTML/SVG** mockup (inline in the spec, or its own file when detailed) — never an ASCII sketch. See the Mockups section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
@@ -145,6 +145,8 @@ Wait for the user's response. If they request changes, make them and re-run the 
 ## Mockups
 
 When a question or design point is genuinely clearer **shown** than told — a layout, a screen, a navigation structure — author a **mockup**: a static, self-contained HTML artifact the user opens and looks at. There is no server and no interactive browser tool; the user views the file, and any choice between options is taken in the terminal like every other brainstorming decision.
+
+**A mockup is always an HTML/SVG file — never ASCII art.** Any time you would represent a UI, layout, screen, or navigation structure visually, render it as HTML (inline `<svg>` or CSS boxes), not as a text/ASCII sketch. Do not draw a quick ASCII box layout in chat "to iterate on" before producing the HTML — go straight to the HTML mockup. ASCII/plain-text diagrams are acceptable **only** in two places: a one-off inline clarifying question in the terminal (a single rough box to disambiguate a question), and Markdown files. They are never the deliverable for a layout or screen, and never belong in a design spec.
 
 **Per-question test:** would the user understand this better by *seeing* it than reading it? A question *about* a UI topic is not automatically visual — "what does personality mean here?" is conceptual (terminal); "which of these two layouts works better?" is visual (mockup). Don't reach for a mockup when words, a list, or a table answer the question.
 

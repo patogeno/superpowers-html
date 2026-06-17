@@ -19,7 +19,12 @@ with the `.nlabel`, `.nsub`, and `.edge` classes plus CSS variables (`var(--acce
 ## Mockups
 A mockup shows what a screen or layout looks like during brainstorming. It is the
 same *kind* of artifact as the spec — a human opens it and looks; nothing parses it —
-but with a different purpose, so it follows different rules:
+but with a different purpose, so it follows different rules.
+
+**A mockup is rendered HTML/SVG, never ASCII art.** Represent every UI, layout, screen,
+or navigation structure as HTML (inline `<svg>` or CSS boxes) — not as a text/ASCII box
+sketch. ASCII/plain-text diagrams belong only in inline terminal clarifying questions and
+in Markdown files; they are never a mockup and never go in the spec.
 
 - **Self-containment still binds.** One file, zero dependencies, no CDNs; it must open
   from `file://`. `findExternalRefs` must return empty. This is the only html-artifacts
