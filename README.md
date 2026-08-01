@@ -34,6 +34,7 @@ Upstream Superpowers produces its human-facing artifacts as Markdown. This fork 
 - **`brainstorming` emits an HTML design spec.** The spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline **SVG** diagram and at least one semantic **table**, instead of `…-design.md`.
 - **`writing-plans` lets you choose an execution model.** Up front you pick **sequential subagents** (a fresh subagent per task, reviewed between tasks) or a **team of specialists** (independent work-streams with a dependency graph, each task tagged with a specialist role inferred from the work itself, dispatched concurrently). The plan itself stays canonical **Markdown**.
 - **A Markdown multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder of Markdown files: a **roadmap** (`roadmap.md`), self-contained **session plans** (`session-NN-<name>.md`), and a cross-session **learnings log** (`learnings.md` — What happened · Deviations · Surprises · Follow-ups).
+- **Claude 5 tuning.** A `claude-5-models.md` reference maps `subagent-driven-development`'s deliberately vendor-neutral tiers (cheap / standard / most capable) onto **Haiku 4.5 · Sonnet 5 · Opus 5 · Fable 5**, and records what changes in dispatch prompts on Claude 5 — don't add verification instructions, don't add "delegate more" guidance, state scope as a boundary, never cap a reviewer to high-severity findings. The neutral vocabulary is untouched, so other harnesses are unaffected. The fork's own `writing-plans` additions also moved their minority-path detail (team plans, multi-session layout) into sibling files, so a planning session loads them only when they apply.
 
 **Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
 
@@ -43,6 +44,7 @@ Upstream Superpowers produces its human-facing artifacts as Markdown. This fork 
 | Implementation plan | Markdown | Markdown (canonical) |
 | Multi-session roadmap / learnings log | — | **Markdown** |
 | Execution model choice (sequential subagents / team of specialists) | — | **chosen at planning time** |
+| Claude 5 model-tier mapping + dispatch guidance | — | **`claude-5-models.md`** (additive; neutral tiers unchanged) |
 | Agent-only / execution skills | Markdown | unchanged |
 
 > Why HTML? For a human–AI collaborative *output* like the design spec, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.

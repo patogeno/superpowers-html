@@ -34,21 +34,9 @@ Record the chosen model in the plan header (`**Execution:**` line). This choice 
 
 ## Multi-Session Plans
 
-**Judge the scope first.** After the spec is approved, decide whether the work fits one session. If it spans multiple subsystems, or has more tasks than a single lead can carry while keeping its context healthy, produce a **multi-session structure**. Otherwise produce a single plan. This is your judgment — there is no manual knob.
+**Judge the scope first.** After the spec is approved, decide whether the work fits one session. If it spans multiple subsystems, or has more tasks than a single lead can carry while keeping its context healthy, produce a **multi-session structure** — a per-feature folder with a roadmap, self-contained session plans, and a learnings log. Otherwise produce a single plan. This is your judgment — there is no manual knob.
 
-When the work is multi-session, group everything in a per-feature folder of Markdown files:
-
-```
-docs/superpowers/plans/<feature>/
-    roadmap.md            orders the sessions, their dependencies, status, and links
-    session-01-<name>.md  canonical session plan (execution agents read this)
-    session-02-<name>.md
-    learnings.md          cross-session memory
-```
-
-- **Roadmap** (`roadmap.md`): orders the sessions, shows their dependencies and status, and links each session's plan. Insert intermediate or fix sessions here as they arise.
-- **Session plans are self-contained.** A fresh lead must be able to execute a session by reading only *that* session's plan plus the learnings log — restate the minimal context each session needs. Each session plan is a normal canonical Markdown plan written in the chosen execution-model shape.
-- **Learnings log** (`learnings.md`): cross-session memory. After each session, append an entry with four parts — **What happened**, **Deviations** (and why), **Surprises** (discoveries, gotchas, constraints found), and **Follow-ups** (new tasks/risks, which may trigger roadmap edits or a new session). The next lead reads this before starting.
+If multi-session: read `multi-session-plans.md` for the folder layout and the learnings-log format.
 
 ## File Structure
 
@@ -108,21 +96,9 @@ include this section.]
 
 ## Team Plan Structure
 
-When the chosen model is **team of specialists**, structure the plan so a dispatcher can run specialists concurrently:
+When the chosen model is **team of specialists**, the plan gains a **Work-streams** section up front — each stream's name, the specialist role it needs, the tasks it owns, and the streams it depends on — and each task carries a `**Specialist:** <role>` tag. That dependency graph is what lets a dispatcher run streams concurrently.
 
-- **Work-streams section (up front).** Before the tasks, list each work-stream: a short name, the specialist role it needs, the tasks it owns, and the work-streams it depends on. This is the dependency graph — a dispatcher runs all dependency-free streams in the first wave, then the next wave as dependencies clear.
-- **Specialists are inferred per plan.** There is no fixed taxonomy. Derive the roles the work actually needs from the task content (for example: a DB-migration specialist, an API specialist, a React specialist) and tag each task with a `**Specialist:** <role>` line under its `**Interfaces:**` block.
-- **Tasks stay bite-sized and independently testable** (same structure as below). Tasks within one stream are ordered; tasks across independent streams are not.
-
-Example work-streams section:
-
-```markdown
-## Work-streams
-
-- **Stream A — Schema** (Specialist: DB-migration) — Tasks 1–2. Depends on: none.
-- **Stream B — API** (Specialist: backend) — Tasks 3–4. Depends on: Stream A.
-- **Stream C — UI** (Specialist: React) — Tasks 5–6. Depends on: none.
-```
+Read `team-plans.md` for the work-streams format and the team execution handoff.
 
 ## Task Structure
 
@@ -216,6 +192,5 @@ After saving the plan, hand off according to the execution model chosen up front
 
 **If Team of specialists:**
 
-- **REQUIRED SUB-SKILL:** Use superpowers:dispatching-parallel-agents.
-- **Prefer a first-class agent team when the harness provides one.** If your harness exposes agent-team tools — Claude Code's *agent teams* (the user enables them with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, after which team-creation/teammate tools are available), Codex's multi-agent mode, or similar — create a team and run one teammate per dependency-free work-stream, coordinating through the shared task list and direct messages. Otherwise (or if the feature isn't enabled), dispatch ordinary parallel subagents as below.
-- Dispatch one specialist agent per dependency-free work-stream as a wave; give each agent only its stream's tasks plus the minimal context it needs. Review each stream's work as it returns, then launch the next wave as its dependencies clear.
+- **REQUIRED SUB-SKILL:** Use superpowers:dispatching-parallel-agents, dispatching one specialist per dependency-free work-stream as a wave.
+- Read `team-plans.md` → "Team Execution Handoff" for the harness agent-team path and the wave mechanics.
