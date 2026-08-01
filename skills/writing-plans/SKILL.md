@@ -61,6 +61,15 @@ Before defining tasks, map out which files will be created or modified and what 
 
 This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
+## Task Right-Sizing
+
+A task is the smallest unit that carries its own test cycle and is worth a
+fresh reviewer's gate. When drawing task boundaries: fold setup,
+configuration, scaffolding, and documentation steps into the task whose
+deliverable needs them; split only where a reviewer could meaningfully
+reject one task while approving its neighbor. Each task ends with an
+independently testable deliverable.
+
 ## Bite-Sized Task Granularity
 
 **Each step is one action (2-5 minutes):**
@@ -87,6 +96,13 @@ This structure informs the task decomposition. Each task should produce self-con
 
 **Execution:** [Sequential subagents | Team of specialists]
 
+## Global Constraints
+
+[The spec's project-wide requirements — version floors, dependency limits,
+naming and copy rules, platform requirements — one line each, with exact
+values copied verbatim from the spec. Every task's requirements implicitly
+include this section.]
+
 ---
 ```
 
@@ -95,7 +111,7 @@ This structure informs the task decomposition. Each task should produce self-con
 When the chosen model is **team of specialists**, structure the plan so a dispatcher can run specialists concurrently:
 
 - **Work-streams section (up front).** Before the tasks, list each work-stream: a short name, the specialist role it needs, the tasks it owns, and the work-streams it depends on. This is the dependency graph — a dispatcher runs all dependency-free streams in the first wave, then the next wave as dependencies clear.
-- **Specialists are inferred per plan.** There is no fixed taxonomy. Derive the roles the work actually needs from the task content (for example: a DB-migration specialist, an API specialist, a React specialist) and tag each task with a `**Specialist:** <role>` line under its `**Files:**` block.
+- **Specialists are inferred per plan.** There is no fixed taxonomy. Derive the roles the work actually needs from the task content (for example: a DB-migration specialist, an API specialist, a React specialist) and tag each task with a `**Specialist:** <role>` line under its `**Interfaces:**` block.
 - **Tasks stay bite-sized and independently testable** (same structure as below). Tasks within one stream are ordered; tasks across independent streams are not.
 
 Example work-streams section:
@@ -117,6 +133,12 @@ Example work-streams section:
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
+
+**Interfaces:**
+- Consumes: [what this task uses from earlier tasks — exact signatures]
+- Produces: [what later tasks rely on — exact function names, parameter
+  and return types. A task's implementer sees only their own task; this
+  block is how they learn the names and types neighboring tasks use.]
 
 - [ ] **Step 1: Write the failing test**
 
@@ -151,7 +173,7 @@ git commit -m "feat: add specific feature"
 ```
 ````
 
-**For team plans only:** add a `**Specialist:** <role>` line immediately after the `**Files:**` block of each task (see "Team Plan Structure"). Sequential plans omit it.
+**For team plans only:** add a `**Specialist:** <role>` line immediately after the `**Interfaces:**` block of each task (see "Team Plan Structure"). Sequential plans omit it.
 
 ## No Placeholders
 
@@ -162,12 +184,6 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
 - Steps that describe what to do without showing how (code blocks required for code steps)
 - References to types, functions, or methods not defined in any task
-
-## Remember
-- Exact file paths always
-- Complete code in every step — if a step changes code, show the code
-- Exact commands with expected output
-- DRY, YAGNI, TDD, frequent commits
 
 ## Self-Review
 
