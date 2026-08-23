@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { findExternalRefs, findUnreplacedMarkers, findSpecDeficiencies } from './validate.js';
+import { findExternalRefs, findUnreplacedMarkers, findSpecDeficiencies,
+         findResponsiveDeficiencies } from './validate.js';
 
 const mockup = readFileSync(
   'skills/html-artifacts/references/mockup-example.html', 'utf8');
@@ -26,4 +27,11 @@ test('the spec-quality gate does not apply to mockups (single styled screen is v
   // legitimately has neither, so this gate is intentionally never run on mockups.
   // This test documents that contract by showing the gate would (wrongly) flag it.
   assert.notDeepEqual(findSpecDeficiencies(mockup), []);
+});
+
+test('the example mockup is responsive (the second html-artifacts rule mockups reuse)', () => {
+  assert.deepEqual(findResponsiveDeficiencies(mockup), []);
+  // It brings its own responsive behaviour rather than inheriting the spec shell.
+  assert.match(mockup, /<meta name="viewport"/);
+  assert.match(mockup, /@media\s*\(max-width/);
 });

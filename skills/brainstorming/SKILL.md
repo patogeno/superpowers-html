@@ -208,6 +208,7 @@ is the whole process.
   - (User preferences for spec location override this default)
 - The spec is **HTML-primary** — a human reads it; nothing machine-parses it. Make it visual: include at least one hand-authored inline `<svg>` diagram (architecture or data flow) and at least one semantic `<table>` (comparisons, data models, decisions).
 - Keep it **self-contained**: no external scripts, stylesheets, fonts, or images, and no CDNs (the `html-artifacts` validator's `findExternalRefs` must return empty).
+- Keep it **responsive**: the user may read the spec on a desktop, a tablet, or a phone. Inline the canonical stylesheet unmodified (its breakpoints do the work), keep the viewport meta, and mark any diagram wider than 640 viewBox units `<div class="fig wide">` (the validator's `findResponsiveDeficiencies` must return empty).
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
 
@@ -244,7 +245,7 @@ When a question or design point is genuinely clearer **shown** than told — a l
 **Two fidelities — let the narrow spec decide:**
 
 - **Inline schematic (default).** A structural wireframe — boxes, flow, layout skeleton — authored *inside the design spec* using the `html-artifacts` conventions (inline `<svg>` or CSS boxes, the canonical stylesheet). Use this when the spec can hold it without turning into a UI file.
-- **Spun-out mockup.** When a mockup needs more fidelity than the narrow spec holds well, author it as its **own** self-contained HTML file that **looks like the product being designed** — its own inline CSS, colors, and type, *not* the plugin's spec stylesheet. Link it from the spec with a plain relative `<a href>`. `html-artifacts` is reused here only for its self-containment discipline (one file, zero-dependency, no CDNs), not its theme.
+- **Spun-out mockup.** When a mockup needs more fidelity than the narrow spec holds well, author it as its **own** self-contained HTML file that **looks like the product being designed** — its own inline CSS, colors, and type, *not* the plugin's spec stylesheet. Link it from the spec with a plain relative `<a href>`. `html-artifacts` is reused here for its self-containment and responsiveness discipline (one file, zero-dependency, no CDNs, fluid widths and a phone breakpoint so it reads on any device), not its theme.
 
 **Output layout:**
 

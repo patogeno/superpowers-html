@@ -7,7 +7,8 @@
 <!--
   Illustrative mockup. It is self-contained (no external scripts, styles, fonts,
   or images) but carries its OWN product look — not the plugin's spec stylesheet.
-  Copy the discipline (one file, zero-dependency, inline <style>), not this theme.
+  Copy the discipline (one file, zero-dependency, inline <style>, fluid widths and
+  a phone breakpoint), not this theme.
 -->
 <style>
   :root{
@@ -15,10 +16,13 @@
     --line:#dfe5e1; --card:#ffffff; --page:#f4f6f4; --danger:#b3261e;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
   body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--page);color:var(--ink);
-    line-height:1.5;padding:2rem;display:flex;justify-content:center;}
+    line-height:1.5;padding:clamp(.9rem,4vw,2rem);display:flex;justify-content:center;}
+  /* Fluid width + max-width, never a fixed pixel width — this is what lets the
+     same mockup read on a phone, a tablet, and a desktop. */
   .app{width:100%;max-width:560px;}
-  .topbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem;}
+  .topbar{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem;margin-bottom:1.25rem;}
   .logo{width:30px;height:30px;border-radius:8px;background:var(--brand);color:#fff;
     display:grid;place-items:center;font-weight:700;}
   .topbar h1{font-size:1.15rem;font-weight:650;}
@@ -41,6 +45,13 @@
   .btn{border:none;border-radius:9px;padding:.6rem 1.1rem;font-size:.9rem;font-weight:600;cursor:pointer;}
   .btn.primary{background:var(--brand);color:#fff;}
   .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);}
+  @media (max-width:420px){
+    .card{padding:1rem;border-radius:12px;}
+    .crumb{margin-left:0;flex-basis:100%;}      /* breadcrumb drops to its own line */
+    .row{align-items:flex-start;gap:.75rem;}
+    .actions{flex-direction:column;}            /* stacked, full-width tap targets */
+    .btn{width:100%;padding:.7rem 1.1rem;}
+  }
 </style>
 </head>
 <body>

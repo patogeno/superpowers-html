@@ -13,13 +13,14 @@ This skill covers two artifact kinds: the formal design **spec** (canonical them
 
 ## Rules
 
-Rules 1–2 and 4–5 are for the **spec**. Rule 3 (self-containment) binds **both** spec and mockups. Mockups carry the product's own theme — see the Mockups section of `references/authoring.md`.
+Rules 1–2 and 4–5 are for the **spec**. Rules 3 and 6 (self-containment, responsiveness) bind **both** spec and mockups. Mockups carry the product's own theme — see the Mockups section of `references/authoring.md`.
 
 1. **Start from the spec template:** `templates/spec.html` — design spec (diagrams + tables).
-2. **Inline the stylesheet.** Replace the `/* INLINE_STYLESHEET */` marker with the full contents of `stylesheet.css`. Never link it externally. (Mockups do **not** inline this stylesheet — they bring their own.)
+2. **Inline the stylesheet.** Replace the `/* INLINE_STYLESHEET */` marker with the full contents of `stylesheet.css`, unmodified. Never link it externally, and never override its layout rules in the document. (Mockups do **not** inline this stylesheet — they bring their own.)
 3. **Stay self-contained.** No external scripts, stylesheets, fonts, or images. No CDNs. Plain `<a href>` hyperlinks are fine; embed images as `data:` URIs only if essential.
-4. **Diagrams are hand-authored inline SVG** (or CSS boxes), themed with the stylesheet's classes (`.fig`, `.nlabel`, `.edge`). Never use a diagram library. See `references/authoring.md`.
+4. **Diagrams are hand-authored inline SVG** (or CSS boxes), themed with the stylesheet's classes (`.fig`, `.nlabel`, `.edge`). Never use a diagram library. Always give the `<svg>` a `viewBox` and no `width`/`height` attributes; a diagram wider than 640 user units goes in `<div class="fig wide">`. See `references/authoring.md`.
 5. **Tables** use plain semantic `<table>` markup.
+6. **Read well on a phone, a tablet, and a desktop.** Keep the `<meta name="viewport" content="width=device-width, initial-scale=1">`, never let content scroll the page sideways, and never hard-code a container width in pixels. The validator's `findResponsiveDeficiencies` must return empty.
 
 ## Reference
 

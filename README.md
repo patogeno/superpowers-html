@@ -58,14 +58,15 @@ Upstream Superpowers produces its human-facing artifacts as Markdown. This fork 
 
 **What's added:**
 
-- **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus the spec HTML template and authoring rules, with a small Node test suite that enforces self-containment. It's the shared design system the design spec inlines.
+- **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus the spec HTML template and authoring rules, with a small Node test suite that enforces self-containment and responsiveness. It's the shared design system the design spec inlines.
 - **`brainstorming` emits an HTML design spec.** The spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline **SVG** diagram and at least one semantic **table**, instead of `…-design.md`.
 - **Mockups instead of a visual companion.** The fork retires upstream's browser-based visual companion (no server, no offer) and conveys visual design as static, self-contained **HTML mockups** — schematic wireframes inline in the spec, and higher-fidelity mockups *styled like the product being designed* spun out to their own files in the topic folder, linked from the spec and the plan. The companion's server and tests stay on disk, untouched, so upstream syncs stay clean.
 - **`writing-plans` lets you choose an execution model.** Up front you pick **sequential subagents** (a fresh subagent per task, reviewed between tasks) or a **team of specialists** (independent work-streams with a dependency graph, each task tagged with a specialist role inferred from the work itself, dispatched concurrently). The plan itself stays canonical **Markdown**.
 - **A Markdown multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder of Markdown files: a **roadmap** (`roadmap.md`), self-contained **session plans** (`session-NN-<name>.md`), and a cross-session **learnings log** (`learnings.md` — What happened · Deviations · Surprises · Follow-ups).
 - **Claude 5 tuning.** A `claude-5-models.md` reference maps `subagent-driven-development`'s deliberately vendor-neutral tiers (cheap / standard / most capable) onto **Haiku 4.5 · Sonnet 5 · Opus 5 · Fable 5**, and records what changes in dispatch prompts on Claude 5 — don't add verification instructions, don't add "delegate more" guidance, state scope as a boundary, never cap a reviewer to high-severity findings. The neutral vocabulary is untouched, so other harnesses are unaffected. The fork's own `writing-plans` additions also moved their minority-path detail (team plans, multi-session layout) into sibling files, so a planning session loads them only when they apply.
+- **Artifacts read on a phone.** The canonical stylesheet is responsive: below 900px the spec's two-column shell collapses and its table of contents becomes a scrollable chip bar, wide tables and code blocks scroll inside themselves instead of dragging the page sideways, and a diagram too wide to shrink legibly (`<div class="fig wide">`) scrolls at a readable size. Mockups carry the same discipline in their own theme. `findResponsiveDeficiencies` enforces the mechanical parts.
 
-**Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; diagrams are hand-authored inline SVG; mockups reuse that self-containment discipline but carry the product's own look; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
+**Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; it reads on a desktop, a tablet, and a phone; diagrams are hand-authored inline SVG; mockups reuse that self-containment and responsiveness discipline but carry the product's own look; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
 
 | Artifact | Upstream | This fork |
 |---|---|---|
@@ -75,6 +76,7 @@ Upstream Superpowers produces its human-facing artifacts as Markdown. This fork 
 | Multi-session roadmap / learnings log | — | **Markdown** |
 | Execution model choice (sequential subagents / team of specialists) | — | **chosen at planning time** |
 | Claude 5 model-tier mapping + dispatch guidance | — | **`claude-5-models.md`** (additive; neutral tiers unchanged) |
+| Artifact rendering on phone / tablet | desktop-width Markdown render | **responsive** (collapsing shell, chip TOC, self-scrolling tables and diagrams) |
 | Agent-executed server/scripts | shipped | unchanged (kept, not offered) |
 | Agent-only / execution skills | Markdown | unchanged |
 

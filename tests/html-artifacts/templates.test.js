@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { findExternalRefs, inlineStylesheet, findUnreplacedMarkers } from './validate.js';
+import { findExternalRefs, inlineStylesheet, findUnreplacedMarkers,
+         findResponsiveDeficiencies } from './validate.js';
 
 const css = readFileSync('skills/html-artifacts/stylesheet.css', 'utf8');
 const tpl = readFileSync('skills/html-artifacts/templates/spec.html', 'utf8');
@@ -27,4 +28,13 @@ test('the reverted plan/roadmap/learnings templates are gone', () => {
     assert.ok(!existsSync(`skills/html-artifacts/templates/${name}.html`),
       `${name}.html should have been removed`);
   }
+});
+
+test('spec template carries the viewport meta a phone needs', () => {
+  assert.match(tpl, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
+});
+
+test('spec template is responsive before and after inlining', () => {
+  assert.deepEqual(findResponsiveDeficiencies(tpl), []);
+  assert.deepEqual(findResponsiveDeficiencies(inlineStylesheet(tpl, css)), []);
 });
