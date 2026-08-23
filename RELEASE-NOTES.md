@@ -8,6 +8,16 @@ This section records what the [`superpowers-html`](https://github.com/patogeno/s
 
 The fork's design principle is to change **what a human reads and reviews**, leaving the agent-executed *code* (servers, scripts) identical to upstream so the fork stays easy to merge. See the README's [What this fork changes](README.md#what-this-fork-changes-superpowers-html) section.
 
+### Upstream v6.3.0 merge (2026-08-23, fork version 6.4.0)
+
+Merged upstream release v6.3.0. Everything upstream shipped is in; the fork's HTML-spec, mockups, execution-model, and multi-session layers are unchanged.
+
+- **What upstream brought.** Devin CLI and Hermes Agent harness support (plus Grok Build CLI in the install docs); `brainstorming`'s three-path router (spike / bounded / architectural) so ceremony scales with the task while the approval gate never does; SDD controllers that rule and keep going instead of stalling on plan conflicts, batch small same-shape tasks, ledger their pre-dispatch conflict scan, and forbid implementers/reviewers from spawning subagents; a `**Spec:**` pointer in plan headers; `finishing-a-development-branch` refusing to `--force` a worktree removal over untracked work; a Windows fix for `render-graphs.js`; and `bump-version.sh` coverage for the Hermes manifest.
+- **Conflicts resolved in favour of both.** `writing-plans`' plan header now carries upstream's `**Spec:**` line *and* the fork's `**Execution:**` and `**Mockups:**` lines. `brainstorming` merged clean: the three-path router sits above the fork's Mockups section, and the architectural path still emits the HTML spec via `html-artifacts`.
+- **`visual-companion.md` stays retired.** Upstream's only change to it was Copilot CLI backgrounding guidance for a server this fork never starts, so the fork's retirement note is kept as-is.
+- **README.** Upstream's new table of contents is in, extended with the fork-only sections (What this fork changes, Execution models, Installing this fork on other harnesses, Troubleshooting). The fork's other-harness install list gains Devin CLI and Hermes Agent.
+- **Version.** Fork manifests move to 6.4.0 — upstream now occupies 6.3.0, which the fork had already used for its previous release.
+
 ### Upstream v6.2.0 merge + Claude 5 tuning (2026-08-01, fork version 6.3.0)
 
 Merged 239 upstream commits (v5.1.0 → v6.2.0) and applied the Claude 5 context-engineering guidance to fork-owned content.
