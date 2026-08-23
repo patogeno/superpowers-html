@@ -82,6 +82,9 @@ independently testable deliverable.
 
 **Tech Stack:** [Key technologies/libraries]
 
+**Spec:** [path to the spec/design doc this plan implements — the plan
+argues from the spec, so the spec travels with it; executors read both]
+
 **Execution:** [Sequential subagents | Team of specialists]
 
 **Mockups:** [If the spec shipped mockups, link the topic folder — e.g. `docs/superpowers/specs/2026-06-17-checkout/`. Omit this line if there are none.]
