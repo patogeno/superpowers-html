@@ -8,6 +8,19 @@ This section records what the [`superpowers-html`](https://github.com/patogeno/s
 
 The fork's design principle is to change **what a human reads and reviews**, leaving the agent-executed *code* (servers, scripts) identical to upstream so the fork stays easy to merge. See the README's [What this fork changes](README.md#what-this-fork-changes-superpowers-html) section.
 
+### Design-first review + Claude 5.5 tuning (2026-10-03, fork version 6.6.0)
+
+With Opus 5.5, the implementation plan is almost always right, and the human partner's time goes into getting the design right: brainstorming, mockups and diagrams. The workflow now spends that time where it matters.
+
+- **Plans are accepted by default.** Approving the written spec and its mockups is now the last human gate before implementation (`brainstorming`'s HARD-GATE and spec-review prompt say so). `writing-plans` chooses the execution model and method itself and records them with a one-line reason in the `**Execution:**` header line. It then posts a three-line summary and invokes the execution skill without waiting.
+- **It stops only for design issues.** These are an ambiguous or contradictory requirement, one that cannot be met, or a UI/behaviour decision the spec never made. Each comes back as a design question with a recommended answer, and with an updated mockup when it is visual; the spec is fixed before the plan. Plan-internal choices are never a reason to stop. Saying "let me review the plan first" (now or in standing instructions) restores the old gate.
+- **More visual specs.** Every spec carries an architecture diagram and a data-flow diagram, and UI-facing architectural work gets a mockup for each key screen (plus empty/loading/error states the spec defines). Open layout choices are presented as competing mockups.
+- **Execution routing follows the plan header.** `executing-plans`' trigger description and `subagent-driven-development`'s routing diagram accept Native chosen in the plan's Execution line, not only by the partner.
+- **Claude 5.5 model tiers.** `claude-5-models.md` maps tiers to Haiku 4.5, Sonnet 5.5, Opus 5.5 and Fable 5.1 with current prices and effort defaults. It adds guidance to steer thinking with the effort setting rather than prompt text (Opus 5.5 defaults to `medium`), and to ask for brevity explicitly.
+- **Claude 5 skill-authoring reference.** New `writing-skills/claude-5-skill-authoring.md` condenses Anthropic's official Claude 5 prompting guidance, with source links: calibrate emphasis in behavioural text but not trigger text, give reasons over rules, bound scope, drop verification and "delegate more" scaffolding, and use effort rather than prose. Each point is framed as a hypothesis for the RED-GREEN-REFACTOR cycle, not licence to retune eval-tuned content.
+- **Fork-owned text follows it.** The `html-artifacts` rules and the fork's Mockups section in `brainstorming` replace bare "never"/MUST prohibitions with the reason behind them. Upstream's eval-tuned skill bodies, Red Flags tables and bootstrap urgency are unchanged.
+- 11 new tests; `test:html` is 70 green.
+
 ### Upstream v6.4.1 + v6.4.2 merge (2026-10-03, fork version 6.5.0)
 
 Merged upstream releases v6.4.1 and v6.4.2. Everything upstream shipped is in; the fork's HTML-spec, mockups, execution-model, and multi-session layers are unchanged.

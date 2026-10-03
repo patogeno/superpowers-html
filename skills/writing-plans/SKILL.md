@@ -22,13 +22,13 @@ If the spec covers multiple independent subsystems, it should have been broken i
 
 ## Execution Model
 
-**Choose the execution model up front, before writing tasks** — ask your human partner which fits the work, because it changes the shape of the plan:
+Choose the execution model before writing tasks, because it changes the shape of the plan. Make the choice yourself from the spec — your human partner spends their review time on the design, not on plan mechanics. If they already named a model, use theirs.
 
-**1. Sequential subagents (default)** — a fresh subagent implements one task at a time, with review between tasks. Produces a plain ordered plan (the task structure below). Best when tasks are coupled or must run in a fixed order.
+**1. Sequential subagents (default)** — one task at a time, in order. Produces a plain ordered plan (the task structure below). Fits when tasks are coupled or must run in a fixed order.
 
-**2. Team of specialists** — multiple specialized agents work concurrently on independent tasks. Produces a plan organized into parallel work-streams with an explicit dependency graph and a specialist tag per task (see "Team Plan Structure"). Best when the work splits into independent domains that benefit from concurrency.
+**2. Team of specialists** — multiple specialized agents work concurrently on independent tasks. Produces a plan organized into parallel work-streams with an explicit dependency graph and a specialist tag per task (see "Team Plan Structure"). Fits when the work splits into independent domains that benefit from concurrency.
 
-Record the chosen model in the plan header (`**Execution:**` line). This choice is **orthogonal** to the multi-session judgment below: a multi-session feature can have each session plan written in either shape.
+Record the choice in the plan header's `**Execution:**` line with a one-line reason drawn from the plan, so your partner can overrule it at a glance. This choice is orthogonal to the multi-session judgment below: a multi-session feature can have each session plan written in either shape.
 
 ## Multi-Session Plans
 
@@ -83,7 +83,7 @@ independently testable deliverable.
 **Spec:** [path to the spec/design doc this plan implements — the plan
 argues from the spec, so the spec travels with it; executors read both]
 
-**Execution:** [Sequential subagents | Team of specialists]
+**Execution:** [Sequential subagents | Team of specialists] — [Subagent-driven | Native for a sequential plan] — [one-line reason]
 
 **Mockups:** [If the spec shipped mockups, link the topic folder — e.g. `docs/superpowers/specs/2026-06-17-checkout/`. Omit this line if there are none.]
 
@@ -216,38 +216,48 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 
 ## Execution Handoff
 
-After saving and self-reviewing the plan, link it for your human partner
-to read, then hand off according to the execution model chosen up front.
-Whichever model, wait for their review of the saved plan before
+The plan is **accepted by default.** Your human partner approved the design
+when they approved the written spec and its mockups; the plan is how you
+carry out that design, not a second design review. So after saving and
+self-reviewing it, report and continue — do not wait for a reply:
+
+> "Plan saved to `docs/superpowers/plans/<filename>.md` — <N> tasks,
+> <execution model and method>, because <the one-line reason from the
+> header>. Starting execution now; say *stop* or *let me review the plan
+> first* at any point."
+
+Then invoke the execution sub-skill for the chosen method:
+
+- **Sequential, Subagent-driven** — a fresh subagent implements each task and a fresh reviewer checks it, then a whole-branch review. Choose it when tasks lean on each other's interfaces or a shipped mistake would be costly. **REQUIRED SUB-SKILL:** superpowers:subagent-driven-development
+- **Sequential, Native** — you implement every task in this session, then one fresh reviewer on the most capable model checks the whole branch. Cheapest and fastest; choose it when the tasks are few, well-specified, and mostly independent. **REQUIRED SUB-SKILL:** superpowers:executing-plans
+- **Team of specialists** — **REQUIRED SUB-SKILL:** superpowers:dispatching-parallel-agents, one specialist per dependency-free work-stream as a wave. Read `team-plans.md` → "Team Execution Handoff" for the agent-team path and the wave mechanics.
+
+If your partner already named a method, use theirs.
+
+### When to stop instead: design issues
+
+Stop before executing — and only then — when writing or self-reviewing the
+plan surfaced a **design issue**: something only your partner can decide,
+because it changes what they will see or what the software does. These are:
+
+- a spec requirement that is **ambiguous** — two reasonable readings that
+  would build different UI or behavior;
+- two parts of the spec or its mockups that **contradict** each other;
+- a requirement that **cannot be met** as written (a platform limit, a
+  conflicting constraint, a dependency that does not exist);
+- a decision the **spec never made** that affects UI or user-visible
+  behavior (an unspecified screen state, an error the user will see, a
+  flow the mockups skip).
+
+Present each issue as a design question with your recommended answer —
+show it with an updated mockup or diagram when it is visual. Once your
+partner answers, update the spec (and mockups) first, then the plan, then
+execute. Plan-internal choices — task boundaries, file layout, test
+names, execution method — are yours to make; don't stop for them.
+
+### When your partner wants the plan gate back
+
+If your partner asks to review the plan first — in this request, earlier
+in the session, or in their standing instructions — link the plan, wait
+for their review, and confirm the execution method with them before
 implementation.
-
-**If Team of specialists:**
-
-- Ask them to review the plan and confirm it captures what they want.
-- **REQUIRED SUB-SKILL:** Use superpowers:dispatching-parallel-agents, dispatching one specialist per dependency-free work-stream as a wave.
-- Read `team-plans.md` → "Team Execution Handoff" for the harness agent-team path and the wave mechanics.
-
-**If Sequential subagents:** if they have already explicitly supplied an
-execution method, ask them to review the plan and confirm it captures what
-they want; wait for that review before implementation, then use the
-preserved method. Otherwise, ask them to review the plan and choose an
-execution method before implementation.
-
-**When no execution method has already been supplied:**
-
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Please review the plan. Which execution approach would you prefer?**
-
-- **Subagent-driven** - A fresh subagent implements each task and a fresh reviewer checks it before the next one starts, then a whole-branch review at the end. Most thorough; costs a fresh context per task and per review.
-- **Native** - I implement every task myself in this session, the way this harness runs work, then one fresh reviewer on the most capable model checks the whole branch. Cheapest and fastest; no independent review until the end. Runs well with a mid-tier session model, since the plan carries the design.
-
-**For this plan I recommend <one of the two>, because <one sentence from the plan: how much the tasks depend on each other's interfaces, how many there are, what a shipped mistake would cost>. Does the plan capture what you want, and which approach should we use?"**
-
-**When an execution method has already been supplied:**
-
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Please review the plan. Does it capture what you want?"**
-
-**If Subagent-driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-
-**If Native chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans

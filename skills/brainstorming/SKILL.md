@@ -43,10 +43,11 @@ selected path's prerequisites:
 
 - Spike: the human partner approves the question and probe.
 - Bounded: the human partner approves the short in-chat design.
-- Architectural: the human partner reviews and approves the written spec,
-  then reviews the written implementation plan and selects its execution
-  method. Conversational design approval only permits writing the spec;
-  written-spec approval only permits invoking writing-plans.
+- Architectural: the human partner reviews and approves the written spec
+  and its mockups. That is the last human gate: the implementation plan
+  is accepted by default, and writing-plans stops again only for a
+  design issue it surfaces. Conversational design approval only permits writing
+  the spec; written-spec approval permits writing-plans and its execution.
 
 A reply approves the stage actually presented. Approval of an idea or
 feature scope does not approve artifacts that do not exist yet. Resume
@@ -128,14 +129,14 @@ your path and complete them in order.
 
 **Architectural:**
 1. **Explore project context** — check files, docs, recent commits
-2. **Show, don't just tell, with mockups** — when a question or design point is genuinely clearer shown than described, author a self-contained **HTML/SVG** mockup (inline in the spec, or its own file when detailed) — never an ASCII sketch. See the Mockups section below.
+2. **Show, don't just tell, with mockups and diagrams** — the spec is the last thing your partner reviews before implementation, so put the design where they can see it. UI-facing work gets a mockup for each key screen; any design point clearer shown than described gets a self-contained HTML/SVG mockup or diagram rather than an ASCII sketch. See the Mockups section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
 6. **Write design doc** — REQUIRED SUB-SKILL: use superpowers:html-artifacts. Save as self-contained HTML to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.html` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+8. **User reviews written spec** — ask user to review the spec and mockups; this is the last checkpoint before implementation
+9. **Transition to implementation** — invoke writing-plans skill, which writes the plan and proceeds to execution unless it finds a design issue
 
 ## Process Flow
 
@@ -241,7 +242,7 @@ is the whole process.
 - **REQUIRED SUB-SKILL:** Use superpowers:html-artifacts to author the spec as a self-contained HTML document, starting from `templates/spec.html` with the canonical stylesheet inlined.
 - Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.html`
   - (User preferences for spec location override this default)
-- The spec is **HTML-primary** — a human reads it; nothing machine-parses it. Make it visual: include at least one hand-authored inline `<svg>` diagram (architecture or data flow) and at least one semantic `<table>` (comparisons, data models, decisions).
+- The spec is **HTML-primary** — a human reads it; nothing machine-parses it. Make it visual, because your partner judges the design from this document and not from the plan: include a hand-authored inline `<svg>` architecture diagram and a data-flow diagram (a sequence or state diagram too when the behavior turns on order or state), and at least one semantic `<table>` (comparisons, data models, decisions). For UI-facing work, link the mockup for each key screen from the section that describes it.
 - Keep it **self-contained**: no external scripts, stylesheets, fonts, or images, and no CDNs (the `html-artifacts` validator's `findExternalRefs` must return empty).
 - Keep it **responsive**: the user may read the spec on a desktop, a tablet, or a phone. Inline the canonical stylesheet unmodified (its breakpoints do the work), keep the viewport meta, and mark any diagram wider than 640 viewBox units `<div class="fig wide">` (the validator's `findResponsiveDeficiencies` must return empty).
 - Use elements-of-style:writing-clearly-and-concisely skill if available
@@ -260,22 +261,24 @@ Fix any issues inline. No need to re-review — just fix and move on.
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Spec written and committed to `<path>` (mockups: `<folder>`). This is the last checkpoint before implementation: once you approve, I'll write the plan and start executing it, stopping again only if planning turns up a design issue. Please review the spec and mockups and tell me what to change."
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
 **Implementation:**
 
-- Invoke the writing-plans skill to create a detailed implementation plan
-- Do NOT invoke any other skill. writing-plans is the next step.
+- Invoke the writing-plans skill, which writes the plan and hands off to execution
+- writing-plans is the only next step; other implementation skills come in through the execution skill it picks.
 
 ## Mockups
 
-When a question or design point is genuinely clearer **shown** than told — a layout, a screen, a navigation structure — author a **mockup**: a static, self-contained HTML artifact the user opens and looks at. There is no server and no interactive browser tool; the user views the file, and any choice between options is taken in the terminal like every other brainstorming decision.
+When a question or design point is clearer **shown** than told — a layout, a screen, a navigation structure — author a **mockup**: a static, self-contained HTML artifact the user opens and looks at. There is no server and no interactive browser tool; the user views the file, and any choice between options is taken in the terminal like every other brainstorming decision.
 
-**A mockup is always an HTML/SVG file — never ASCII art.** Any time you would represent a UI, layout, screen, or navigation structure visually, render it as HTML (inline `<svg>` or CSS boxes), not as a text/ASCII sketch. Do not draw a quick ASCII box layout in chat "to iterate on" before producing the HTML — go straight to the HTML mockup. ASCII/plain-text diagrams are acceptable **only** in two places: a one-off inline clarifying question in the terminal (a single rough box to disambiguate a question), and Markdown files. They are never the deliverable for a layout or screen, and never belong in a design spec.
+**Mockups are where your partner does most of their reviewing.** The implementation plan is accepted by default, so the spec and its mockups are the last place they can see and correct the UI before code exists. For architectural work with a user interface, author a mockup for each key screen — and for the states that change what the user sees (empty, loading, error) when the spec defines them. Presenting two layout options as mockups when the choice is open beats describing them.
 
-**Per-question test:** would the user understand this better by *seeing* it than reading it? A question *about* a UI topic is not automatically visual — "what does personality mean here?" is conceptual (terminal); "which of these two layouts works better?" is visual (mockup). Don't reach for a mockup when words, a list, or a table answer the question.
+**A mockup is an HTML/SVG file, not ASCII art.** ASCII sketches misrepresent proportion, spacing, and hierarchy, so your partner ends up approving a layout they never actually saw. Render any UI, layout, screen, or navigation structure as HTML (inline `<svg>` or CSS boxes), and go straight to the HTML rather than iterating on an ASCII draft in chat first. Plain-text diagrams are fine in two places: a one-off rough box in a terminal clarifying question, and Markdown files. They are not the deliverable for a layout or screen, and they don't belong in a design spec.
+
+**Per-question test:** would the user understand this better by *seeing* it than reading it? A question *about* a UI topic is not automatically visual — "what does personality mean here?" is conceptual (terminal); "which of these two layouts works better?" is visual (mockup). Words, a list, or a table are the better answer when they suffice.
 
 **Two fidelities — let the narrow spec decide:**
 

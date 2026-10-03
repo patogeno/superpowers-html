@@ -39,7 +39,7 @@ Diagram rules that keep a phone reader in mind:
 - **Prefer a viewBox no wider than 640 user units,** stacking nodes vertically rather
   than sprawling sideways. At 640 the 12.5px `.nlabel` text is still legible when the
   diagram is scaled down to a phone column.
-- **A diagram wider than 640 units MUST be marked `<div class="fig wide">`.** That keeps
+- **Mark a diagram wider than 640 units `<div class="fig wide">`.** That keeps
   it at a legible floor width and scrolls it horizontally inside the figure on a phone,
   instead of shrinking 12.5px labels to ~5px. `findResponsiveDeficiencies` flags a wide
   diagram that forgot the class.

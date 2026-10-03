@@ -74,3 +74,34 @@ test('every sibling Markdown file writing-plans points at exists', () => {
     assert.ok(existsSync(`${DIR}/${name}`), `SKILL.md points at missing file: ${name}`);
   }
 });
+
+// Plans are accepted by default: the human partner's review time goes into the
+// design (spec + mockups), not the plan. The plan stops only for design issues.
+
+test('the agent chooses the execution model and records why, instead of asking', () => {
+  assert.ok(!/ask your human partner which fits the work/.test(skill),
+    'execution model should no longer be an up-front question');
+  assert.match(skill, /\*\*Execution:\*\* \[Sequential subagents \| Team of specialists\]/);
+  assert.match(skill, /one-line reason/);
+});
+
+test('the execution handoff accepts the plan by default and starts executing', () => {
+  const handoff = skill.slice(skill.indexOf('## Execution Handoff'));
+  assert.match(handoff, /accepted by default/i);
+  assert.ok(!/Please review the plan/.test(handoff), 'handoff must not ask for plan review by default');
+  assert.ok(!/Which execution approach would you prefer/.test(handoff),
+    'handoff must not ask the partner to pick a method by default');
+});
+
+test('the handoff stops only for design issues, and names them', () => {
+  const handoff = skill.slice(skill.indexOf('## Execution Handoff'));
+  assert.match(handoff, /design issue/i);
+  for (const kind of [/ambigu/i, /contradict/i, /cannot be met|can't be met/i, /spec never made|spec did not make/i]) {
+    assert.match(handoff, kind);
+  }
+});
+
+test('the partner can opt back into the plan review gate', () => {
+  const handoff = skill.slice(skill.indexOf('## Execution Handoff'));
+  assert.match(handoff, /review the plan first/i);
+});
