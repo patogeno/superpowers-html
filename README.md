@@ -24,10 +24,13 @@ Superpowers is a complete software development methodology for your coding agent
   - [Kimi Code](#kimi-code)
   - [OpenCode](#opencode)
   - [Pi](#pi)
+  - [Qwen Code](#qwen-code)
   - [Hermes Agent](#hermes-agent)
+  - [Muse](#muse)
   - [Installing this fork on other harnesses](#installing-this-fork-on-other-harnesses)
 - [Troubleshooting](#troubleshooting)
 - [The Basic Workflow](#the-basic-workflow)
+- [When Something Goes Wrong](#when-something-goes-wrong)
 - [Community](#community)
 - [What's Inside](#whats-inside)
 - [Philosophy](#philosophy)
@@ -98,7 +101,7 @@ When `writing-plans` turns an approved design into a plan, it asks you to pick h
 | Plan shape | A plain ordered list of tasks | Tasks grouped into parallel **work-streams** with an explicit dependency graph; each task tagged `**Specialist:** <role>` |
 | How it runs | A fresh subagent implements one task at a time, with review between tasks | One specialist agent per dependency-free work-stream runs **concurrently**; the next wave launches as dependencies clear |
 | Best when | Tasks are coupled or must run in a fixed order | The work splits into independent domains that benefit from concurrency |
-| Execution skill | `subagent-driven-development` (recommended) or `executing-plans` | `dispatching-parallel-agents` |
+| Execution skill | `subagent-driven-development` (fresh subagent + review per task) or `executing-plans` (Native: inline, one final review) — `writing-plans` recommends one for the plan | `dispatching-parallel-agents` |
 
 Pick the team path by choosing it when `writing-plans` asks, or by saying so up front (e.g. *"write this as a team plan"* / *"use a team of specialists"*). `writing-plans` then derives the specialist roles the work needs from the task content (no fixed taxonomy — e.g. a DB-migration specialist, an API specialist, a React specialist), lays out the work-streams and their dependencies, and tags each task with its role. The choice is recorded in an `**Execution:**` line in the plan header, and is **orthogonal** to whether the work is split across multiple sessions.
 
@@ -354,6 +357,22 @@ pi -e /path/to/superpowers
 
 The Pi package loads the Superpowers skills and a small extension that injects the `using-superpowers` bootstrap at session startup and again after compaction. Pi has native skills, so no compatibility `Skill` tool is required. Subagent and task-list tools remain optional Pi companion packages.
 
+### Qwen Code
+
+Qwen Code installs plugins from Claude Code marketplaces directly.
+
+- Install the plugin from this repository, and pick `superpowers` when prompted:
+
+  ```bash
+  qwen extensions install obra/superpowers
+  ```
+
+- Update later:
+
+  ```bash
+  qwen extensions update superpowers
+  ```
+
 ### Hermes Agent
 
 Install Superpowers as a Hermes plugin from this repository:
@@ -365,6 +384,33 @@ hermes plugins install obra/superpowers --enable
 Restart any active Hermes sessions after installing. Note: Hermes has no
 post-compaction hook, so a very long session that compacts over its first
 turn loses the bootstrap — start a fresh session if skills stop triggering.
+
+### Muse
+
+Superpowers is available as a native Muse plugin — same repo, same skills, all harnesses. The `using-superpowers` bootstrap is injected via the native `SessionStart` hook alongside Claude Code, Codex, Cursor, Gemini, Pi, and the rest — no per-session opt-in.
+
+- Install from a local checkout:
+
+  ```bash
+  muse plugins install ./
+  muse plugins approve superpowers
+  ```
+
+  Or clone and install:
+
+  ```bash
+  git clone https://github.com/obra/superpowers.git
+  muse plugins install ./superpowers
+  muse plugins approve superpowers
+  ```
+
+- Update later:
+
+  ```bash
+  muse plugins update superpowers
+  ```
+
+Restart any active Muse sessions after installing so the `SessionStart` hook takes effect — skills are active immediately, hooks require approval on first install. To verify, start a fresh session and send `Let's make a react todo list` — a working install auto-triggers `brainstorming` before any code is written. Version is tracked in `.version-bump.json` so `scripts/bump-version.sh` keeps it in sync.
 
 ### Installing this fork on other harnesses
 
@@ -378,6 +424,7 @@ The fork's changes live in the shared skill files, which every harness loads. Fo
 - **OpenCode:** tell OpenCode to `Fetch and follow instructions from https://raw.githubusercontent.com/patogeno/superpowers-html/refs/heads/main/.opencode/INSTALL.md`
 - **Pi:** `pi install git:github.com/patogeno/superpowers-html`
 - **Hermes Agent:** `hermes plugins install patogeno/superpowers-html --enable`
+- **Muse:** `git clone https://github.com/patogeno/superpowers-html.git`, then `muse plugins install ./superpowers-html` and `muse plugins approve superpowers`
 
 **Codex CLI/App and Cursor** install from their own curated marketplaces (`openai/plugins`, the Cursor marketplace), which carry only upstream Superpowers. To use this fork there, clone the repo and install it locally per that harness's local-plugin instructions.
 
@@ -404,7 +451,7 @@ After installing, start a fresh Claude Code session so the hook runs again.
 
 3. **writing-plans** - Activates with approved design. Breaks work into bite-sized tasks (2-5 minutes each). Every task has exact file paths, complete code, verification steps.
 
-4. **subagent-driven-development**, **executing-plans**, or **dispatching-parallel-agents** - Activates with plan, per the execution model chosen when the plan was written ([see above](#execution-models-for-implementation-plans)). A *sequential* plan dispatches a fresh subagent per task with two-stage review (spec compliance, then code quality) or executes in batches with human checkpoints; a *team* plan dispatches specialist agents across independent work-streams concurrently.
+4. **subagent-driven-development**, **executing-plans**, or **dispatching-parallel-agents** - Activates with plan, per the execution model chosen when the plan was written ([see above](#execution-models-for-implementation-plans)). A *sequential* plan either dispatches a fresh subagent per task with a review after each (most thorough), or implements every task inline in the current session with one fresh review of the whole branch at the end (cheapest); a *team* plan dispatches specialist agents across independent work-streams concurrently.
 
 5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
@@ -413,6 +460,12 @@ After installing, start a fresh Claude Code session so the hook runs again.
 7. **finishing-a-development-branch** - Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up worktree.
 
 **The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
+
+## When Something Goes Wrong
+
+Sometimes a session misbehaves: a skill fires when it shouldn't, stays silent when it should, or the agent ignores its plan, repeats work, or burns more tokens than you'd expect. Ask your coding agent to "figure out what went wrong with superpowers in this session" and it will invoke the **diagnosing-superpowers** skill. To examine an earlier session, name it: "figure out what went wrong with superpowers in session `<id>`".
+
+The skill reads the session transcript, reports what happened with line-level evidence, and, if you want, packages a scrubbed bundle for a bug report.
 
 ## Community
 
@@ -432,11 +485,12 @@ Superpowers is built by [Jesse Vincent](https://blog.fsck.com) and the rest of t
 **Debugging**
 - **systematic-debugging** - 4-phase root cause process (includes root-cause-tracing, defense-in-depth, condition-based-waiting techniques)
 - **verification-before-completion** - Ensure it's actually fixed
+- **diagnosing-superpowers** - Work out what went wrong in a session, with evidence; export a scrubbed bundle or file an issue
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
 - **writing-plans** - Detailed implementation plans
-- **executing-plans** - Batch execution with checkpoints
+- **executing-plans** - Inline plan execution: one context, one final review
 - **dispatching-parallel-agents** - Concurrent subagent workflows
 - **requesting-code-review** - Pre-review checklist
 - **receiving-code-review** - Responding to feedback
