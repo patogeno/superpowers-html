@@ -8,6 +8,20 @@ This section records what the [`superpowers-html`](https://github.com/patogeno/s
 
 The fork's design principle is to change **what a human reads and reviews**, leaving the agent-executed *code* (servers, scripts) identical to upstream so the fork stays easy to merge. See the README's [What this fork changes](README.md#what-this-fork-changes-superpowers-html) section.
 
+### Artifact-first brainstorming, multi-session runs, upstream v7.0.2 (2026-11-13, fork version 7.1.0)
+
+The design review now shows you the experience, on any device, and big plans run unattended or session by session.
+
+- **Upstream v7.0.2 merged.** That includes upstream's rebuilt brainstorming (asks why first, fewer filler questions, a builder check instead of the spec reviewer), the hook and helper-script fixes, and the compaction-safe skill split. The fork's brainstorming edits are re-applied on top of the new skill.
+- **Experience-first design docs.** The design is a layered `html-artifacts` page: what it's for, what users can do, screens, how it flows, approaches, and the technical design folded at the end (architecture, data, Claude's technical calls). Work with screens gets a clickable, product-styled **prototype**. A topic folder holds `index.html` and `prototype.html`.
+- **Claude artifacts on Claude Code.** Pages are published with the Artifact tool when it's available: mockups mid-conversation without an offer, and the spec + prototype as one artifact that keeps its link across revisions. Your comments on the artifact and your chat note are read together; untouched parts count as approved only on a go-ahead. Elsewhere, the same pages are local files. `html-artifacts` gains `templates/prototype.html`, `templates/report.html` and `references/claude-code-artifacts.md`; its stylesheet gains the artifact viewer's dark-mode guards and a safe-area sticky offset, and the spec template is now a page fragment.
+- **`running-multi-session-plans` (new skill).** Runs a roadmap with a fresh lead per session. Staged by default (stop after each session with a report), or autonomous (back to back, one night report updated after each session). Switch with "go autonomous until it's done" or "stop after this session". Calls made without you take the option easiest to undo and are flagged; hard calls get a two-agent second opinion; push, PRs, deploys, deletes and sends are parked in either mode. Resumes from the roadmap's run log.
+- **Learnings split by topic.** `learnings/index.md`, one file per topic opening with *Current truths*, and `feedback.md`. Session plans carry a `**Read learnings:**` line; topic files are condensed past about 150 lines.
+- **Build and Review settings.** Plans record `**Review:** standard | panel` beside the execution model; Build is "one at a time" or "parallel". New `subagent-driven-development/references/review-panel.md`: user-experience, correctness, security and test lenses, per task and for the final review.
+- **Plans link the design.** The plan header's `**Design:**` line links the artifact and topic folder; UI tasks list `Prototype: …/prototype.html#<screen-id>`.
+- **Windows:** `run-hook.cmd` keeps upstream's new bash discovery and adds the fork's bash-beside-`git` fallback and missing-bash stderr warning, with tests.
+- The Claude 5 references moved into `references/` so `subagent-driven-development` stays under the 20,000-byte compaction cut.
+
 ### Design-first review + Claude 5.5 tuning (2026-10-03, fork version 6.6.0)
 
 With Opus 5.5, the implementation plan is almost always right, and the human partner's time goes into getting the design right: brainstorming, mockups and diagrams. The workflow now spends that time where it matters.
