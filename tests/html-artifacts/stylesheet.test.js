@@ -30,7 +30,7 @@ test('stylesheet is responsive: phone/tablet breakpoints for the two-column shel
     assert.ok(css.includes(bp), `missing breakpoint ${bp}`);
   }
   // Sidebar becomes a horizontally scrollable chip row rather than a full-height column.
-  assert.match(css, /\.sidebar\{position:sticky;top:0;z-index:20;height:auto/);
+  assert.match(css, /\.sidebar\{position:sticky;top:env\(safe-area-inset-top,0px\);z-index:20;height:auto/);
   assert.match(css, /\.toc\{display:flex;[^}]*overflow-x:auto/);
 });
 

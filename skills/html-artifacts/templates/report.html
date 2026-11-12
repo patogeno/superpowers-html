@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title><!-- TITLE: project name · Run report --></title>
+<style>
+/* The run report for a multi-session roadmap: one page per roadmap,
+   republished after every session. Read on a phone first. */
+:root{
+  --bg:#eef0f3;--surface:#ffffff;--line:#d9dce1;--fg:#1c1f24;--muted:#646b75;--accent:#3355d6;
+  --ok:#1f8a4c;--ok-soft:#e1f3e8;--note:#9a5b00;--note-soft:#fff1d6;--wait:#7b35b8;--wait-soft:#f1e6fb;
+  --font:system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121417;--surface:#1c1f24;--line:#353a43;--fg:#eceef1;--muted:#a1a8b3;--accent:#8ea4ff;
+  --ok:#5fcf8c;--ok-soft:#1b3326;--note:#f0b75a;--note-soft:#3d2f14;--wait:#c99bf0;--wait-soft:#33244a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417;--surface:#1c1f24;--line:#353a43;--fg:#eceef1;--muted:#a1a8b3;--accent:#8ea4ff;
+  --ok:#5fcf8c;--ok-soft:#1b3326;--note:#f0b75a;--note-soft:#3d2f14;--wait:#c99bf0;--wait-soft:#33244a;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{font-family:var(--font);color:var(--fg);line-height:1.55;font-size:15px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+main{max-width:680px;margin-inline:auto;display:flex;flex-direction:column;gap:14px}
+header h1{font-size:1.35rem;text-wrap:balance}
+header p{color:var(--muted);font-size:14px}
+.steps{display:flex;gap:6px;margin-top:10px}
+.steps span{flex:1;height:6px;border-radius:99px;background:var(--line)}
+.steps span.done{background:var(--ok)}.steps span.now{background:var(--accent)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+section h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+section#waiting{border-color:var(--wait);background:var(--wait-soft)}section#waiting h2{color:var(--wait)}
+ul{margin-left:1.15rem}li{margin-bottom:4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.pill{font-size:11px;font-weight:650;border-radius:99px;padding:1px 8px;white-space:nowrap}
+.pill.ok{color:var(--ok);background:var(--ok-soft)}.pill.note{color:var(--note);background:var(--note-soft)}
+.call{border-left:3px solid var(--note);padding:4px 0 4px 10px;margin:8px 0}
+.call small{display:block;color:var(--muted);font-size:12.5px}
+code{font-family:var(--mono);font-size:.9em;overflow-wrap:anywhere}
+details summary{cursor:pointer;font-weight:600}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1><!-- Project name --></h1>
+    <p><!-- Run: staged|autonomous · Build: … · Review: … · updated <time> --></p>
+    <div class="steps" aria-label="sessions"><!-- one <span class="done|now"> per roadmap session --></div>
+  </header>
+
+  <section id="done"><h2>Sessions</h2>
+    <!-- <div class="row"><b>Session name</b><span class="pill ok">done</span></div>
+         and one or two lines on what it built, in the user's terms -->
+  </section>
+
+  <section id="calls"><h2>Calls made without you</h2>
+    <!-- <div class="call">The decision<small>session N · second opinion taken? ·
+         how to undo it</small></div>; for a second opinion, both options in one line each -->
+  </section>
+
+  <section id="waiting"><h2>Waiting for you</h2>
+    <!-- parked outward or hard-to-undo steps (push, PR, deploy, deletes, sends,
+         keys or accounts needed), and any question that blocked a session -->
+  </section>
+
+  <section id="try"><h2>Try it</h2>
+    <!-- the command or URL and the two or three things worth clicking -->
+  </section>
+
+  <section id="learnings"><h2>Learnings updated</h2>
+    <!-- topic → the one-line change to its current truths -->
+  </section>
+
+  <section id="history"><h2>Earlier sessions</h2>
+    <!-- <details><summary>Session N · name</summary>…</details> per earlier session -->
+  </section>
+</main>
+</body>
+</html>
