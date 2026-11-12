@@ -28,7 +28,7 @@ Before you start implementing, you must, in order:
 1. Lay out the approaches in a message of their own, and have your
    human partner pick one (see Lay out the approaches).
 2. Write the design doc, short or full (see Size the Work).
-3. Get their approval of that doc.
+3. Get their approval of that doc (and its prototype, when it has one).
 4. Invoke the superpowers:writing-plans skill.
 
 If nothing is open when you write your first message and there's one
@@ -167,8 +167,11 @@ next one. This is for how it gets built; for what they want, get them
 describing first.
 
 **Show, don't tell.** Whenever seeing would help more than reading,
-sketch it in text: a few lines of what they'd see. Offer the visual
-companion (below) when the look itself is theirs to decide:
+show it as a page (see Showing It): a mockup to react to, options side
+by side, a flow diagram, a throwaway prototype they can click. Don't
+draw screens in ASCII: it misrepresents proportion and hierarchy, so
+they'd approve a layout they never saw. A few lines of text are fine
+for something too small for a page. The moments:
 
 - something they'll look at: a screen, a page, a printout, a sign
 - a layout or arrangement: of a screen, a room, a schedule
@@ -176,8 +179,7 @@ companion (below) when the look itself is theirs to decide:
 - options that would look different from each other
 - a structure that's easier to see than read: a diagram, a timeline, a map
 
-Once they've accepted, use it for mockups to react to, side-by-side
-options, and throwaway prototypes they can click.
+Showing is your call; don't ask first.
 
 **Spike to feel things out.** Agentic work is waterfall, but very, very
 fast. A quick throwaway build is often the cheapest way to learn what
@@ -200,11 +202,8 @@ as your proposal, with your reason. End each chunk by asking what's wrong
 or missing.
 
 Before you send a chunk, check it: does it describe something they'll
-look at, like a page, a screen, a schedule, or a printout? If so, put a
-text sketch next to the description. If the look itself is theirs to
-decide and they haven't seen the visual companion offer yet, send the
-offer instead (its own message, below) and hold the chunk for the next
-message. Once they've accepted, put a mockup next to the description.
+look at, like a page, a screen, a schedule, or a printout? If so, show
+it next to the description: a mockup page, linked in the same message.
 
 ## Size the Work
 
@@ -214,7 +213,7 @@ how big the work is in plain words. They can override it.
 | Size | The design doc |
 |------|----------------|
 | A small change | a short one: what you already covered together, written down |
-| A project | the full written design (below) |
+| A project | the full written design (below), with a prototype when it has screens |
 
 Short or full, the design doc has an **Approaches** part: the two or
 three ways you considered building it, what each trades off, which one
@@ -228,24 +227,39 @@ order, and brainstorm them one at a time.
 
 ## The Written Design
 
-Write a plain document a talented builder in the domain could plan
-from without going back to your human partner. Cover:
+Write a design your human partner can review mostly by looking, and
+that a talented builder in the domain could plan from without going
+back to them. **REQUIRED SUB-SKILL:** use superpowers:html-artifacts and
+start from its `templates/spec.html`. In this order:
 
-- intent and the why
-- goals, non-goals, anti-goals
-- constraints
-- approaches (above)
-- the parts of the how they decided, as they decided them
-- what's left to the builder
+- **What it's for:** intent and the why; goals, non-goals, anti-goals
+- **What users can do:** the capabilities, in their words, each linked
+  to its screen
+- **Screens:** for work with an interface, each key screen, plus the
+  empty and error states that change what users see
+- **How it flows:** high-level diagrams of the steps a user or the
+  solution goes through, showing intent, not implementation
+- **Approaches** (above)
+- **Technical design, folded:** constraints, an architecture block
+  diagram, data and interfaces, the parts of the how they decided (as
+  they decided them), what's left to the builder, and each technical
+  call you made, marked as yours. They open it when they want to, so
+  nothing above it may depend on it.
+
+When the work has screens, also build a **prototype**: each key screen
+as a clickable page styled like the product, from html-artifacts'
+`templates/prototype.html`. The Screens section opens it.
 
 For a small change, the short design covers the same points in a line
-or two each and goes straight to your human partner, without the
-builder check.
+or two each and goes straight to your human partner in chat, without
+the builder check. If it changes something they'll see, show that as a
+mockup page.
 
-**Where it goes:** in a software repo,
-`docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, committed.
-Otherwise, pick a sensible place and say where. Your human partner's
-preferences override both.
+**Where it goes:** in a software repo, a design with a prototype is a
+folder, `docs/superpowers/specs/YYYY-MM-DD-<topic>/index.html` plus
+`prototype.html`; without one, `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.html`.
+Commit it. Otherwise, pick a sensible place and say where. Your human
+partner's preferences override both.
 
 **Builder check** (for a project): dispatch a fresh subagent with
 `builder-check-prompt.md` in this directory. When you tell your human
@@ -261,10 +275,12 @@ until the check is back. Sort what the builder asks into three piles:
   what gets built.
 
 Bring the "theirs" pile in one message, most important first. Update the
-document with their answers, then hand it over with a short list of the
-calls you made so they can check those while reading. That's the only
-round of questions the check produces. Without a subagent tool, read the
-document as that builder yourself.
+document with their answers, then hand it over (see Showing It) with a
+short list of the calls you made so they can check those while reading.
+Tell them this is the last checkpoint: once they approve, you write the
+plan and start building, and stop again only if planning finds a design
+issue. That's the only round of questions the check produces. Without a
+subagent tool, read the document as that builder yourself.
 
 <HARD-GATE>
 Nothing gets built until your human partner approves the design doc:
@@ -278,8 +294,10 @@ and the gate goes with it. A spike they said yes to may be built; it
 stays labeled throwaway, and keeping what it produced is a new request
 that comes back through this gate.
 
-After the design doc is approved, the next step is the plan: invoke
-superpowers:writing-plans and no other skill.
+After the design doc (and its prototype) is approved, the next step is
+the plan: invoke superpowers:writing-plans and no other skill. That
+approval is the last human gate. The plan is accepted by default, and
+writing-plans stops again only for a design issue it finds.
 </HARD-GATE>
 
 ## Red Flags
@@ -292,25 +310,34 @@ superpowers:writing-plans and no other skill.
 | "I should explain the process first" | Ask your question. The process shows itself. |
 | "They said 'sounds good' to the idea" | Approval covers what you showed them. A design doc you haven't written isn't approved. |
 | "The spike works, I'll keep building on it" | Keeping it is a new request. Back through the gate. |
+| "A quick ASCII sketch of the screen will do" | Show it as a page. ASCII misrepresents the layout they're approving. |
+| "They commented, so the rest is approved" | Comments are feedback. Approval is their go-ahead. |
 
-## Visual Companion
+## Showing It
 
-A browser tab for showing mockups, diagrams, and prototypes. It's a
-tool, not a mode: accepting it doesn't send every question to the
-browser.
+The pages your human partner looks at are mockups during the
+conversation and, at the end, the design doc with its prototype. Build
+them with superpowers:html-artifacts.
 
-**Offer it just-in-time.** Offer it the first time one of the moments
-above comes up, never upfront. The offer is its own message with nothing
-else in it:
+- **With the Artifact tool** (Claude Code): publish each page as a
+  claude.ai artifact and put the link in your message, so they can open
+  it on a PC or a phone. Read html-artifacts'
+  `references/claude-code-artifacts.md` before the first publish. The
+  design doc and its prototype go out as one artifact. Every revision
+  republishes to the same path, so the link they have stays current.
+- **Without it:** write the files and give them their paths. Feedback
+  comes in chat.
 
-> "This might be easier if I show you. Want me to open a browser tab with some mockups?"
-
-If they decline, stay in text and don't offer again unless they raise it.
+The files are committed either way.
 
 **Per question, ask: would they understand this better by seeing it?**
-Mockups, layouts, diagrams, and side-by-side designs go in the browser.
+Screens, layouts, flows and side-by-side designs get a page.
 Requirements, scope, tradeoffs, and conceptual choices stay in text. A
 question about a UI topic isn't automatically a visual question.
 
-If they accept, read `visual-companion.md` in this directory before
-starting the server.
+**Feedback.** They may comment on the pages, write a general note in
+chat, or both. When they reply, read the artifact's comments along with
+their note, answer each comment in its thread, revise, republish, and
+say what changed. Parts they didn't touch count as approved only when
+they give a go-ahead; a batch of comments by itself is
+feedback, not approval.
