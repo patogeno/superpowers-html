@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multi-Session Runs · Prototype</title>
+<style>
+/* Layout: one phone-width screen at a time, centered; a screen strip below navigates the walkthrough. */
+:root{
+  --bg:#eef0f3;--surface:#ffffff;--surface-2:#f4f5f7;--line:#d9dce1;--fg:#1c1f24;--muted:#646b75;
+  --accent:#3355d6;--accent-soft:#e3e9ff;--ok:#1f8a4c;--ok-soft:#e1f3e8;--note:#b26a00;--note-soft:#fff1d6;--wait:#8a3fc7;--wait-soft:#f1e6fb;
+  --font:system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121417;--surface:#1c1f24;--surface-2:#262a31;--line:#353a43;--fg:#eceef1;--muted:#a1a8b3;
+  --accent:#8ea4ff;--accent-soft:#26305a;--ok:#5fcf8c;--ok-soft:#1b3326;--note:#f0b75a;--note-soft:#3d2f14;--wait:#c99bf0;--wait-soft:#33244a;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417;--surface:#1c1f24;--surface-2:#262a31;--line:#353a43;--fg:#eceef1;--muted:#a1a8b3;
+  --accent:#8ea4ff;--accent-soft:#26305a;--ok:#5fcf8c;--ok-soft:#1b3326;--note:#f0b75a;--note-soft:#3d2f14;--wait:#c99bf0;--wait-soft:#33244a;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{font-family:var(--font);color:var(--fg);line-height:1.5;font-size:15px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.wrap{max-width:420px;margin-inline:auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.top .label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:650}
+.top a{font-size:13px;color:var(--accent);text-decoration:none;font-weight:600}
+.phone{background:var(--surface);border:1px solid var(--line);border-radius:22px;min-height:560px;overflow:hidden;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-weight:650;font-size:14px}
+.bar .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.bar .sub{margin-left:auto;font-weight:500;font-size:12px;color:var(--muted)}
+.body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;min-width:0}
+.msg{border-radius:14px;padding:10px 12px;max-width:92%;font-size:14px}
+.msg.me{background:var(--accent);color:#fff;align-self:flex-end}
+.msg.ai{background:var(--surface-2);align-self:flex-start}
+:root[data-theme="dark"] .msg.me{color:#0f1530}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .msg.me{color:#0f1530}}
+.runline{font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:6px 0;display:block}
+.link{display:flex;gap:10px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;margin-top:8px;text-decoration:none;color:var(--fg)}
+.link .ico{width:34px;height:34px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);font-weight:700;flex-shrink:0}
+.link b{display:block;font-size:14px}.link span{font-size:12px;color:var(--muted)}
+.steps{display:flex;gap:6px}
+.steps span{flex:1;height:6px;border-radius:99px;background:var(--surface-2)}
+.steps span.done{background:var(--ok)}.steps span.now{background:var(--accent)}
+.sec{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sec h4{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.sec p,.sec li{font-size:14px}.sec ul{margin-left:1.1rem}.sec li{margin-bottom:3px}
+.sec.wait{border-color:var(--wait);background:var(--wait-soft)}.sec.wait h4{color:var(--wait)}
+.call{display:block;border-left:3px solid var(--note);padding:4px 0 4px 10px;margin:6px 0;text-decoration:none;color:var(--fg);font-size:14px}
+.call small{display:block;color:var(--muted);font-size:12px}
+.pill{font-size:11px;font-weight:650;border-radius:99px;padding:1px 8px;white-space:nowrap}
+.pill.ok{color:var(--ok);background:var(--ok-soft)}.pill.note{color:var(--note);background:var(--note-soft)}.pill.wait{color:var(--wait);background:var(--wait-soft)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:4px 0}
+.op{border-radius:10px;padding:8px 10px;background:var(--surface-2);font-size:13.5px}
+.op b{display:block;font-size:13px}
+.file{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:7px 12px;font:inherit;font-size:13px;text-decoration:none;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0f1530}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0f1530}}
+.note{font-size:12px;color:var(--muted);text-align:center}
+nav.strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+nav.strip a{flex:0 0 auto;font-size:12px;padding:6px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted);text-decoration:none;background:var(--surface)}
+nav.strip a[aria-current="page"]{border-color:var(--accent);color:var(--accent);font-weight:650}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="label">Prototype · a three-session roadmap</span><a href="index.html">← Back to spec</a></div>
+
+  <section class="phone" id="handoff" data-screen>
+    <div class="bar"><span class="dot"></span>Your session</div>
+    <div class="body">
+      <div class="msg ai">Plan saved: 3 sessions (sign-in, shared lists, reminders). Each session gets its own fresh lead.
+        <code class="runline">Run: staged · Build: one at a time · Review: standard</code>
+        Starting session 1 now. Say "overnight, fast" or "staged, thorough" to change how it runs.</div>
+      <div class="msg me">Staged is fine, but make the review thorough.</div>
+      <div class="msg ai">Done: <code class="runline">Run: staged · Build: one at a time · Review: panel</code>Session 1 is running. You'll get a report when it's done.</div>
+      <div class="btns"><a class="btn primary" href="#session-report">Session 1 finishes →</a></div>
+    </div>
+  </section>
+
+  <section class="phone" id="session-report" data-screen hidden>
+    <div class="bar">Family App · run report<span class="sub">staged</span></div>
+    <div class="body">
+      <div class="steps" aria-label="Session 1 of 3 done"><span class="done"></span><span></span><span></span></div>
+      <div class="sec"><h4>Session 1 · Sign-in <span class="pill ok">done</span></h4>
+        <ul><li>Sign in with email link, stay signed in for 30 days</li><li>12 tasks, panel review: 2 issues found and fixed</li></ul></div>
+      <div class="sec"><h4>Try it</h4><p><code>npm run dev</code>, then open /login</p></div>
+      <div class="sec"><h4>Calls made</h4>
+        <a class="call" href="#hard-call">Sign-in links expire after 15 minutes<small>second opinion taken · easy to change</small></a></div>
+      <div class="sec"><h4>Next</h4><p>Session 2 · Shared lists. Reads learnings: auth, data-model, feedback.</p></div>
+      <p class="note">Reply in chat or comment here: feedback, "next", or "go autonomous until it's done".</p>
+      <div class="btns"><a class="btn primary" href="#go-autonomous">Reply →</a></div>
+    </div>
+  </section>
+
+  <section class="phone" id="go-autonomous" data-screen hidden>
+    <div class="bar"><span class="dot"></span>Your session</div>
+    <div class="body">
+      <div class="msg me">Looks good. 15 minutes is fine. Go autonomous until it's done, I'm off to bed.</div>
+      <div class="msg ai">Saved your note to feedback. Switched:
+        <code class="runline">Run: autonomous · Build: one at a time · Review: panel</code>
+        Running sessions 2 and 3 back to back. The report at the same link updates after each one. I won't push, deploy or delete anything; those wait for you.
+        <a class="link" href="#night-report"><span class="ico">▤</span><span><b>Family App · run report</b><span>updates after each session</span></span></a></div>
+      <p class="note">"Stop after this session" switches back to staged.</p>
+    </div>
+  </section>
+
+  <section class="phone" id="night-report" data-screen hidden>
+    <div class="bar">Family App · run report<span class="sub">finished 04:12</span></div>
+    <div class="body">
+      <div class="steps" aria-label="All 3 sessions done"><span class="done"></span><span class="done"></span><span class="done"></span></div>
+      <div class="row"><b>Sign-in</b><span class="pill ok">done</span></div>
+      <div class="row"><b>Shared lists</b><span class="pill ok">done</span></div>
+      <div class="row"><b>Reminders</b><span class="pill ok">done · 1 call</span></div>
+      <div class="sec"><h4>Calls made without you</h4>
+        <a class="call" href="#hard-call">Reminders repeat daily until ticked<small>session 3 · second opinion taken · undo: one setting</small></a>
+        <a class="call" href="#hard-call">Lists are shared per household, not per person<small>session 2 · matched the spec's examples</small></a></div>
+      <div class="sec wait"><h4>Waiting for you</h4><ul><li>Push the branch and open the PR</li><li>Add the email service key (needed to send real sign-in links)</li></ul></div>
+      <div class="sec"><h4>Try it</h4><p><code>npm run dev</code>: sign in, make a list, set a reminder</p></div>
+    </div>
+  </section>
+
+  <section class="phone" id="hard-call" data-screen hidden>
+    <div class="bar">Family App · run report<span class="sub">a call</span></div>
+    <div class="body">
+      <div class="sec"><h4>The question</h4><p>The spec says reminders "nudge until done" but never says how often.</p></div>
+      <div class="op"><b>Option A: once a day until ticked</b>Quiet, matches "nudge". Easy to make more frequent later.</div>
+      <div class="op"><b>Option B: every 2 hours, daytime only</b>Gets things done, but people mute apps that ping this often.</div>
+      <div class="sec"><h4>Decision <span class="pill note">Claude's call</span></h4><p>A, the easiest to undo: it's one setting, and it errs on the quiet side. Both agents' arguments are kept in the run log.</p></div>
+      <div class="sec"><h4>To change it</h4><p>Say "reminders every 2 hours" and it's a one-task fix.</p></div>
+      <div class="btns"><a class="btn" href="#night-report">← Back to report</a></div>
+    </div>
+  </section>
+
+  <section class="phone" id="learnings" data-screen hidden>
+    <div class="bar">plans/family-app/learnings/</div>
+    <div class="body">
+      <div class="sec"><h4>index.md</h4>
+        <div class="file">auth         sign-in, sessions        s1, s2
+data-model   lists, households        s2, s3
+build-test   dev server, test runner  s1
+feedback     your notes               always read</div></div>
+      <div class="sec"><h4>auth.md</h4>
+        <div class="file">## Current truths
+- Sign-in links expire after 15 min (confirmed by you)
+- Session cookie is httpOnly, 30 days
+
+## History
+s1: chose email links over passwords (spec)
+s2: fixed logout leaving the cookie</div></div>
+      <p class="note">Session 3 read index, data-model and feedback, and skipped the rest.</p>
+    </div>
+  </section>
+
+  <nav class="strip" aria-label="Screens">
+    <a href="#handoff">1 Handoff</a><a href="#session-report">2 Session report</a><a href="#go-autonomous">3 Go autonomous</a>
+    <a href="#night-report">4 Night report</a><a href="#hard-call">5 A hard call</a><a href="#learnings">6 Learnings</a>
+  </nav>
+</div>
+<script>
+(function(){
+  var screens=[].slice.call(document.querySelectorAll('[data-screen]'));
+  var links=[].slice.call(document.querySelectorAll('nav.strip a'));
+  function show(){
+    var id=(location.hash||'').slice(1);
+    if(!screens.some(function(s){return s.id===id;})) id=screens[0].id;
+    screens.forEach(function(s){s.hidden=s.id!==id;});
+    links.forEach(function(a){if(a.getAttribute('href')==='#'+id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',show);show();
+})();
+</script>
+</body>
+</html>
