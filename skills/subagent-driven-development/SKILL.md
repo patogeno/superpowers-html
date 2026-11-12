@@ -174,8 +174,7 @@ that implementer. Single-file mechanical fixes also take the cheapest tier.
 - Touches multiple files with integration concerns → standard model
 - Requires design judgment or broad codebase understanding → most capable model
 
-On Anthropic models, `references/claude-5-models.md` maps these tiers to
-Claude 5 models and covers the dispatch-prompt changes.
+Claude 5 tiers and dispatch notes: `references/claude-5-models.md`.
 
 ## The Task Loop
 
@@ -295,7 +294,7 @@ If the reviewer reports "⚠️ Cannot verify from diff" items, read
 [references/cannot-verify.md](references/cannot-verify.md) before you mark
 the task complete.
 
-Template: [task-reviewer-prompt.md](task-reviewer-prompt.md)
+Template: [task-reviewer-prompt.md](task-reviewer-prompt.md). Review: panel → `references/review-panel.md`.
 
 ### 4. The fix loop
 
