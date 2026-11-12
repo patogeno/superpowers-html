@@ -38,32 +38,49 @@ the header and add a run-log line:
 
 ## The Loop
 
+0. **Workspace, once, before the first session.** Set up or verify the
+   run's workspace with superpowers:using-git-worktrees *with your
+   partner*, before session 1 and before you first go autonomous: a
+   worktree or branch off the main branch, never `main` itself. Record its
+   path and branch in the roadmap header. Every lead works there; a lead
+   that made its own worktree would build from a base without the earlier
+   sessions' commits.
 1. **Read the roadmap** and its run log. **Resume** at the first unfinished
-   session, the first whose status isn't done: a session with a "started" line and no
-   "finished" line was interrupted, so check `git log` for its commits
-   and hand its lead what already landed. Never redo a finished session.
-2. **Start a fresh lead** for that session, with
-   `references/session-lead-prompt.md`: the session plan's path, the
-   learnings files its `**Read learnings:**` line names, `learnings/index.md`,
-   `learnings/feedback.md`, the run settings, and any carry-over from the
-   run log. Nothing else: the lead's clean context is the point. Choose its
-   model per superpowers:subagent-driven-development's Model Selection;
-   a lead coordinates, so the standard tier usually fits.
+   session, the first whose status is neither done nor blocked. A session
+   with a "started" line and no "finished" line was interrupted: check
+   `git log` from its base for commits that already landed and hand them
+   to its lead. Never redo a finished session.
+2. **Start a fresh lead** for that session. First write
+   `session N started (base <sha>)` to the run log, then dispatch the lead
+   with `references/session-lead-prompt.md`: the workspace path and branch,
+   the session plan's path, the learnings files its `**Read learnings:**`
+   line names, `learnings/index.md`, `learnings/feedback.md`, the run
+   settings, and any carry-over from the run log. Nothing else: the lead's
+   clean context is the point. Choose its model per
+   superpowers:subagent-driven-development's Model Selection; a lead
+   coordinates, so the standard tier usually fits.
 3. **Collect its summary.** Check it against the repo: the commits it
    names exist, the tests it names pass. A summary you didn't check is a
    claim, not a result.
-4. **Update the record:** roadmap status and run log; new topics in
+4. **Update the record:** `session N finished (<first>..<last>)` or
+   `partial (why)` in the run log, roadmap status; new topics in
    `learnings/index.md`; any new or amended session the follow-ups call
-   for; the run report (below).
-5. **Staged:** publish the report, tell your partner in a few lines what
-   the session did and what's next, and **stop**. Their reply goes to
-   `learnings/feedback.md` in their words, and into the next session's
-   plan when it changes the work, before that session starts.
+   for; the run report (below). A **partial** session is retried once, by a
+   fresh lead that's told what's missing. If it's partial again, mark it
+   **blocked**, list why under "Waiting for you", and continue with the
+   next session whose dependencies are met. When none is left, stop.
+5. **Staged:** publish (or write) the report, tell your partner in a few
+   lines what the session did and what's next, and **stop**. Their reply
+   goes to `learnings/feedback.md` in their words, and into the next
+   session's plan when it changes the work. The next session starts only
+   on a go-ahead: "next", "continue", or a switch to autonomous. Feedback
+   by itself doesn't start it; record it, answer it, and wait.
    **Autonomous:** go to step 1 for the next session.
-6. **Done:** when every session is done, run the final whole-branch
-   review the last session's execution skill calls for (a panel when
-   Review is panel), publish the final report, and stop. Use
-   superpowers:finishing-a-development-branch only with your partner;
+6. **Done:** when every session is done or blocked, run the final
+   whole-branch review the last session's execution skill calls for (a
+   panel when Review is panel), publish (or write) the final report, and
+   stop. Leads never finish the branch; you use
+   superpowers:finishing-a-development-branch, and only with your partner:
    merging and pushing are theirs (below).
 
 ## Calls Made Without Your Partner
@@ -93,18 +110,22 @@ with the exact command, for your partner to run or approve.
 - deleting data, databases, or files outside the work tree
 - sending messages, emails, or notifications to anyone
 - paid API spend beyond the session's normal use, creating accounts or keys
+- destructive git: `git reset --hard`, `git clean -fdx` (it also deletes
+  the run's ledgers), force-push, rewriting published history
 
 Commits on the work branch are fine; they are how the run makes progress.
 
 ## The Run Report
 
 One report per roadmap, from html-artifacts' `templates/report.html`,
-saved beside the roadmap and republished to the same path after every
-session, so the link your partner has always shows the latest. With the
-Artifact tool (Claude Code), publish it as an artifact and put the link
-in the roadmap's `**Report:**` line (see html-artifacts'
-`references/claude-code-artifacts.md`); comments on it are feedback like
-any other. Without it, give your partner the file path.
+saved beside the roadmap and republished after every session, so the
+same link your partner has always shows the latest. With the Artifact tool
+(Claude Code), publish it as an artifact and put its link in the
+roadmap's `**Report:**` line. A later conversation updates that same
+artifact by passing its link as `url` (read it first), never by a fresh
+publish, which would make a new link; see html-artifacts'
+`references/claude-code-artifacts.md`. Comments on it are feedback like
+any other. Without the tool, give your partner the file path.
 
 It shows: sessions done, calls made without them (each with how to undo
 it), what's waiting for them, how to try the result, which learnings

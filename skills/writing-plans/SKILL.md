@@ -30,7 +30,7 @@ Choose the execution model before writing tasks, because it changes the shape of
 
 Record the choice in the plan header's `**Execution:**` line with a one-line reason drawn from the plan, so your partner can overrule it at a glance. This choice is orthogonal to the multi-session judgment below: a multi-session feature can have each session plan written in either shape.
 
-Your partner may name these in plain words instead. **Build** "one at a time" (carefully, safer) is model 1; "parallel" (fast, get it done quicker) is model 2. **Review** is separate: `standard` (one reviewer per task) or `panel` ("thorough", "different points of view": several reviewers with different lenses, per superpowers:subagent-driven-development's `references/review-panel.md`). Record it in the header's `**Review:**` line; `standard` unless they asked for more or a shipped mistake would be costly.
+Your partner may name these in plain words instead. **Build** "one at a time" (carefully, safer) is model 1; "parallel" (fast, get it done quicker) is model 2. **Review** is separate: `standard` (one reviewer per task) or `panel` ("thorough", "different points of view": several reviewers with different lenses, per superpowers:subagent-driven-development's `references/review-panel.md`). Record it in the header's `**Review:**` line; `standard` unless they asked for more or a shipped mistake would be costly. A sequential plan with Review: panel runs Subagent-driven, since Native has no per-task reviewers to replace.
 
 ## Multi-Session Plans
 

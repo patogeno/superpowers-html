@@ -82,3 +82,16 @@ test('the visual-companion stub points at artifacts', () => {
   assert.match(stub, /retired/i);
   assert.match(stub, /Artifact tool/);
 });
+
+test('mid-conversation mockups are scratch pages; only the design doc and prototype are committed', () => {
+  const showing = section('## Showing It');
+  assert.match(showing, /scratch/i);
+  assert.match(showing, /not committed|aren't committed/i);
+});
+
+test('a small change still gets a short design file, without forcing diagrams onto it', () => {
+  const written = section('## The Written Design');
+  assert.ok(!/goes straight to your human partner in chat/.test(written),
+    'the short design is written down, not only said in chat');
+  assert.match(written, /short design[^.]*-design\.html/i);
+});

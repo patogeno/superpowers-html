@@ -251,9 +251,10 @@ as a clickable page styled like the product, from html-artifacts'
 `templates/prototype.html`. The Screens section opens it.
 
 For a small change, the short design covers the same points in a line
-or two each and goes straight to your human partner in chat, without
-the builder check. If it changes something they'll see, show that as a
-mockup page.
+or two each, with only the sections that apply and no required
+diagrams: a short design written to `…-design.html` from the same
+template, summarized in chat, without the builder check. If it changes
+something they'll see, show that as a mockup page.
 
 **Where it goes:** in a software repo, a design with a prototype is a
 folder, `docs/superpowers/specs/YYYY-MM-DD-<topic>/index.html` plus
@@ -328,7 +329,10 @@ them with superpowers:html-artifacts.
 - **Without it:** write the files and give them their paths. Feedback
   comes in chat.
 
-The files are committed either way.
+The design doc and its prototype are committed either way.
+Mid-conversation mockups are scratch pages, written to the session's
+scratch or temp directory and not committed; what the design keeps
+becomes prototype screens.
 
 **Per question, ask: would they understand this better by seeing it?**
 Screens, layouts, flows and side-by-side designs get a page.

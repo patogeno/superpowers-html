@@ -136,3 +136,8 @@ test('the partner can opt back into the plan review gate', () => {
   const handoff = skill.slice(skill.indexOf('## Execution Handoff'));
   assert.match(handoff, /review the plan first/i);
 });
+
+test('Review: panel is honoured by every execution method', () => {
+  assert.match(skill, /panel[^.]*(Subagent-driven|subagent-driven)/, 'panel rules out Native or wires it in');
+  assert.match(teamPlans, /review-panel\.md/);
+});

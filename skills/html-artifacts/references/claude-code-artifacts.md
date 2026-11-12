@@ -27,14 +27,28 @@ Publish them as **one** artifact: `file_path` is `index.html`, and
 
 - **First publish:** pass `icon` (one generic word, such as `blueprint`)
   and a one-sentence `description`. Keep the page's `<title>` a name.
-- **Every revision:** edit the files, then publish the **same file path**
-  again, with `files` again when the prototype changed. That republishes
-  to the same URL, so the link your partner already has shows the new
-  version. Omit `icon` on a republish.
+- **Every revision in this conversation:** edit the files, then publish
+  the **same file path** again, with `files` again when the prototype
+  changed. That republishes to the same URL, so the link your partner
+  already has shows the new version. Omit `icon` on a republish.
+- **Keep the link.** Write the artifact's link where the next session
+  will find it: the plan's `**Design:**` line for the design, the
+  roadmap's `**Report:**` line for a run report.
+- **A revision from an earlier conversation** (a new session, a resumed
+  roadmap, a design issue found while planning): the same file path
+  would publish a *new* artifact with a new link. Read the artifact at
+  the saved link first, then publish with that link as `url`.
 - **Mid-conversation visuals** (a single screen, two layout options) are
   the same thing at a smaller scale: one page, published when it helps,
   linked in your message. You don't need to ask first; a link is cheap to
-  ignore.
+  ignore. Write them as **scratch pages** in the session's scratch or
+  temp directory, not the repo: they aren't committed. What the design
+  keeps becomes prototype screens.
+- **These are plain HTML pages** published by `file_path`. When the
+  Artifact tool steers you toward a quickstart, a design-guidance skill,
+  or a document type, the templates here and the canonical stylesheet
+  win for these pages. If your partner says something is sensitive,
+  don't publish it; write the files and give paths.
 
 Pages follow the artifact page rules the Artifact tool gives you (title,
 theme tokens with both dark-mode guards, an explicit `body` background,
