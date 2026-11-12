@@ -174,9 +174,8 @@ that implementer. Single-file mechanical fixes also take the cheapest tier.
 - Touches multiple files with integration concerns → standard model
 - Requires design judgment or broad codebase understanding → most capable model
 
-Dispatching on Anthropic models? `claude-5-models.md` maps these tiers to
-Claude Haiku 4.5 / Sonnet 5 / Opus 5 / Fable 5, and covers what changes in
-dispatch prompts when the subagents are Claude 5 models.
+On Anthropic models, `references/claude-5-models.md` maps these tiers to
+Claude 5 models and covers the dispatch-prompt changes.
 
 ## The Task Loop
 
