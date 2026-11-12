@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title><!-- TITLE: feature name · Prototype --></title>
+<style>
+/* A clickable prototype styled like the PRODUCT, not like the plugin's spec.
+   Replace these tokens with the product's own palette and type; keep the shape:
+   every color is a token, dark values appear twice (OS preference unless the
+   viewer chose light, and an explicit dark choice), body has a background. */
+:root{
+  --bg:#f3f4f6;--surface:#ffffff;--line:#d9dce1;--fg:#1c1f24;--muted:#646b75;--accent:#2f6fd6;--on-accent:#ffffff;
+  --font:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121417;--surface:#1c1f24;--line:#353a43;--fg:#eceef1;--muted:#a1a8b3;--accent:#8ab0ff;--on-accent:#0f1830;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417;--surface:#1c1f24;--line:#353a43;--fg:#eceef1;--muted:#a1a8b3;--accent:#8ab0ff;--on-accent:#0f1830;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{font-family:var(--font);color:var(--fg);line-height:1.5;font-size:15px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:16px 32px}
+/* One screen at a time. A phone-first product keeps max-width near 420px;
+   a desktop product widens it and stacks its columns below ~640px. */
+.wrap{max-width:420px;margin-inline:auto;display:flex;flex-direction:column;gap:14px}
+.back{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;align-self:flex-start;background:var(--fg);color:var(--bg);
+  border-radius:99px;padding:6px 12px;font-size:12px;font-weight:650;text-decoration:none}
+.screen{background:var(--surface);border:1px solid var(--line);border-radius:18px;min-height:520px;overflow:hidden;display:flex;flex-direction:column}
+.bar{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:650}
+.body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;min-width:0}
+.btn{border:none;border-radius:12px;padding:12px;font:inherit;font-weight:650;background:var(--accent);color:var(--on-accent);text-align:center;text-decoration:none;cursor:pointer}
+nav.screens{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+nav.screens a{flex:0 0 auto;font-size:12px;padding:6px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted);text-decoration:none;background:var(--surface)}
+nav.screens a[aria-current="page"]{border-color:var(--accent);color:var(--accent);font-weight:650}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- index.html is the spec: the artifact serves its main page under that
+       name, and the topic folder keeps it under that name on disk. -->
+  <a class="back" href="index.html">← Back to spec</a>
+
+  <!-- One <section data-screen> per screen. Ids: ASCII letters, digits and
+       hyphens, never settings, sidebar, customize, upgrade, downloads or
+       comment-* (claude.ai reserves them). The spec links prototype.html#id. -->
+  <section class="screen" id="home" data-screen>
+    <div class="bar"><!-- product name / screen title --></div>
+    <div class="body">
+      <!-- the screen, with real-looking example content -->
+      <a class="btn" href="#detail"><!-- an action that goes somewhere --></a>
+    </div>
+  </section>
+
+  <section class="screen" id="detail" data-screen hidden>
+    <div class="bar"><!-- screen title --></div>
+    <div class="body">
+      <a class="btn" href="#home"><!-- back to the first screen --></a>
+    </div>
+  </section>
+
+  <nav class="screens" aria-label="Screens">
+    <a href="#home">Home</a><a href="#detail">Detail</a>
+  </nav>
+</div>
+<script>
+(function(){
+  var screens=[].slice.call(document.querySelectorAll('[data-screen]'));
+  var links=[].slice.call(document.querySelectorAll('nav.screens a'));
+  function show(){
+    var id=(location.hash||'').slice(1);
+    if(!screens.some(function(s){return s.id===id;})) id=screens[0].id;
+    screens.forEach(function(s){s.hidden=s.id!==id;});
+    links.forEach(function(a){if(a.getAttribute('href')==='#'+id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',show);show();
+})();
+</script>
+</body>
+</html>

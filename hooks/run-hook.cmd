@@ -15,43 +15,74 @@ if "%~1"=="" (
     exit /b 1
 )
 
+setlocal
 set "HOOK_DIR=%~dp0"
+set "BASH_EXE="
 
-REM Try Git for Windows bash in standard locations
-if exist "C:\Program Files\Git\bin\bash.exe" (
-    "C:\Program Files\Git\bin\bash.exe" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-    exit /b %ERRORLEVEL%
-)
-if exist "C:\Program Files (x86)\Git\bin\bash.exe" (
-    "C:\Program Files (x86)\Git\bin\bash.exe" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-    exit /b %ERRORLEVEL%
-)
+REM Git for Windows in its standard system-wide locations
+if exist "C:\Program Files\Git\bin\bash.exe" set "BASH_EXE=C:\Program Files\Git\bin\bash.exe"
+if not defined BASH_EXE if exist "C:\Program Files (x86)\Git\bin\bash.exe" set "BASH_EXE=C:\Program Files (x86)\Git\bin\bash.exe"
 
-REM Try bash on PATH (e.g. user-installed Git Bash, MSYS2, Cygwin)
-where bash >nul 2>nul
-if %ERRORLEVEL% equ 0 (
-    bash "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-    exit /b %ERRORLEVEL%
-)
+REM Per-user Git for Windows install (no admin rights needed). The defined
+REM check matters: with LOCALAPPDATA unset the path would collapse to
+REM \Programs\Git\... on the current drive, where any user can create it.
+if not defined BASH_EXE if defined LOCALAPPDATA if exist "%LOCALAPPDATA%\Programs\Git\bin\bash.exe" set "BASH_EXE=%LOCALAPPDATA%\Programs\Git\bin\bash.exe"
 
-REM Try bash bundled with Git, even in a non-standard install dir (e.g. D:\Tools\Git).
-REM where git -> ...\Git\cmd\git.exe; bash sits beside it at ...\Git\bin\bash.exe.
-for /f "delims=" %%G in ('where git 2^>nul') do (
-    if exist "%%~dpG..\bin\bash.exe" (
-        "%%~dpG..\bin\bash.exe" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-        exit /b
-    )
-)
+REM bash on PATH (MSYS2, Cygwin, a non-default Git install). where.exe is
+REM called by full path and with $PATH: so neither it nor bash can come from
+REM the current directory. The filters use for-variable modifiers, which never
+REM re-expand the path, and skip extensionless matches and the WSL launchers
+REM (System32, Sysnative, the Store alias in WindowsApps), which fail when no
+REM Linux distro is installed.
+if not defined BASH_EXE if defined SystemRoot for /f "delims=" %%B in ('"%SystemRoot%\System32\where.exe" $PATH:bash 2^>nul') do if not defined BASH_EXE if not "%%~xB"=="" if /i not "%%~dpB"=="%SystemRoot%\System32\" if /i not "%%~dpB"=="%SystemRoot%\Sysnative\" if /i not "%%~dpB"=="%LOCALAPPDATA%\Microsoft\WindowsApps\" set "BASH_EXE=%%B"
+
+REM Bash bundled with Git, even in a non-standard install dir (e.g. D:\Tools\Git)
+REM where only Git\cmd is on PATH: git.exe sits in ...\Git\cmd, bash in ...\Git\bin.
+REM where.exe is called by full path for the same reason as above.
+if not defined BASH_EXE if defined SystemRoot for /f "delims=" %%G in ('"%SystemRoot%\System32\where.exe" $PATH:git 2^>nul') do if not defined BASH_EXE if exist "%%~dpG..\bin\bash.exe" set "BASH_EXE=%%~dpG..\bin\bash.exe"
 
 REM No bash found. Warn on stderr instead of failing silently: a silent skip
 REM means the superpowers bootstrap never loads and skills don't auto-trigger,
 REM which is very hard to diagnose. The session still starts.
-echo superpowers: bash not found; SessionStart hook skipped, so skills will not auto-trigger. Install Git for Windows, or add bash to PATH. See README "Windows: skills not auto-triggering".>&2
-exit /b 0
+if not defined BASH_EXE (
+    echo superpowers: bash not found; SessionStart hook skipped, so skills will not auto-trigger. Install Git for Windows, or add bash to PATH. See README "Windows: skills not auto-triggering".>&2
+    exit /b 0
+)
+
+REM Run bash outside any parenthesized block: cmd expands %ERRORLEVEL%
+REM inside a block when it parses the block, which would lose the hook's
+REM exit code.
+"%BASH_EXE%" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
+exit /b %ERRORLEVEL%
 CMDBLOCK
 
 # Unix: run the named script directly
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Splits $0 on its last / or \ (cmd passes Windows paths) instead of calling
+# dirname, and uses $BASH (bash's own absolute path, always set once bash is
+# running) instead of a PATH lookup for bash, so this keeps working when
+# Claude Code spawns the SessionStart hook with a broken/empty PATH
+# (anthropics/claude-code#43127).
+# No $(cd ... && pwd) subshell: a fork costs tens of milliseconds under Git
+# Bash on Windows, and a relative directory is enough for the exec below.
+case "$0" in
+  */*|*\\*) SCRIPT_DIR="${0%[/\\]*}" ;;
+  *) SCRIPT_DIR="." ;;
+esac
 SCRIPT_NAME="$1"
 shift
-exec bash "${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"
+
+# Without bash installed, the harness runs this file with zsh or sh and $BASH
+# is unset (#2503). session-start runs unchanged under zsh, so fall back to
+# it, and otherwise exit quietly like the Windows half: the plugin still
+# works, just without SessionStart context injection.
+if [ -n "${BASH:-}" ]; then
+  shell="$BASH"
+elif command -v bash >/dev/null 2>&1; then
+  shell="bash"
+elif command -v zsh >/dev/null 2>&1; then
+  shell="zsh"
+else
+  exit 0
+fi
+
+exec "$shell" "${SCRIPT_DIR}/${SCRIPT_NAME}" "$@"

@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const DIR = 'skills/subagent-driven-development';
 const skill = readFileSync(`${DIR}/SKILL.md`, 'utf8');
-const tiers = readFileSync(`${DIR}/claude-5-models.md`, 'utf8');
+const tiers = readFileSync(`${DIR}/references/claude-5-models.md`, 'utf8');
 
 test('SKILL.md keeps Model Selection vendor-neutral and points at the mapping', () => {
   assert.match(skill, /## Model Selection/);
@@ -12,8 +12,8 @@ test('SKILL.md keeps Model Selection vendor-neutral and points at the mapping', 
   for (const tier of ['cheap model', 'standard model', 'most capable model']) {
     assert.ok(skill.includes(tier), `Model Selection lost the neutral tier: ${tier}`);
   }
-  assert.match(skill, /claude-5-models\.md/, 'SKILL.md must point at the tier mapping');
-  assert.ok(existsSync(`${DIR}/claude-5-models.md`), 'the pointed-at mapping must exist');
+  assert.match(skill, /references\/claude-5-models\.md/, 'SKILL.md must point at the tier mapping');
+  assert.ok(existsSync(`${DIR}/references/claude-5-models.md`), 'the pointed-at mapping must exist');
 });
 
 test('the mapping covers every neutral tier with a current Claude model', () => {
@@ -41,7 +41,7 @@ test('the mapping says to steer thinking with effort, not prompt text', () => {
   assert.match(tiers, /Haiku 4\.5.*effort/s);
 });
 
-const authoring = 'skills/writing-skills/claude-5-skill-authoring.md';
+const authoring = 'skills/writing-skills/references/claude-5-skill-authoring.md';
 
 test('writing-skills points at the Claude 5 skill-authoring reference', () => {
   const ws = readFileSync('skills/writing-skills/SKILL.md', 'utf8');

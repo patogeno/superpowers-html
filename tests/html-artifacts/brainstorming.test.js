@@ -2,49 +2,96 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const skill = readFileSync('skills/brainstorming/SKILL.md', 'utf8');
+const DIR = 'skills/brainstorming';
+const skill = readFileSync(`${DIR}/SKILL.md`, 'utf8');
+const section = (heading) => {
+  const start = skill.indexOf(heading);
+  assert.ok(start >= 0, `missing section ${heading}`);
+  const next = skill.indexOf('\n## ', start + heading.length);
+  return skill.slice(start, next < 0 ? undefined : next);
+};
+const gate = skill.slice(skill.indexOf('<HARD-GATE>'), skill.indexOf('</HARD-GATE>'));
 
-test('brainstorming references html-artifacts as a REQUIRED SUB-SKILL', () => {
-  assert.match(skill, /REQUIRED SUB-SKILL/);
-  assert.match(skill, /html-artifacts/);
+// Upstream's rebuilt brainstorming is the base. These tests pin the fork's
+// edits on top of it: the design doc is a layered HTML page, visuals are
+// shown (published on Claude Code), and approving it is the last gate.
+
+test('the written design is HTML authored with html-artifacts, never Markdown', () => {
+  const written = section('## The Written Design');
+  assert.match(written, /REQUIRED SUB-SKILL[^\n]*html-artifacts/);
+  assert.match(written, /specs\/YYYY-MM-DD-<topic>\/index\.html/);
+  assert.match(written, /prototype\.html/);
+  assert.match(written, /specs\/YYYY-MM-DD-<topic>-design\.html/);
+  assert.ok(!/-design\.md\b/.test(skill), 'must not still instruct writing the spec as .md');
 });
 
-test('brainstorming writes the spec as HTML, not Markdown', () => {
-  assert.match(skill, /specs\/YYYY-MM-DD-<topic>-design\.html/);
-  assert.ok(!/-design\.md\b/.test(skill),
-    'must not still instruct writing the spec as .md');
+test('the written design leads with the experience and folds the technical design', () => {
+  const written = section('## The Written Design');
+  for (const part of [/what users can do/i, /screens/i, /flows?/i]) assert.match(written, part);
+  assert.match(written, /technical design/i);
+  assert.match(written, /folded|collapsed|closed/i);
+  assert.match(written, /architecture/i);
 });
 
-test('brainstorming references the spec template and self-containment', () => {
-  assert.match(skill, /templates\/spec\.html/);
-  assert.match(skill, /self-contained/i);
+test('a project with screens gets a clickable prototype of each key screen', () => {
+  assert.match(skill, /prototype/i);
+  assert.match(skill, /each key screen/i);
 });
 
-test('brainstorming emphasizes inline SVG diagrams and tables in the spec', () => {
-  assert.match(skill, /<svg>/);
-  assert.match(skill, /<table>/);
+test('showing it publishes with the Artifact tool when present, else writes local files', () => {
+  const showing = section('## Showing It');
+  assert.match(showing, /Artifact tool/);
+  assert.match(showing, /references\/claude-code-artifacts\.md/);
+  assert.match(showing, /local file|on disk|their paths/i);
+  assert.match(showing, /same link|same path/i);
 });
 
-// The written spec is the last human gate before implementation; the plan is
-// accepted by default. So the design stage carries the visual weight.
+test('visuals are shown without an offer; the visual companion is gone', () => {
+  assert.ok(!/## Visual Companion/.test(skill), 'Visual Companion section must be replaced');
+  assert.ok(!/Want me to open a browser tab/.test(skill), 'no companion offer message');
+  assert.ok(!/start-server|visual-companion\.md/.test(skill), 'the companion server is never started');
+});
 
-test('architectural path: spec approval is the last gate, plan review is not required', () => {
-  const gate = skill.slice(skill.indexOf('<HARD-GATE>'), skill.indexOf('</HARD-GATE>'));
-  assert.ok(!/reviews the written implementation plan/.test(gate),
-    'plan review should no longer be a gate');
+test('feedback reads artifact comments together with the chat note', () => {
+  const showing = section('## Showing It');
+  assert.match(showing, /comment/i);
+  assert.match(showing, /chat/i);
+});
+
+test('untouched parts count as approved only on a go-ahead', () => {
+  assert.match(skill, /go-ahead/i);
+  assert.match(skill, /comments[^.]*(by itself|alone)[^.]*feedback, not approval/i);
+});
+
+test('approving the design doc and prototype is the last human gate', () => {
   assert.match(gate, /last human gate|last gate/i);
+  assert.match(gate, /prototype/i);
   assert.match(gate, /design issue/i);
+  assert.match(gate, /superpowers:writing-plans/);
 });
 
-test('the spec review request tells the partner it is the last checkpoint', () => {
-  assert.match(skill, /last checkpoint before implementation/i);
+test('the builder check reads the HTML design, its technical section and the prototype', () => {
+  const prompt = readFileSync(`${DIR}/builder-check-prompt.md`, 'utf8');
+  assert.match(prompt, /HTML/);
+  assert.match(prompt, /technical design/i);
+  assert.match(prompt, /prototype/i);
 });
 
-test('every spec carries an architecture diagram and a data-flow diagram', () => {
-  assert.match(skill, /architecture diagram/i);
-  assert.match(skill, /data-flow diagram/i);
+test('the visual-companion stub points at artifacts', () => {
+  const stub = readFileSync(`${DIR}/visual-companion.md`, 'utf8');
+  assert.match(stub, /retired/i);
+  assert.match(stub, /Artifact tool/);
 });
 
-test('UI-facing architectural work gets a mockup per key screen by default', () => {
-  assert.match(skill, /mockup for each key screen/i);
+test('mid-conversation mockups are scratch pages; only the design doc and prototype are committed', () => {
+  const showing = section('## Showing It');
+  assert.match(showing, /scratch/i);
+  assert.match(showing, /not committed|aren't committed/i);
+});
+
+test('a small change still gets a short design file, without forcing diagrams onto it', () => {
+  const written = section('## The Written Design');
+  assert.ok(!/goes straight to your human partner in chat/.test(written),
+    'the short design is written down, not only said in chat');
+  assert.match(written, /short design[^.]*-design\.html/i);
 });

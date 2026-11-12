@@ -18,9 +18,9 @@ test('spec template has no external refs before or after inlining', () => {
   assert.deepEqual(findUnreplacedMarkers(inlined), []);
 });
 
-test('spec template is a full HTML document', () => {
-  assert.match(tpl, /<!DOCTYPE html>/i);
-  assert.match(tpl, /<html[ >]/i);
+test('spec template is a page fragment (the artifact viewer wraps it)', () => {
+  assert.ok(!/<!DOCTYPE html>/i.test(tpl));
+  assert.ok(!/<html[ >]/i.test(tpl));
 });
 
 test('the reverted plan/roadmap/learnings templates are gone', () => {

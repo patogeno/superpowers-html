@@ -55,16 +55,47 @@ test('SKILL.md states the multi-session judgment and defers the layout', () => {
 test('multi-session-plans.md keeps the structure in Markdown', () => {
   assert.match(multiSession, /docs\/superpowers\/plans\/<feature>\//);
   assert.match(multiSession, /roadmap\.md/);
-  assert.match(multiSession, /learnings\.md/);
   assert.match(multiSession, /Session plans are self-contained/);
   assert.ok(!/roadmap\.html/.test(multiSession), 'roadmap.html reference should be removed');
   assert.ok(!/learnings\.html/.test(multiSession), 'learnings.html reference should be removed');
 });
 
-test('multi-session-plans.md documents the four-part learnings log entry', () => {
-  for (const part of ['What happened', 'Deviations', 'Surprises', 'Follow-ups']) {
-    assert.ok(multiSession.includes(part), `missing learnings part: ${part}`);
-  }
+test('learnings are split by topic with an index, current truths, and a feedback file', () => {
+  assert.match(multiSession, /learnings\/index\.md/);
+  assert.match(multiSession, /Current truths/);
+  assert.match(multiSession, /feedback\.md/);
+  assert.match(multiSession, /\*\*Read learnings:\*\*/, 'each session plan names the topics its lead reads');
+  assert.match(multiSession, /150 lines/, 'a long topic file is condensed');
+  assert.ok(!/^\s*learnings\.md\s/m.test(multiSession), 'the single learnings.md log is gone');
+});
+
+test('the roadmap records Run / Build / Review and a run log', () => {
+  assert.match(multiSession, /\*\*Run:\*\*/);
+  assert.match(multiSession, /\*\*Build:\*\*/);
+  assert.match(multiSession, /\*\*Review:\*\*/);
+  assert.match(multiSession, /run log/i);
+  assert.match(multiSession, /staged/);
+  assert.match(multiSession, /autonomous/);
+});
+
+test('a multi-session plan is run by running-multi-session-plans, starting staged', () => {
+  const handoff = skill.slice(skill.indexOf('## Execution Handoff'));
+  assert.match(handoff, /superpowers:running-multi-session-plans/);
+  assert.match(handoff, /staged/);
+  assert.match(handoff, /Run: .*Build: .*Review: /);
+});
+
+test('Build maps onto the execution models and Review offers a panel', () => {
+  assert.match(skill, /one at a time/);
+  assert.match(skill, /parallel/);
+  assert.match(skill, /panel/);
+  assert.match(skill, /\*\*Review:\*\*/);
+});
+
+test('the plan links the design and points UI tasks at prototype screens', () => {
+  assert.match(skill, /\*\*Design:\*\*/);
+  assert.match(skill, /Prototype: `[^`]*prototype\.html#/);
+  assert.ok(!/mockup-<name>\.html/.test(skill), 'old per-mockup file convention should be gone');
 });
 
 test('every sibling Markdown file writing-plans points at exists', () => {
@@ -104,4 +135,9 @@ test('the handoff stops only for design issues, and names them', () => {
 test('the partner can opt back into the plan review gate', () => {
   const handoff = skill.slice(skill.indexOf('## Execution Handoff'));
   assert.match(handoff, /review the plan first/i);
+});
+
+test('Review: panel is honoured by every execution method', () => {
+  assert.match(skill, /panel[^.]*(Subagent-driven|subagent-driven)/, 'panel rules out Native or wires it in');
+  assert.match(teamPlans, /review-panel\.md/);
 });

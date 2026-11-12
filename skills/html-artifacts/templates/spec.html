@@ -1,21 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><!-- TITLE: Design Spec — Feature --></title>
+<title><!-- TITLE: the feature's name, two to four words --></title>
 <style>/* INLINE_STYLESHEET */</style>
-</head>
-<body class="layout">
+<!-- A page fragment, not a full document: the claude.ai artifact viewer wraps
+     the main page in its own html/head/body, and browsers open the fragment
+     from disk too. The prototype (prototype.html) is a full document. -->
+<div class="layout">
 <nav class="sidebar">
   <div class="doc-label">Design Spec</div>
   <h1><!-- FEATURE NAME --></h1>
-  <div class="toc"><!-- TOC: <a href="#id"><span class="num">1</span>Section</a> per H2 --></div>
+  <div class="toc">
+    <a href="#purpose"><span class="num">1</span>What it's for</a>
+    <a href="#features"><span class="num">2</span>What you can do</a>
+    <a href="#screens"><span class="num">3</span>Screens</a>
+    <a href="#flows"><span class="num">4</span>How it flows</a>
+    <a href="#approaches"><span class="num">5</span>Approaches</a>
+    <a href="#technical"><span class="num">6</span>Technical design</a>
+  </div>
 </nav>
 <main class="main">
-  <p class="lede"><!-- One-sentence summary of what this builds --></p>
-  <!-- SECTIONS: each is <h2 id="..."> + prose. Use diagrams (inline SVG in
-       a .fig wrapper) and <table> for architecture, comparisons, data models. -->
+  <p class="lede"><!-- Two sentences: what this builds and for whom, in the user's words --></p>
+
+  <h2 id="purpose">1. What it's for</h2>
+  <!-- The why, goals, non-goals, and what would make it a failure. -->
+
+  <h2 id="features">2. What you can do</h2>
+  <!-- <ul class="feat"><li><b>Capability, in the user's words</b><span>One line,
+       then <a href="prototype.html#screen-id">See it</a></span></li>…</ul> -->
+
+  <h2 id="screens">3. Screens</h2>
+  <!-- <div class="cards"> one .card per key screen (and the empty/error states
+       that change what users see): a .thumb sketch, <h3>, one line, and
+       <a class="open" href="prototype.html#screen-id">Open in prototype →</a>.
+       Omit the section when the work has no screens. -->
+
+  <h2 id="flows">4. How it flows</h2>
+  <!-- High-level solution flow(s) as inline SVG in <div class="fig">: the steps
+       a user or the solution moves through, for intent, not implementation. -->
+
+  <h2 id="approaches">5. Approaches</h2>
+  <!-- <table>: the approaches considered, what each trades off, which was picked. -->
+
+  <h2 id="technical">6. Technical design</h2>
+  <details class="tech">
+    <summary>Show technical design <span class="hint">· architecture, data, and the calls Claude made</span></summary>
+    <!-- Architecture block diagram (inline SVG), data model or interfaces
+         (<table>), what's left to the builder, and each technical decision you
+         made, tagged <span class="yours">Claude's call</span>. -->
+  </details>
 </main>
-</body>
-</html>
+</div>

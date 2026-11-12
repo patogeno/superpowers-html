@@ -57,33 +57,33 @@ If you're using Superpowers in enterprise and could benefit from commercial supp
 
 ## What this fork changes (superpowers-html)
 
-Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **what a human reads and reviews** — the design **spec** renders as a polished, self-contained HTML document that's easier to navigate and react to, while implementation plans stay canonical Markdown and are accepted by default — your review time goes into the spec, its mockups and diagrams, not the plan. The agent-executed *code* (the brainstorm server, scripts) is left identical to upstream, which keeps the fork easy to merge.
+Upstream Superpowers produces its human-facing artifacts as Markdown. This fork keeps everything Superpowers does and changes **what you read and review**. Designs show you the experience first, as a layered HTML spec with a clickable prototype that you can open on a PC or a phone, and on Claude Code they are published as Claude artifacts you can comment on. Plans stay canonical Markdown and are accepted by default, so your review time goes into the design. Big plans run as a roadmap of sessions, staged or overnight. The agent-executed *code* (the brainstorm server, scripts) is left identical to upstream, which keeps the fork easy to merge.
 
 **What's added:**
 
-- **A new `html-artifacts` skill** — one canonical, zero-dependency stylesheet plus the spec HTML template and authoring rules, with a small Node test suite that enforces self-containment and responsiveness. It's the shared design system the design spec inlines.
-- **`brainstorming` emits an HTML design spec.** The spec is written to `…-design.html` (built from `templates/spec.html`) with at least one hand-authored inline **SVG** diagram and at least one semantic **table**, instead of `…-design.md`.
-- **Mockups instead of a visual companion.** The fork retires upstream's browser-based visual companion (no server, no offer) and conveys visual design as static, self-contained **HTML mockups** — schematic wireframes inline in the spec, and higher-fidelity mockups *styled like the product being designed* spun out to their own files in the topic folder, linked from the spec and the plan. The companion's server and tests stay on disk, untouched, so upstream syncs stay clean.
-- **Design is the last human gate; plans are accepted by default.** Approving the written spec and its mockups is the final checkpoint before implementation. `writing-plans` then writes the plan, posts a three-line summary, and starts executing without waiting. It stops again only for a **design issue** it surfaces: an ambiguous or contradictory requirement, one that can't be met, or a UI/behaviour decision the spec never made. Each of these comes back to you as a design question, with an updated mockup where it's visual. Say *"let me review the plan first"* to restore the plan gate. To make that review worthwhile, every spec carries an architecture diagram and a data-flow diagram, and UI-facing work gets a mockup for each key screen.
-- **`writing-plans` picks an execution model.** It chooses **sequential subagents** (a fresh subagent per task, reviewed between tasks) or a **team of specialists** (independent work-streams with a dependency graph, each task tagged with a specialist role inferred from the work itself, dispatched concurrently) and records the choice, plus the reason for it, in the plan header. Name a model up front to override it. The plan itself stays canonical **Markdown**.
-- **A Markdown multi-session workflow.** For work too large for one session, `writing-plans` (by its own judgment) produces a per-feature folder of Markdown files: a **roadmap** (`roadmap.md`), self-contained **session plans** (`session-NN-<name>.md`), and a cross-session **learnings log** (`learnings.md` — What happened · Deviations · Surprises · Follow-ups).
-- **Claude 5 tuning.** A `claude-5-models.md` reference maps `subagent-driven-development`'s deliberately vendor-neutral tiers (cheap / standard / most capable) onto **Haiku 4.5 · Sonnet 5.5 · Opus 5.5 · Fable 5.1** (with effort defaults; steer thinking with effort, not prompt text), and records what changes in dispatch prompts on Claude 5 — don't add verification instructions, don't add "delegate more" guidance, state scope as a boundary, never cap a reviewer to high-severity findings. The neutral vocabulary is untouched, so other harnesses are unaffected. The fork's own `writing-plans` additions also moved their minority-path detail (team plans, multi-session layout) into sibling files, so a planning session loads them only when they apply. `writing-skills` gains `claude-5-skill-authoring.md`, which condenses Anthropic's official Claude 5 prompting guidance (calibrated emphasis, reasons over rules, bounded scope, effort over prose) with source links.
-- **Artifacts read on a phone.** The canonical stylesheet is responsive: below 900px the spec's two-column shell collapses and its table of contents becomes a scrollable chip bar, wide tables and code blocks scroll inside themselves instead of dragging the page sideways, and a diagram too wide to shrink legibly (`<div class="fig wide">`) scrolls at a readable size. Mockups carry the same discipline in their own theme. `findResponsiveDeficiencies` enforces the mechanical parts.
+- **Experience-first designs.** `brainstorming` (upstream's rebuilt skill, with the fork's edits) writes the design as a layered HTML page: what it's for, what users can do, the screens, how it flows, the approaches, and then the **technical design folded** at the bottom, where you open it only when you want to. Work with screens also gets a **clickable prototype** styled like the product. They sit together in the topic folder (`docs/superpowers/specs/YYYY-MM-DD-<topic>/index.html` + `prototype.html`).
+- **Claude artifacts on Claude Code.** Whenever something is easier to see than read, it is published as a private claude.ai artifact and linked in chat, with no "want me to show you?" offer. The spec and its prototype go out as one artifact, every revision keeps the same link, and you can comment on either page or write a general note in chat; Claude reads both. On other harnesses the same pages are written locally. Upstream's browser visual companion is retired (its server stays on disk, unused).
+- **A new `html-artifacts` skill.** Templates for the layered spec, the prototype, and the run report; one canonical, zero-dependency stylesheet (light/dark with the artifact viewer's theme guards, responsive down to a phone); and a reference for publishing and reading comments on Claude Code. A Node test suite enforces self-containment and responsiveness.
+- **Design is the last human gate; plans are accepted by default.** Approving the design and its prototype is the final checkpoint. `writing-plans` writes the plan, posts a short summary, and starts executing. It stops again only for a **design issue**: an ambiguous or contradictory requirement, one that can't be met, or a user-visible decision the design never made. Say *"let me review the plan first"* to restore the plan gate.
+- **Build and Review, in plain words.** `writing-plans` records **Build** (*one at a time*, or *parallel* as a team of specialists) and **Review** (*standard*, or a *panel* of reviewers with user-experience, correctness, security and test lenses) in the plan header. Say *"fast"* or *"thorough"* to change them.
+- **Multi-session runs, staged or overnight.** For work too large for one session, `writing-plans` produces a roadmap folder and the new **`running-multi-session-plans`** skill runs it. Each session gets a fresh lead with a clean context. **Staged** (the default) stops after each session with a report for you to answer; **autonomous** runs every session back to back and leaves a night report. Switch any time: *"go autonomous until it's done"*, *"stop after this session"*. Calls made without you take the option easiest to undo and are flagged, hard ones get a two-agent second opinion first, and anything outward (push, PR, deploy, deletes, sends) is parked for you in either mode.
+- **Learnings split by topic.** A roadmap's `learnings/` folder holds an index, one file per topic opening with its *current truths*, and a `feedback.md` of what you told the run. Each session plan names the topics its lead reads, so no session reads everything, and long topic files are condensed.
+- **Claude 5 tuning.** `subagent-driven-development/references/claude-5-models.md` maps the vendor-neutral model tiers onto Haiku 4.5 · Sonnet 5.5 · Opus 5.5 · Fable 5.1 and records what changes in dispatch prompts on Claude 5. `writing-skills/references/claude-5-skill-authoring.md` condenses Anthropic's Claude 5 prompting guidance, with source links.
+- **Windows hook fallback.** On top of upstream's Windows bash discovery, `run-hook.cmd` also finds the bash beside a `git` on `PATH` (a Git install in a non-standard folder), and warns on stderr instead of failing silently when there's no bash at all.
 
-**Principles:** the design spec is a single self-contained HTML file — no CDNs, no build step, no external resources; it reads on a desktop, a tablet, and a phone; diagrams are hand-authored inline SVG; mockups reuse that self-containment and responsiveness discipline but carry the product's own look; and implementation plans stay canonical Markdown so execution skills read and tick them directly.
+**Principles:** every page is self-contained HTML (no CDNs, no build step), reads on a desktop, a tablet and a phone in light and dark, and draws diagrams as inline SVG. Prototypes and mockups carry the product's own look. Implementation plans, roadmaps and learnings stay canonical Markdown so execution skills read and tick them directly.
 
 | Artifact | Upstream | This fork |
 |---|---|---|
-| Design spec | Markdown | **HTML** (inline SVG + tables) |
-| Visual mockups | Browser visual companion (live server) | **Static self-contained HTML** (inline schematic, or product-styled spin-out) |
+| Design doc | Markdown | **Layered HTML**: experience first, technical design folded |
+| Visuals | Browser visual companion (live server, offered) | **Clickable prototype + mockup pages**, published as Claude artifacts on Claude Code, local files elsewhere |
+| Feedback on the design | chat | chat **and** artifact comments |
+| Plan approval | you review the plan | **accepted by default**; stops only for design issues |
+| Build / Review settings | — | **one at a time / parallel · standard / panel** |
+| Multi-session roadmap | — | **staged or autonomous runs**, one run report, switch any time |
+| Learnings | — | **split by topic** with current truths and your feedback |
 | Implementation plan | Markdown | Markdown (canonical) |
-| Multi-session roadmap / learnings log | — | **Markdown** |
-| Plan approval | you review the plan and pick a method | **accepted by default**; stops only for design issues |
-| Execution model choice (sequential subagents / team of specialists) | — | **chosen at planning time** |
-| Claude 5 model-tier mapping + dispatch guidance | — | **`claude-5-models.md`** (additive; neutral tiers unchanged) |
-| Artifact rendering on phone / tablet | desktop-width Markdown render | **responsive** (collapsing shell, chip TOC, self-scrolling tables and diagrams) |
 | Agent-executed server/scripts | shipped | unchanged (kept, not offered) |
-| Agent-only / execution skills | Markdown | unchanged |
 
 > Why HTML? For a human–AI collaborative *output* like the design spec, HTML gives better information density, navigability, and diagrams/tables — making the work legible enough that you actually want to read it. The win is at the review layer, not the agent-instruction layer.
 
@@ -199,8 +199,9 @@ Install Superpowers as a plugin from this repository:
 agy plugin install https://github.com/obra/superpowers
 ```
 
-Antigravity runs the plugin's session-start hook, so Superpowers is active from
-the first message. Reinstall with the same command to update.
+Antigravity lists each installed skill's description, and the description of
+the `using-superpowers` skill prompts the model to load that skill at the start
+of a conversation. Reinstall with the same command to update.
 
 ### Codex App
 
@@ -447,7 +448,7 @@ After installing, start a fresh Claude Code session so the hook runs again.
 
 ## The Basic Workflow
 
-1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
+1. **brainstorming** - Activates before building anything. Draws out what you actually want, and why, through questions that get you describing it, then plays its understanding back for correction. Small changes get agreed in chat; projects get a written design document a builder could plan from.
 
 2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
 
@@ -490,9 +491,11 @@ Superpowers is built by [Jesse Vincent](https://blog.fsck.com) and the rest of t
 - **diagnosing-superpowers** - Work out what went wrong in a session, with evidence; export a scrubbed bundle or file an issue
 
 **Collaboration** 
-- **brainstorming** - Socratic design refinement
+- **brainstorming** - Drawing out intent before building
 - **writing-plans** - Detailed implementation plans
 - **executing-plans** - Inline plan execution: one context, one final review
+- **running-multi-session-plans** - Runs a multi-session roadmap, staged or autonomous, with a fresh lead per session (fork)
+- **html-artifacts** - Layered design specs, clickable prototypes and run reports, published as Claude artifacts on Claude Code (fork)
 - **dispatching-parallel-agents** - Concurrent subagent workflows
 - **requesting-code-review** - Pre-review checklist
 - **receiving-code-review** - Responding to feedback
@@ -515,13 +518,13 @@ Read [the original release announcement](https://blog.fsck.com/2025/10/09/superp
 
 ## Contributing
 
-The general contribution process for Superpowers is below. Keep in mind that we don't generally accept contributions of new skills and that any updates to skills must work across all of the coding agents we support.
+The general contribution process for Superpowers is below. Keep in mind that we don't generally accept contributions of new skills and that any updates to skills must work across all of the coding agents we support. We also don't accept agent-written PRs that fix issues filed by someone else unless a maintainer asked for one, even when you hit the same problem; add your report to the existing issue instead.
 
 1. Fork the repository
 2. Switch to the 'dev' branch
 3. Create a branch for your work
 4. Follow the `writing-skills` skill for creating and testing new and modified skills
-5. Submit a PR, being sure to fill in the pull request template.
+5. Submit a PR, filling in every section of the pull request template, including the summary a human writes in their own words.
 
 Skill-behavior tests use the drill eval harness from [superpowers-evals](https://github.com/prime-radiant-inc/superpowers-evals/), cloned into `evals/` — see `evals/README.md` for setup. Plugin-infrastructure tests live at `tests/` and run via the relevant `run-*.sh` or `npm test`.
 

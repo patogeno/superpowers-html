@@ -30,6 +30,8 @@ Choose the execution model before writing tasks, because it changes the shape of
 
 Record the choice in the plan header's `**Execution:**` line with a one-line reason drawn from the plan, so your partner can overrule it at a glance. This choice is orthogonal to the multi-session judgment below: a multi-session feature can have each session plan written in either shape.
 
+Your partner may name these in plain words instead. **Build** "one at a time" (carefully, safer) is model 1; "parallel" (fast, get it done quicker) is model 2. **Review** is separate: `standard` (one reviewer per task) or `panel` ("thorough", "different points of view": several reviewers with different lenses, per superpowers:subagent-driven-development's `references/review-panel.md`). Record it in the header's `**Review:**` line; `standard` unless they asked for more or a shipped mistake would be costly. A sequential plan with Review: panel runs Subagent-driven, since Native has no per-task reviewers to replace.
+
 ## Multi-Session Plans
 
 **Judge the scope first.** After the spec is approved, decide whether the work fits one session. If it spans multiple subsystems, or has more tasks than a single lead can carry while keeping its context healthy, produce a **multi-session structure** — a per-feature folder with a roadmap, self-contained session plans, and a learnings log. Otherwise produce a single plan. This is your judgment — there is no manual knob.
@@ -85,7 +87,9 @@ argues from the spec, so the spec travels with it; executors read both]
 
 **Execution:** [Sequential subagents | Team of specialists] — [Subagent-driven | Native for a sequential plan] — [one-line reason]
 
-**Mockups:** [If the spec shipped mockups, link the topic folder — e.g. `docs/superpowers/specs/2026-06-17-checkout/`. Omit this line if there are none.]
+**Review:** [standard | panel]
+
+**Design:** [The design artifact's link when it was published, and the spec's topic folder — e.g. `docs/superpowers/specs/2026-06-17-checkout/`, which holds `index.html` and `prototype.html`. Omit the folder when the spec is a single file.]
 
 ## Global Constraints
 
@@ -109,14 +113,14 @@ owns the code, in that task's own step style.]
 ---
 ```
 
-## Mockups
+## Prototype
 
-If the design spec shipped HTML mockups (see `brainstorming`'s Mockups section), the plan ties them to the work so an implementer building a screen opens the right reference:
+If the design shipped a prototype (see `brainstorming`'s Written Design), the plan ties its screens to the work so an implementer building a screen opens the right reference:
 
-- Link the topic folder once in the header's `**Mockups:**` line.
-- In each UI-building task, list the specific `mockup-<name>.html` it implements under that task's `**Files:**` block (as a `Mockup:` entry). The implementer reads the mockup, not just the prose.
+- Link the design once in the header's `**Design:**` line.
+- In each UI-building task, list the screens it implements under that task's `**Files:**` block as `Prototype:` entries, by screen id: `prototype.html#<screen-id>`. The implementer clicks through those screens, not just the prose.
 
-Plans stay canonical Markdown; mockups are linked, never embedded.
+Plans stay canonical Markdown; the prototype is linked, never embedded.
 
 ## Team Plan Structure
 
@@ -133,7 +137,7 @@ Read `team-plans.md` for the work-streams format and the team execution handoff.
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
-- Mockup: `docs/superpowers/specs/<topic>/mockup-<name>.html` (UI tasks only, if the spec shipped one)
+- Prototype: `docs/superpowers/specs/<topic>/prototype.html#<screen-id>` (UI tasks only, if the design shipped one)
 
 **Interfaces:**
 - Consumes: [what this task uses from earlier tasks — exact signatures]
@@ -217,7 +221,7 @@ If you find issues, fix them inline. No need to re-review — just fix and move 
 ## Execution Handoff
 
 The plan is **accepted by default.** Your human partner approved the design
-when they approved the written spec and its mockups; the plan is how you
+when they approved the written spec and its prototype; the plan is how you
 carry out that design, not a second design review. So after saving and
 self-reviewing it, report and continue — do not wait for a reply:
 
@@ -234,6 +238,10 @@ Then invoke the execution sub-skill for the chosen method:
 
 If your partner already named a method, use theirs.
 
+**A multi-session plan** goes to **REQUIRED SUB-SKILL:** superpowers:running-multi-session-plans instead, which runs the roadmap session by session with the method above inside each session. Its report line names the run settings, staged unless your partner said otherwise:
+
+> "Roadmap saved to `docs/superpowers/plans/<feature>/` — <N> sessions. Run: staged · Build: one at a time · Review: standard. Starting session 1; say *overnight*, *fast* or *thorough* to change how it runs."
+
 ### When to stop instead: design issues
 
 Stop before executing — and only then — when writing or self-reviewing the
@@ -242,16 +250,16 @@ because it changes what they will see or what the software does. These are:
 
 - a spec requirement that is **ambiguous** — two reasonable readings that
   would build different UI or behavior;
-- two parts of the spec or its mockups that **contradict** each other;
+- two parts of the spec or its prototype that **contradict** each other;
 - a requirement that **cannot be met** as written (a platform limit, a
   conflicting constraint, a dependency that does not exist);
 - a decision the **spec never made** that affects UI or user-visible
   behavior (an unspecified screen state, an error the user will see, a
-  flow the mockups skip).
+  flow the prototype skips).
 
 Present each issue as a design question with your recommended answer —
-show it with an updated mockup or diagram when it is visual. Once your
-partner answers, update the spec (and mockups) first, then the plan, then
+show it with an updated prototype screen or diagram when it is visual. Once your
+partner answers, update the spec (and prototype) first, then the plan, then
 execute. Plan-internal choices — task boundaries, file layout, test
 names, execution method — are yours to make; don't stop for them.
 

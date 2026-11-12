@@ -69,12 +69,34 @@ in Markdown files; they are never a mockup and never go in the spec.
 - **No spec-quality gate.** `findSpecDeficiencies` (the "needs an inline SVG and a table"
   check) is a spec rule. Do not apply it to mockups — a mockup may be a single styled
   screen with neither.
-- **Inline vs. spun-out.** A schematic wireframe that fits the spec goes inline in the
-  spec (using the diagram conventions above, canonical theme). A higher-fidelity,
-  product-styled mockup is its own file, linked from the spec with a plain relative
-  `<a href>`. Once a topic has a spec plus one or more mockups, put them together in a
-  per-topic folder: `docs/superpowers/specs/YYYY-MM-DD-<topic>/` with `design.html` and
-  `mockup-<name>.html`.
+- **Inline vs. its own page.** A schematic wireframe that fits the spec goes inline in the
+  spec (using the diagram conventions above, canonical theme). A product-styled screen is
+  its own page: part of the prototype once the design is written, or a one-off mockup
+  mid-conversation.
+
+## Prototypes
+The prototype is the clickable version of the spec's key screens, styled like the
+product. Start from `templates/prototype.html`.
+
+- **One `<section data-screen id="…">` per screen**, including the empty, loading and
+  error states that change what users see. The inline script shows the screen named in
+  `location.hash` (the first one when there is none) and keeps the screen strip in sync.
+- **Navigation works.** Buttons and links that move between screens are `<a href="#id">`,
+  so your partner feels the flow. Example content is realistic, never lorem ipsum.
+- **The spec links into it** with `prototype.html#screen-id`, and its "Back to spec" chip
+  links `index.html`.
+- **Screen ids** are ASCII letters, digits and hyphens, and never one claude.ai reserves:
+  `settings`, `sidebar`, `customize`, `upgrade`, `downloads`, `comment-*`.
+- **Same discipline as a mockup:** self-contained, responsive, the product's own tokens
+  with both dark-mode guards.
+
+## Where the files go
+A topic with a prototype is a folder: `docs/superpowers/specs/YYYY-MM-DD-<topic>/` holding
+`index.html` (the spec) and `prototype.html`. The artifact serves its main page as
+`index.html`, so the same relative links work published and on disk. A spec with no
+screens stays one file, `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.html`.
+Mid-conversation mockups that the design keeps become prototype screens; the rest stay
+in the conversation.
 
 See `mockup-example.html` in this directory for a minimal, self-contained,
-product-styled mockup (illustrative only — your mockup carries *its* product's look).
+product-styled screen (illustrative only — your page carries *its* product's look).

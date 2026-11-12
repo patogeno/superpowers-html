@@ -1,0 +1,367 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artifact-First Brainstorming</title>
+<style>/* superpowers-html · canonical artifact stylesheet
+   Light/dark aware · responsive (phone → tablet → desktop) · zero dependencies
+   Inline into each artifact's <style>. */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+:root{
+  --bg-primary:#f5f5f7;--bg-secondary:#fff;--bg-tertiary:#e9e9ec;--border:#d1d1d6;
+  --text-primary:#1d1d1f;--text-secondary:#6e6e73;--text-tertiary:#aeaeb2;
+  --accent:#0071e3;--success:#34c759;--warning:#ff9f0a;--error:#ff3b30;--purple:#bf5af2;--code-bg:#f6f8fa;
+  --nav-h:0px;--side-w:270px;--fig-floor:640px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg-primary:#1d1d1f;--bg-secondary:#2d2d2f;--bg-tertiary:#3a3a3c;--border:#424245;
+  --text-primary:#f5f5f7;--text-secondary:#a1a1a6;--text-tertiary:#636366;--accent:#0a84ff;--code-bg:#161618;}}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);
+  color:var(--text-primary);line-height:1.6;overflow-wrap:break-word;}
+/* minmax(0,…) stops a wide table/pre/diagram from stretching its track and
+   pushing the whole page sideways — the classic CSS-grid blowout. */
+.layout{display:grid;grid-template-columns:minmax(0,var(--side-w)) minmax(0,1fr);min-height:100vh;min-height:100dvh;}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;height:100dvh;overflow-y:auto;min-width:0;
+  background:var(--bg-secondary);border-right:1px solid var(--border);padding:1.5rem 1rem;}
+.sidebar .doc-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;}
+.sidebar h1{font-size:1.05rem;font-weight:650;margin:.3rem 0 .8rem;line-height:1.3;}
+.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--text-secondary);
+  font-size:.84rem;padding:.36rem .5rem;border-radius:6px;}
+.toc a:hover,.toc a.active{background:var(--bg-tertiary);color:var(--text-primary);}
+.toc .num{color:var(--text-tertiary);font-variant-numeric:tabular-nums;margin-right:.4rem;}
+.progress{background:var(--bg-tertiary);border-radius:8px;padding:.75rem;margin-bottom:1.1rem;}
+.progress .bar{height:6px;background:var(--bg-primary);border-radius:99px;overflow:hidden;margin-bottom:.5rem;}
+.progress .fill{height:100%;background:var(--success);}
+.progress .pct{font-size:.78rem;color:var(--text-secondary);}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;border:2px solid var(--text-tertiary);}
+.dot.done{background:var(--success);border-color:var(--success);}
+.dot.active{background:var(--accent);border-color:var(--accent);}
+.main{padding:2.5rem 3rem;max-width:880px;min-width:0;}
+.lede{font-size:1.05rem;color:var(--text-secondary);margin-bottom:1.5rem;}
+h2{font-size:1.35rem;font-weight:660;margin:2.4rem 0 .9rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);
+  scroll-margin-top:calc(var(--nav-h) + 1rem);}
+h2:first-of-type{margin-top:0;}
+h3{font-size:1.02rem;font-weight:620;margin:1.3rem 0 .5rem;scroll-margin-top:calc(var(--nav-h) + 1rem);}
+p{margin-bottom:.9rem;}ul,ol{margin:.3rem 0 1rem 1.4rem;}li{margin-bottom:.35rem;}
+img,video{max-width:100%;height:auto;}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--code-bg);
+  padding:.1rem .35rem;border-radius:5px;}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;
+  font-family:ui-monospace,Menlo,monospace;font-size:.8rem;line-height:1.55;margin:.6rem 0 1.1rem;}
+pre code{background:none;padding:0;overflow-wrap:normal;}
+.callout{border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);
+  border-radius:0 8px 8px 0;padding:.8rem 1.1rem;margin:1.1rem 0;font-size:.92rem;}
+.callout.warn{border-color:var(--warning);background:color-mix(in srgb,var(--warning) 11%,transparent);}
+.callout .h{font-weight:650;display:block;margin-bottom:.2rem;}
+table{width:100%;border-collapse:collapse;margin:1rem 0 1.3rem;font-size:.9rem;}
+th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid var(--border);vertical-align:top;}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);}
+tbody tr:hover{background:var(--bg-secondary);}
+td code{color:var(--accent);}
+/* Long paths/identifiers in a narrow cell break rather than force a scroll. */
+th code,td code{overflow-wrap:anywhere;}
+/* Optional wrapper for a table too wide to wrap gracefully. A bare <table>
+   also scrolls on its own below 900px — see the responsive section. */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin:1rem 0 1.3rem;}
+.table-wrap table{margin:0;}
+.pill{font-size:.68rem;font-weight:650;padding:.14rem .5rem;border-radius:99px;white-space:nowrap;}
+.pill.ok{color:var(--success);background:color-mix(in srgb,var(--success) 16%,transparent);}
+.pill.warn{color:var(--warning);background:color-mix(in srgb,var(--warning) 16%,transparent);}
+.pill.muted{color:var(--text-secondary);background:var(--bg-tertiary);}
+.fig{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin:1.2rem 0;
+  max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+/* Diagrams scale to the column: author with viewBox, no fixed width/height attrs. */
+.fig svg{display:block;width:100%;height:auto;max-width:100%;margin-inline:auto;}
+/* .fig.wide — required on any figure whose svg viewBox is wider than
+   --fig-floor. It keeps a legible floor width and scrolls inside the figure on
+   a phone, instead of shrinking 12px labels down to unreadable 5px. */
+.fig.wide svg{width:100%;max-width:none;min-width:var(--fig-floor);}
+.fig-cap{font-size:.74rem;color:var(--text-secondary);text-align:center;margin-top:.7rem;}
+.nlabel{fill:var(--text-primary);font:600 12.5px system-ui;text-anchor:middle;}
+.nsub{fill:var(--text-secondary);font:10px system-ui;text-anchor:middle;}
+.edge{stroke:var(--text-tertiary);stroke-width:1.4;fill:none;}
+.meta-head{border-bottom:1px solid var(--border);padding-bottom:1.5rem;margin-bottom:2rem;}
+.meta-row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:1rem;font-size:.92rem;margin-bottom:.5rem;}
+.meta-row .k{color:var(--text-secondary);font-weight:600;}
+details.task{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;margin-bottom:1rem;overflow:hidden;}
+details.task[open]{box-shadow:0 2px 10px rgba(0,0,0,.05);}
+summary{list-style:none;cursor:pointer;padding:1rem 1.25rem;display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;}
+summary::-webkit-details-marker{display:none;}
+summary .tnum{font-size:.72rem;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:.15rem .5rem;border-radius:99px;}
+summary h3{font-size:1.05rem;font-weight:620;flex:1;min-width:0;margin:0;}
+.badge{font-size:.68rem;font-weight:600;padding:.18rem .55rem;border-radius:99px;text-transform:uppercase;letter-spacing:.03em;}
+.badge.done{color:var(--success);background:color-mix(in srgb,var(--success) 15%,transparent);}
+.badge.todo{color:var(--text-secondary);background:var(--bg-tertiary);}
+.task-body{padding:0 1.25rem 1.25rem;border-top:1px solid var(--border);}
+.step{display:flex;gap:.7rem;padding:.55rem 0;align-items:flex-start;font-size:.9rem;}
+.step .cb{width:16px;height:16px;border:2px solid var(--text-tertiary);border-radius:4px;flex-shrink:0;margin-top:.18rem;}
+.step.checked .cb{background:var(--success);border-color:var(--success);}
+.step.checked .txt{color:var(--text-secondary);text-decoration:line-through;}
+
+/* ===== Responsive ===================================================
+   Desktop keeps the two-column shell. At 900px and below — tablet
+   portrait and every phone — the sidebar becomes a compact sticky bar
+   whose TOC is a horizontally scrollable row of chips, and the document
+   reads full width. Nothing ever scrolls the page sideways. */
+@media (max-width:1100px){
+  :root{--side-w:220px;}
+  .main{padding:2rem;}
+}
+@media (max-width:900px){
+  :root{--nav-h:8rem;}
+  .layout{grid-template-columns:minmax(0,1fr);}
+  .sidebar{position:sticky;top:0;z-index:20;height:auto;overflow:visible;
+    border-right:none;border-bottom:1px solid var(--border);padding:.7rem 1rem .55rem;}
+  .sidebar .doc-label{font-size:.62rem;}
+  .sidebar h1{font-size:.98rem;margin:.1rem 0 .5rem;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .toc{display:flex;gap:.4rem;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;padding-bottom:.1rem;}
+  .toc::-webkit-scrollbar{display:none;}
+  .toc a{flex:0 0 auto;white-space:nowrap;gap:.3rem;border:1px solid var(--border);
+    border-radius:99px;padding:.42rem .7rem;font-size:.8rem;}
+  .toc .num{margin-right:.15rem;}
+  .main{padding:1.6rem 1.25rem 3rem;max-width:none;width:100%;margin-inline:auto;}
+  /* A bare <table> scrolls inside itself instead of widening the page. */
+  table{display:block;width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .fig{padding:1rem;}
+}
+@media (max-width:640px){
+  /* The floor width now exceeds the column, so .fig.wide really does scroll. */
+  .fig.wide .fig-cap::after{content:"swipe the diagram sideways to see all of it";
+    display:block;margin-top:.2rem;font-size:.68rem;color:var(--text-tertiary);}
+}
+/* Phone in landscape: a sticky bar would eat a third of the screen. */
+@media (max-width:900px) and (max-height:520px){
+  .sidebar{position:static;}
+  :root{--nav-h:0px;}
+}
+@media (max-width:560px){
+  body{line-height:1.55;}
+  .main{padding:1.25rem 1rem 2.5rem;}
+  .lede{font-size:1rem;}
+  h2{font-size:1.2rem;margin:2rem 0 .8rem;}
+  .meta-row{grid-template-columns:minmax(0,1fr);gap:.1rem;margin-bottom:.8rem;}
+  .callout{padding:.75rem .9rem;}
+  .fig{padding:.8rem;border-radius:10px;}
+  summary{padding:.85rem 1rem;gap:.6rem;}
+  summary h3{flex:1 0 100%;order:3;}
+  .task-body{padding:0 1rem 1rem;}
+  th,td{padding:.5rem .6rem;}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto !important;}}
+
+/* page additions (new classes only; the canonical layout rules are untouched) */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:1rem;margin:1rem 0 1.4rem;}
+.card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.55rem;min-width:0;}
+.card .thumb{aspect-ratio:9/12;max-width:100%;border-radius:8px;background:var(--bg-tertiary);padding:.6rem;display:flex;flex-direction:column;gap:.35rem;overflow:hidden;}
+.thumb .b{background:var(--bg-secondary);border-radius:4px;height:.55rem;}
+.thumb .b.w60{width:60%}.thumb .b.w80{width:80%}.thumb .b.acc{background:var(--accent);opacity:.75}
+.thumb .blk{background:var(--bg-secondary);border-radius:6px;flex:1;}
+.card h3{margin:0;font-size:.95rem;}
+.card p{margin:0;font-size:.85rem;color:var(--text-secondary);}
+.card a.open{font-size:.85rem;font-weight:600;color:var(--accent);text-decoration:none;}
+.feat{list-style:none;margin:0 0 1.2rem;display:grid;gap:.6rem;}
+.feat li{background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:.75rem .95rem;margin:0;}
+.feat li b{display:block;}
+.feat li span{font-size:.88rem;color:var(--text-secondary);}
+details.tech{border:1px dashed var(--border);border-radius:12px;padding:0 1.1rem;margin:1rem 0;}
+details.tech>summary{padding:1rem 0;font-weight:650;}
+details.tech>summary::before{content:"\25B8";color:var(--accent);margin-right:.2rem;}
+details.tech[open]>summary::before{content:"\25BE";}
+details.tech>summary .hint{font-weight:400;font-size:.85rem;color:var(--text-secondary);}
+.yours{font-size:.68rem;font-weight:650;padding:.1rem .45rem;border-radius:99px;color:var(--purple);background:color-mix(in srgb,var(--purple) 14%,transparent);white-space:nowrap;}
+</style>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="doc-label">Design Spec</div>
+  <h1>Artifact-First Brainstorming</h1>
+  <div class="toc">
+    <a href="#purpose"><span class="num">1</span>What it's for</a>
+    <a href="#features"><span class="num">2</span>What you can do</a>
+    <a href="#screens"><span class="num">3</span>Screens</a>
+    <a href="#flows"><span class="num">4</span>How it flows</a>
+    <a href="#approaches"><span class="num">5</span>Approaches</a>
+    <a href="#technical"><span class="num">6</span>Technical design</a>
+  </div>
+</nav>
+<main class="main">
+  <p class="lede">Brainstorming shows you the experience first: what users can do, the screens as a clickable prototype, and how the solution flows. On Claude Code it is all one artifact you can review from your PC or phone. Technical design stays one tap away, folded.</p>
+
+  <h2 id="purpose">1. What it's for</h2>
+  <p><strong>Why.</strong> Claude now gets the technical design right often enough that you rarely review it. What you do review is the experience: the features users get, the screens, and the flow of the app. Today's spec leads with architecture and data-flow diagrams and keeps mockups as local files you can only open at your desk.</p>
+  <p><strong>Goals</strong></p>
+  <ul>
+    <li>Every design review starts with what users can do, what they see, and how they move through it.</li>
+    <li>You can review from anywhere, PC or phone, by clicking through a prototype, commenting on it, or writing a general note in chat.</li>
+    <li>Technical design is still there, complete, for when you want it, but it's optional and folded by default.</li>
+    <li>High-level solution flows (the "half-technical" view) are shown by default, so you can see intent and shape the flows.</li>
+    <li>Take upstream Superpowers v7.0.2, including its rebuilt brainstorming, without losing any of the above.</li>
+  </ul>
+  <p><strong>Non-goals:</strong> changing how plans are executed, or keeping the server-based visual companion running.</p>
+  <p><strong>It fails if:</strong> you have to open the technical section to understand what gets built, a review on your phone breaks or scrolls sideways, or feedback you left as a comment gets missed.</p>
+
+  <h2 id="features">2. What you can do</h2>
+  <ul class="feat">
+    <li><b>See ideas as they come up</b><span>Whenever something is easier to see than read, Claude publishes it as an artifact mid-conversation and gives you the link. It doesn't ask first. <a href="prototype.html#chat-link">See it</a></span></li>
+    <li><b>Read the spec experience-first</b><span>Purpose, features, screens, flows, approaches, in that order. <a href="prototype.html#spec-page">See it</a></span></li>
+    <li><b>Click through the prototype</b><span>A second page in the same artifact, styled like the product, with working navigation. Every screen in the spec opens the prototype on that screen. <a href="prototype.html#proto-screen">See it</a></span></li>
+    <li><b>Open the technical design when you want it</b><span>Block diagrams, data model, and the technical calls Claude made, folded at the bottom of the spec. <a href="prototype.html#spec-technical">See it</a></span></li>
+    <li><b>Comment on what you looked at</b><span>Leave comments on either page from the claude.ai viewer, PC or phone. <a href="prototype.html#leave-comment">See it</a></span></li>
+    <li><b>Or just write a note in chat</b><span>Rushing? Tell Claude your general preferences. Claude reads the comments and your note together, answers each comment, revises, and republishes to the same link. Anything you didn't touch counts as approved. <a href="prototype.html#chat-reply">See it</a></span></li>
+    <li><b>Approve once</b><span>Approving the spec and prototype is the last checkpoint. The plan is written and executed without another review unless planning finds a design problem.</span></li>
+  </ul>
+  <p>Outside Claude Code there's no artifact viewer, so the same two pages are saved in the topic folder and you open them locally. Comments aren't available there; feedback goes in chat.</p>
+
+  <h2 id="screens">3. Screens</h2>
+  <p>The prototype below clicks through a review of a small example app (<em>Pantry</em>, a shared grocery list) to show the new experience end to end.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="thumb"><div class="b w60"></div><div class="blk"></div><div class="b acc w80"></div></div>
+      <h3>The link arrives</h3><p>Claude says what it published and what to look at first.</p>
+      <a class="open" href="prototype.html#chat-link">Open in prototype →</a>
+    </div>
+    <div class="card">
+      <div class="thumb"><div class="b w80"></div><div class="b"></div><div class="b w60"></div><div class="blk"></div><div class="b w60"></div></div>
+      <h3>Spec on a phone</h3><p>Experience sections first; screen thumbnails open the prototype.</p>
+      <a class="open" href="prototype.html#spec-page">Open in prototype →</a>
+    </div>
+    <div class="card">
+      <div class="thumb"><div class="b w60"></div><div class="blk"></div><div class="blk"></div></div>
+      <h3>Technical design, expanded</h3><p>Folded by default; block diagram and Claude's calls inside.</p>
+      <a class="open" href="prototype.html#spec-technical">Open in prototype →</a>
+    </div>
+    <div class="card">
+      <div class="thumb"><div class="b acc w60"></div><div class="b"></div><div class="b"></div><div class="b w80"></div><div class="blk"></div></div>
+      <h3>Prototype screen</h3><p>Product-styled, clickable, with a "Back to spec" chip.</p>
+      <a class="open" href="prototype.html#proto-screen">Open in prototype →</a>
+    </div>
+    <div class="card">
+      <div class="thumb"><div class="blk"></div><div class="b acc w80"></div><div class="b"></div></div>
+      <h3>Leaving a comment</h3><p>Pinned to the page you were looking at.</p>
+      <a class="open" href="prototype.html#leave-comment">Open in prototype →</a>
+    </div>
+    <div class="card">
+      <div class="thumb"><div class="b w80"></div><div class="b w60"></div><div class="blk"></div><div class="b acc w60"></div></div>
+      <h3>Claude's reply</h3><p>What changed, which comments were answered, what counts as approved.</p>
+      <a class="open" href="prototype.html#chat-reply">Open in prototype →</a>
+    </div>
+  </div>
+
+  <h2 id="flows">4. How it flows</h2>
+  <p>The review loop. It runs as many times as you need; each pass republishes to the same link.</p>
+  <div class="fig">
+    <svg viewBox="0 0 620 520" role="img" aria-label="Review loop: conversation, publish, review, revise, approve, plan">
+      <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/></marker></defs>
+      <rect x="170" y="10" width="280" height="56" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="310" y="34">Conversation</text><text class="nsub" x="310" y="52">why, what users do, approach picked</text>
+      <path class="edge" d="M310 66 V96" marker-end="url(#ah)"/>
+      <rect x="170" y="100" width="280" height="56" rx="10" fill="color-mix(in srgb,var(--accent) 14%,transparent)" stroke="var(--accent)"/>
+      <text class="nlabel" x="310" y="124">Spec + prototype published</text><text class="nsub" x="310" y="142">one artifact, one link</text>
+      <path class="edge" d="M310 156 V186" marker-end="url(#ah)"/>
+      <rect x="170" y="190" width="280" height="56" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="310" y="214">You review, anywhere</text><text class="nsub" x="310" y="232">click through · comment · note in chat</text>
+      <path class="edge" d="M310 246 V276" marker-end="url(#ah)"/>
+      <rect x="170" y="280" width="280" height="56" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="310" y="304">Claude reads comments + chat</text><text class="nsub" x="310" y="322">answers each comment in its thread</text>
+      <path class="edge" d="M310 336 V366" marker-end="url(#ah)"/>
+      <path d="M310 370 L400 400 L310 430 L220 400 Z" fill="var(--bg-secondary)" stroke="var(--border)"/>
+      <text class="nlabel" x="310" y="404">Approved?</text>
+      <path class="edge" d="M220 400 H60 V128 H164" marker-end="url(#ah)"/>
+      <text class="nsub" x="112" y="390">changes: revise,</text><text class="nsub" x="112" y="404">republish same link</text>
+      <path class="edge" d="M310 430 V456" marker-end="url(#ah)"/>
+      <text class="nsub" x="330" y="448">yes</text>
+      <rect x="170" y="460" width="280" height="50" rx="10" fill="color-mix(in srgb,var(--success) 16%,transparent)" stroke="var(--success)"/>
+      <text class="nlabel" x="310" y="482">Plan written and executed</text><text class="nsub" x="310" y="498">accepted by default</text>
+    </svg>
+    <div class="fig-cap">Anything you didn't comment on or mention counts as approved when you say go.</div>
+  </div>
+  <p>Where the pages go depends on the harness:</p>
+  <div class="fig">
+    <svg viewBox="0 0 620 230" role="img" aria-label="Harness branch: Claude Code publishes an artifact, others write local files">
+      <defs><marker id="ah2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/></marker></defs>
+      <rect x="190" y="10" width="240" height="52" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="310" y="32">Spec + prototype written</text><text class="nsub" x="310" y="49">topic folder, committed</text>
+      <path class="edge" d="M270 62 L150 110" marker-end="url(#ah2)"/><path class="edge" d="M350 62 L470 110" marker-end="url(#ah2)"/>
+      <text class="nsub" x="170" y="86">Artifact tool available</text><text class="nsub" x="460" y="86">no Artifact tool</text>
+      <rect x="20" y="114" width="260" height="104" rx="10" fill="color-mix(in srgb,var(--accent) 14%,transparent)" stroke="var(--accent)"/>
+      <text class="nlabel" x="150" y="140">Published as one artifact</text>
+      <text class="nsub" x="150" y="160">link in chat · PC and phone</text>
+      <text class="nsub" x="150" y="178">comments answered in thread</text>
+      <text class="nsub" x="150" y="196">same link on every revision</text>
+      <rect x="340" y="114" width="260" height="104" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+      <text class="nlabel" x="470" y="140">Local files</text>
+      <text class="nsub" x="470" y="160">paths in chat · open in a browser</text>
+      <text class="nsub" x="470" y="178">feedback in chat only</text>
+      <text class="nsub" x="470" y="196">same pages, same format</text>
+    </svg>
+    <div class="fig-cap">The files are written either way, so the design is always in the repo.</div>
+  </div>
+
+  <h2 id="approaches">5. Approaches</h2>
+  <table>
+    <thead><tr><th>Approach</th><th>Trades off</th><th></th></tr></thead>
+    <tbody>
+      <tr><td><strong>One artifact, layered</strong>: spec main page, prototype as a second page</td><td>One link and one comment stream; the technical design is one tap away and never in the way.</td><td><span class="pill ok">picked</span></td></tr>
+      <tr><td>Two artifacts: spec and prototype</td><td>Each is simpler, but two links and two comment threads that can drift apart.</td><td><span class="pill muted">no</span></td></tr>
+      <tr><td>Prototype is the spec, with a side panel</td><td>Most immersive, but features and flows get squeezed into a panel; awkward for work with little UI.</td><td><span class="pill muted">no</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="technical">6. Technical design</h2>
+  <details class="tech">
+    <summary>Show technical design <span class="hint">· what changes in the plugin, and the calls Claude made</span></summary>
+
+    <h3>What changes</h3>
+    <div class="fig">
+      <svg viewBox="0 0 620 330" role="img" aria-label="Block diagram of plugin parts changed">
+        <defs><marker id="ah3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--text-tertiary)"/></marker></defs>
+        <rect x="200" y="10" width="220" height="52" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+        <text class="nlabel" x="310" y="32">upstream v7.0.2 merge</text><text class="nsub" x="310" y="49">new brainstorming as the base</text>
+        <path class="edge" d="M310 62 V92" marker-end="url(#ah3)"/>
+        <rect x="160" y="96" width="300" height="60" rx="10" fill="color-mix(in srgb,var(--accent) 14%,transparent)" stroke="var(--accent)"/>
+        <text class="nlabel" x="310" y="120">brainstorming/SKILL.md</text><text class="nsub" x="310" y="138">layered HTML design doc · show it · last gate</text>
+        <path class="edge" d="M250 156 L130 196" marker-end="url(#ah3)"/><path class="edge" d="M370 156 L490 196" marker-end="url(#ah3)"/>
+        <rect x="10" y="200" width="250" height="78" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+        <text class="nlabel" x="135" y="224">html-artifacts</text><text class="nsub" x="135" y="242">spec + prototype templates</text><text class="nsub" x="135" y="258">stylesheet theme guards</text><text class="nsub" x="135" y="272">references/claude-code-artifacts.md</text>
+        <rect x="360" y="200" width="250" height="78" rx="10" fill="var(--bg-tertiary)" stroke="var(--border)"/>
+        <text class="nlabel" x="485" y="224">writing-plans</text><text class="nsub" x="485" y="242">header links the artifact</text><text class="nsub" x="485" y="258">UI tasks cite prototype.html#screen</text>
+        <rect x="160" y="290" width="300" height="34" rx="8" fill="var(--bg-secondary)" stroke="var(--border)"/>
+        <text class="nlabel" x="310" y="312">tests · README fork section · version 7.1.0</text>
+      </svg>
+      <div class="fig-cap">Brainstorming decides <em>when</em> to show; html-artifacts owns <em>how</em> pages are built and published.</div>
+    </div>
+
+    <table>
+      <thead><tr><th>Part</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td><code>skills/brainstorming/SKILL.md</code></td><td>Take upstream's rebuilt skill. Edit "Show, don't tell" and "Play It Back" to publish visuals (artifact or local file) instead of offering the visual companion. "The Written Design" writes the layered HTML doc via html-artifacts into the topic folder. Approving the doc and prototype is the last gate. Replace the "Visual Companion" section with a short "Showing it" section. Stays under 20,000 bytes.</td></tr>
+        <tr><td><code>skills/brainstorming/builder-check-prompt.md</code></td><td>Tell the builder the doc is HTML and the prototype is part of the design; have it read the technical section too.</td></tr>
+        <tr><td><code>skills/brainstorming/visual-companion.md</code></td><td>Keep the "retired" stub and point it at artifacts. Server scripts stay on disk, as today.</td></tr>
+        <tr><td><code>html-artifacts/templates/spec.html</code></td><td>Layered skeleton: purpose → features → screens → flows → approaches → <code>&lt;details class="tech"&gt;</code>. Page fragment (no html/head/body), so it publishes as-is.</td></tr>
+        <tr><td><code>html-artifacts/templates/prototype.html</code></td><td>New. Full document, product-styled, hash routing (<code>#screen-id</code>), "Back to spec" chip, tokens with both dark-mode guards.</td></tr>
+        <tr><td><code>html-artifacts/stylesheet.css</code></td><td>Dark tokens under <code>:root:not([data-theme="light"])</code> and <code>:root[data-theme="dark"]</code>; sticky bar offset by the safe-area inset; <code>details.tech</code>, feature list and screen-card classes.</td></tr>
+        <tr><td><code>html-artifacts/references/claude-code-artifacts.md</code></td><td>New. Publish the spec with <code>files: {"prototype.html": …}</code>; republish to the same path; read and answer comments when your partner replies; reserved hash names; mid-conversation visuals.</td></tr>
+        <tr><td><code>writing-plans/SKILL.md</code></td><td><code>**Design:**</code> header line carries the artifact link; UI tasks list <code>Prototype: …/prototype.html#screen-id</code>.</td></tr>
+        <tr><td><code>subagent-driven-development/SKILL.md</code></td><td>Move the Claude 5 paragraph's detail into <code>references/</code> so the skill is under 20,000 bytes.</td></tr>
+        <tr><td><code>run-hook.cmd</code>, <code>writing-skills/SKILL.md</code>, version files</td><td>Merge resolutions: keep our <code>where git</code> fallback and warning on upstream's new structure; re-point our Claude 5 authoring line into <code>references/</code>.</td></tr>
+        <tr><td><code>tests/html-artifacts/*</code></td><td>Spec checks: layers in order, technical section folded, architecture diagram inside it; prototype template checks; skill-size and upstream suites pass.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Calls Claude made</h3>
+    <ul>
+      <li><span class="yours">Claude's call</span> The spec template becomes a page fragment. The artifact viewer wraps the main page in its own document shell, and browsers open a fragment locally too. The prototype stays a full document, because supporting pages aren't wrapped.</li>
+      <li><span class="yours">Claude's call</span> A topic folder's main page is <code>index.html</code> (was <code>design.html</code>), with <code>prototype.html</code> beside it. The artifact serves its main page as <code>index.html</code>, so the prototype's "Back to spec" link works both in the artifact and from local files. A spec with no prototype stays a single <code>…-design.html</code> file.</li>
+      <li><span class="yours">Claude's call</span> Visuals mid-conversation are published without asking, replacing upstream's "offer the companion" message: a link is cheap to ignore, and upstream already treats "how to show something" as Claude's call.</li>
+      <li><span class="yours">Claude's call</span> Comments are read when you reply (and from watch notices if the session gets them), not polled. Each comment gets an answer in its own thread.</li>
+      <li><span class="yours">Claude's call</span> Untouched parts count as approved only when you give a go-ahead. A batch of comments alone is feedback, not approval.</li>
+      <li><span class="yours">Claude's call</span> Small changes keep upstream's short in-chat design; they get a prototype artifact only when they change something visible.</li>
+      <li><span class="yours">Claude's call</span> Prototype screen ids avoid the names claude.ai reserves (<code>settings</code>, <code>sidebar</code>, <code>comment-*</code>, …).</li>
+      <li><span class="yours">Claude's call</span> The fork's version becomes 7.1.0 (upstream 7.0.2 plus this feature).</li>
+      <li><span class="yours">Claude's call</span> The architecture and data-flow diagrams are still required for a project, but inside the technical section; the default view requires the features, screens and flow diagram instead.</li>
+    </ul>
+  </details>
+</main>
+</div>
